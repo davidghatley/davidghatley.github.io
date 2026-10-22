@@ -1,85 +1,218 @@
 [
-  {
-    "slug": "anime-pipeline",
-    "title": "anime pipeline",
-    "order": 2,
-    "glyph": [
-      "X.X.X",
-      "XXXXX",
-      "X...X",
-      "XXXXX",
-      "X.X.X"
-    ],
-    "status": "generative art",
-    "status_note": "Lab piece. The pipeline runs end to end on one card, but the series itself is pre-production: stills, storyboards and short test clips, no finished episode.",
-    "oneliner": "Gray-box Blender previz in, anime frames and clips out, on one GPU.",
-    "role": "I built the whole local pipeline and am using it to develop an original series, Meguri: the Blender previz scenes, the ComfyUI and video workflows, the storyboard boards, and the character looks.",
-    "when": "2026-10",
-    "hero": {
-      "src": "public/media/anime-pipeline/hero.jpg",
-      "alt": "Left: a gray-box Blender render of a mannequin climbing a hillside stair. Right: the same frame as a painted anime still, a girl in a yellow raincoat on the same stair."
-    },
-    "media": [
-      {
-        "src": "public/media/anime-pipeline/blockout-to-final.mp4",
-        "alt": "Looping muted clip: Blender blockout and depth pass above, the generated anime shot below.",
-        "caption": "The blockout becomes the shot: a depth pass from Blender steers the video model, and the stair stays where I put it."
-      },
-      {
-        "src": "public/media/anime-pipeline/previz-riso.jpg",
-        "alt": "Gray-box mannequin render beside a two-color riso-style version of the same stair frame.",
-        "caption": "Same previz frame, different look: the geometry survives, so I can swap the print style without redrawing the scene."
-      },
-      {
-        "src": "public/media/anime-pipeline/depth-passes.jpg",
-        "alt": "Line art, depth map and generated anime frame of a boy on a bicycle in a narrow street, stacked.",
-        "caption": "Line art and depth are the two inputs I hand the model; the bicycle shot is the result."
-      },
-      {
-        "src": "public/media/anime-pipeline/storyboard.jpg",
-        "alt": "A contact sheet of 30 storyboard thumbnails made from mannequin previz in different looks.",
-        "caption": "Thirty previz thumbnails in one board, each with lens, look and the reason for the shot, approved before any video is made."
-      },
-      {
-        "src": "public/media/anime-pipeline/character-turnaround.jpg",
-        "alt": "Front, side and back turnaround of a girl with a bob haircut in a yellow raincoat and navy sailor uniform.",
-        "caption": "A character turnaround, the reference the generations are held to."
-      }
-    ],
-    "spec": [
-      {
-        "label": "generations logged",
-        "value": "1,777",
-        "source": "logs/runs.jsonl line count (anime-pipeline repo), read 2026-10-22"
-      },
-      {
-        "label": "succeeded",
-        "value": "1,633",
-        "source": "logs/runs.jsonl, status == success, read 2026-10-22"
-      },
-      {
-        "label": "GB VRAM ceiling",
-        "value": "12",
-        "source": "AGENTS.md memory budget: nothing may need more than 12 GB of VRAM (one RTX 3060)"
-      },
-      {
-        "label": "fps",
-        "value": "24",
-        "source": "docs/manual/pipeline_manual.html"
-      },
-      {
-        "label": "storyboard thumbnails",
-        "value": "30",
-        "source": "project/meguri/review/media/board_ep01_board.jpg, 'previz v2 - 30 thumbnails'"
-      }
-    ],
-    "links": [],
-    "body": [
-      "I can block a shot as gray boxes in Blender and get an anime frame back that keeps the same camera, stairs and figure placement. The hero image is one frame both ways; the loop is the same idea in motion.",
-      "The pipeline is Blender previz, then ComfyUI and a video model steered by depth and line passes, all on one 12 GB RTX 3060. Nothing is allowed to need more than 12 GB of VRAM, so I lean on 8-bit weights and tiled decode. Every generation is appended to a run log.",
-      "The test bed is an original series, Meguri, with two shows in development, SHUTO and SURI. I storyboard in previz first and only spend GPU time on video once a board is approved. Look Lab pages compare print styles on the same frames.",
-      "What I learned: depth is the operator. Once the previz carries the camera and layout, the style becomes a setting I can change, and most failures are about the model ignoring the scene rather than the scene being wrong. This is still a lab; the character consistency and shot-to-shot continuity are not solved."
-    ],
-    "category": "generative art"
-  }
+ {
+  "slug": "meguri",
+  "title": "meguri",
+  "order": 1,
+  "glyph": [
+   "X.X.X",
+   "XXXXX",
+   "X...X",
+   "XXXXX",
+   "X.X.X"
+  ],
+  "status": "generative art",
+  "status_note": "Lab piece. The pipeline runs end to end on one card, but the series is pre-production: stills, storyboards and short test clips, no finished episode.",
+  "oneliner": "A spring town in 3D, then riso anime shots from gray-box previz, on one GPU.",
+  "role": "I built the local pipeline and am developing the original series Meguri with it: the Blender world and previz scenes, the ComfyUI and video workflows, the storyboards and the character looks.",
+  "when": "2026-10",
+  "hero": {
+   "src": "public/media/meguri/hero.jpg",
+   "alt": "Left: a gray-box Blender render of a mannequin climbing a hillside stair. Right: the same frame as a painted anime still, a girl in a yellow raincoat on the same stair."
+  },
+  "media": [
+   {
+    "src": "public/media/meguri/map.png",
+    "alt": "Top-down plan of the town of Meguri: terraced streets, the river and levee on the right, the station and the sea gate at the bottom, with numbered camera positions.",
+    "caption": "The town plan with its 20 numbered camera positions. Shots start from a real place on this map."
+   },
+   {
+    "src": "public/media/meguri/scene-01_aerial.jpg",
+    "alt": "Aerial gray-box 3D render of the town on its hillside.",
+    "caption": "The 3D town from above: the same plan, built as a Blender scene."
+   },
+   {
+    "src": "public/media/meguri/scene-05_main_street.jpg",
+    "alt": "Gray-box 3D render looking along the main street.",
+    "caption": "Main street, previz render."
+   },
+   {
+    "src": "public/media/meguri/scene-03_level_crossing.jpg",
+    "alt": "Gray-box 3D render of the level crossing.",
+    "caption": "The level crossing, previz render."
+   },
+   {
+    "src": "public/media/meguri/stairs-depth-final.mp4",
+    "alt": "Looping muted clip, landscape: a depth render of a stair climb on the left and the generated riso anime shot of the same climb on the right.",
+    "caption": "The stair climb: a depth render from Blender (left) steers the video model, and the stair stays where I put it (right)."
+   },
+   {
+    "src": "public/media/meguri/previz-riso.jpg",
+    "alt": "Gray-box mannequin render beside a two-color riso-style version of the same stair frame.",
+    "caption": "Same previz frame, different look: the geometry survives, so I can swap the print style without redrawing the scene."
+   },
+   {
+    "src": "public/media/meguri/storyboard.jpg",
+    "alt": "A contact sheet of 30 storyboard thumbnails made from mannequin previz in different looks.",
+    "caption": "Thirty previz thumbnails in one board, each with lens, look and the reason for the shot, approved before any video is made."
+   },
+   {
+    "src": "public/media/meguri/character-turnaround.jpg",
+    "alt": "Front, side and back turnaround of a girl with a bob haircut in a yellow raincoat and navy sailor uniform.",
+    "caption": "A character turnaround, the reference the generations are held to."
+   },
+   {
+    "src": "public/media/meguri/depth-passes.jpg",
+    "alt": "Line art, depth map and generated anime frame of a boy on a bicycle in a narrow street, stacked.",
+    "caption": "Line art and depth are the two inputs I hand the model; the bicycle shot is the result."
+   }
+  ],
+  "spec": [
+   {
+    "label": "generations logged",
+    "value": "1,024",
+    "source": "logs/runs.jsonl (anime-pipeline repo), rows not naming shuto or suri; all status success, read 2026-10-22"
+   },
+   {
+    "label": "map camera positions",
+    "value": "20",
+    "source": "project/world/out/meguri_atlas.svg legend: 'cameras: 2 sea gate · 3 stair street ...' to 20"
+   },
+   {
+    "label": "storyboard thumbnails",
+    "value": "30",
+    "source": "project/meguri/review/media/board_ep01_board.jpg, 'previz v2 - 30 thumbnails'"
+   },
+   {
+    "label": "GB VRAM ceiling",
+    "value": "12",
+    "source": "AGENTS.md memory budget: nothing may need more than 12 GB of VRAM (one RTX 3060)"
+   },
+   {
+    "label": "fps",
+    "value": "24",
+    "source": "docs/manual/pipeline_manual.html"
+   }
+  ],
+  "links": [],
+  "body": [
+   "I can block a shot as gray boxes in Blender and get an anime frame back that keeps the same camera, stairs and figure placement. The first panel is one shot, SH050 crane down the stair street, as four stages of one clock: the Blender previz, the depth and line passes, the ComfyUI job, and the finished clip.",
+   "The pipeline is Blender previz, then ComfyUI and a video model steered by depth and line passes, all on one 12 GB RTX 3060. Nothing is allowed to need more than 12 GB of VRAM, so I lean on 8-bit weights and tiled decode. Every generation is appended to a run log.",
+   "Meguri is an original series about a terraced spring town whose water runs downhill and still comes back to the top. The town is built as a 3D world from a plan, a map with 20 numbered camera positions, so every shot starts from a real place. I storyboard in previz first and spend GPU time on video only once a board is approved. The look is a two-ink riso print, one ink pair per character and place, and the geometry survives a change of print style.",
+   "What exists: stills, thirty-thumbnail storyboards, character turnarounds, and test clips of single shots such as the stair climb and the stair street. No episode is finished. What I learned: depth is the operator. Once the previz carries the camera and layout, the style becomes a setting I can change, and most failures are the model ignoring the scene rather than the scene being wrong. Character consistency and shot-to-shot continuity are not solved."
+  ],
+  "category": "generative art"
+ },
+ {
+  "slug": "shuto",
+  "title": "shuto",
+  "order": 2,
+  "glyph": [
+   "XXXXX",
+   "X.X.X",
+   "XXXXX",
+   "X...X",
+   "X...X"
+  ],
+  "status": "generative art",
+  "status_note": "Lab piece in development. Previz and look tests only: no finished episode, and the look is not chosen yet.",
+  "oneliner": "Blades, bikes and light trails on a ruined expressway: previz first, then video.",
+  "role": "I am developing SHUTO as the second show on the pipeline: the expressway 3D kit, the shot choreography in Blender, the look lab and the video tests.",
+  "when": "2026-10",
+  "hero": {
+   "src": "public/media/shuto/key-cyberpunk-SH13.jpg",
+   "alt": "Two bike riders on an elevated expressway at night, blades drawn and crossing, pink light trails behind them, a city skyline behind."
+  },
+  "media": [
+   {
+    "src": "public/media/shuto/previz-SH01_afterglow.jpg",
+    "alt": "Gray-box previz of the junction drone dive: low-poly bikes and elevated roads at night.",
+    "caption": "SH01 junction, previz: the expressway kit and a drone camera."
+   },
+   {
+    "src": "public/media/shuto/previz-SH05_tunnel.jpg",
+    "alt": "Previz render of a tunnel shot.",
+    "caption": "SH05 tunnel, first-person previz."
+   },
+   {
+    "src": "public/media/shuto/previz-SH06_toll.jpg",
+    "alt": "Previz render of the toll plaza.",
+    "caption": "SH06 toll plaza, previz."
+   },
+   {
+    "src": "public/media/shuto/duel-previz-final.mp4",
+    "alt": "Looping muted landscape clip: the SH13 duel previz on the left and the generated shot on the right.",
+    "caption": "SH13, the duel: the previz (left) fixes the bikes, blades and trails; the video model paints over it (right)."
+   },
+   {
+    "src": "public/media/shuto/guard-previz-final.mp4",
+    "alt": "Looping muted landscape clip: the SH12 guard previz on the left and the generated shot on the right.",
+    "caption": "SH12, the guard: head-on at the toll plaza, previz left and generated shot right."
+   },
+   {
+    "src": "public/media/shuto/key-cyberpunk-SH13.jpg",
+    "alt": "Key frame of the duel in a neon cyberpunk look.",
+    "caption": "Look lab, neon cyberpunk, SH13."
+   },
+   {
+    "src": "public/media/shuto/key-backlit-SH13.jpg",
+    "alt": "Key frame of the duel in a black-and-white backlit manga look with neon blades.",
+    "caption": "Look lab, backlit manga, SH13."
+   },
+   {
+    "src": "public/media/shuto/key-boldinked-SH13.jpg",
+    "alt": "Key frame of the duel in a bold inked look.",
+    "caption": "Look lab, bold inked, SH13."
+   },
+   {
+    "src": "public/media/shuto/look-riso-junction.jpg",
+    "alt": "Two-ink riso plate of the Kasumi junction.",
+    "caption": "Riso plate: the junction."
+   },
+   {
+    "src": "public/media/shuto/look-riso-kiku.jpg",
+    "alt": "Riso character plate: Kiku, a rider with a long ponytail and a long coat, in green and purple.",
+    "caption": "Riso plate: Kiku."
+   },
+   {
+    "src": "public/media/shuto/look-riso-jun.jpg",
+    "alt": "Riso character plate: Jun, a courier on a bike in blue ink.",
+    "caption": "Riso plate: Jun."
+   }
+  ],
+  "spec": [
+   {
+    "label": "shots blocked in previz",
+    "value": "13",
+    "source": "shows/shuto/previz/specs/ (SH01 to SH13), read 2026-10-22"
+   },
+   {
+    "label": "look-lab frames",
+    "value": "180",
+    "source": "shows/shuto/NOTES.md, 'Look lab: 15 looks x 12 frames'"
+   },
+   {
+    "label": "frames with blades",
+    "value": "172",
+    "source": "shows/shuto/NOTES.md, look lab: weapons in 172 of 180"
+   },
+   {
+    "label": "generations logged",
+    "value": "749",
+    "source": "logs/runs.jsonl rows naming shuto in name, dest or outputs; 605 succeeded, 144 failed to submit, read 2026-10-22"
+   },
+   {
+    "label": "GB VRAM ceiling",
+    "value": "12",
+    "source": "AGENTS.md memory budget: one RTX 3060"
+   }
+  ],
+  "links": [],
+  "body": [
+   "SHUTO is an action show about night couriers and rival bike gangs on an abandoned elevated expressway, where every on-ramp belongs to a gang and fights are blades at speed, with light trails. The first panel is one shot, SH13 the duel, as four stages of one clock: the Blender previz, a look-lab key, the video-model job, and the finished clip.",
+   "It runs on the same pipeline as Meguri on one 12 GB RTX 3060: a Blender previz scene with the choreography scripted, then depth-guided ComfyUI video. The expressway has its own 3D kit and a choreography tool; thirteen shots are blocked as previz, including the junction dive, the joust, the tunnel and the toll plaza, so the camera and the two bikes are fixed before any model touches them.",
+   "The look is the open question, so I run a look lab: fifteen looks across twelve frames each. Image models keep the layout but add riders, flip views and will not draw a head-on crossing, which is why the jousts come from previz, not from prompts. A blade and trail pass is added to the previz so the blades and the light trails follow the bikes.",
+   "What exists: previz clips for thirteen shots, 180 look-lab frames, a few finished test clips, and riso look plates for the cast. There is no finished episode and no chosen look yet. SURI, the sister idea from the same session, is shelved and not shown here."
+  ],
+  "category": "generative art"
+ }
 ]

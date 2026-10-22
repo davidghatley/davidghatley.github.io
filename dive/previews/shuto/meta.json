@@ -1,0 +1,10 @@
+{
+ "accent": "#2559c9",
+ "accent_dark": "#7aa2ff",
+ "on_accent": "#f9f9f5",
+ "label": "duel: previz \u2192 final",
+ "fonts": [
+  "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+ ],
+ "font_display": "\"Barlow Condensed\", system-ui, sans-serif"
+}
