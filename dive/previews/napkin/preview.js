@@ -6,17 +6,16 @@ const FR = [
   ['components-inspect.png','components','Inspect lists declared CSS per property, with a Copy usage snippet'],
   ['agents-activity.png','agents ui','Activity feed of agent file events, filterable to agents only'],
   ['history-timeline.png','history','a revision timeline with undo, redo and restore to the live component'],
-  ['layout-panel.png','layout','Direction, gap and padding controls with the size row: hug, fill, fixed'],
-  ['tokens-inspect.png','tokens','the same component with the tokens tabs wired in']
+  ['layout-panel.png','layout','Direction, gap and padding controls with the size row: hug, fill, fixed']
 ];
-const W = 640, H = 400, GX = 120, GY = 150, COLS = 3;
+const W = 640, H = 400, GX = 120, GY = 150, COLS = 4;
 export default function mount(root, { mode, base }) {
   const hero = mode === 'hero';
   const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const st = document.createElement('style');
   st.textContent = `
 .pv-napkin{position:relative;height:${hero ? 'min(80vh,760px)' : '460px'};background:var(--sheet);border:1px solid var(--ink);overflow:hidden;font-family:var(--font-mono);color:var(--ink);touch-action:none;cursor:grab;user-select:none;
- background-image:radial-gradient(circle,var(--rule) 1px,transparent 1.5px);background-size:24px 24px}
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect x='11' y='11' width='2' height='2' fill='%23888' fill-opacity='.45'/%3E%3C/svg%3E")}
 .pv-napkin.drag{cursor:grabbing}
 .pv-napkin .w{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
 .pv-napkin .w.an{transition:transform .5s cubic-bezier(.3,.7,.2,1)}
@@ -35,7 +34,7 @@ export default function mount(root, { mode, base }) {
 .pv-napkin .hint{font:500 11px/16px var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);background:var(--sheet);padding:2px 6px}`;
   document.head.appendChild(st);
   const cs = getComputedStyle(document.documentElement);
-  const dark = matchMedia('(prefers-color-scheme: dark)').matches || document.documentElement.dataset.theme === 'dark';
+  const th = document.documentElement.dataset.theme, dark = th === 'dark' || (th !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
   const el = document.createElement('div'); el.className = 'pv-napkin'; el.tabIndex = 0;
   el.style.setProperty('--napkin-a', dark ? '#8ea0ff' : '#2236b0'); el.style.setProperty('--napkin-on', dark ? '#121417' : '#f9f9f5');
   const world = document.createElement('div'); world.className = 'w'; el.appendChild(world);
@@ -59,12 +58,12 @@ export default function mount(root, { mode, base }) {
   const fitRect = (x, y, w, h, pad = 40) => { const b = box(); s = Math.min((b.width - pad * 2) / w, (b.height - pad * 2) / h); tx = (b.width - w * s) / 2 - x * s; ty = (b.height - h * s) / 2 - y * s; };
   const focus = (i, an = true) => { cur = i; frames.forEach((q, j) => q.f.classList.toggle('on', j === i)); const q = frames[i]; fitRect(q.x, q.y, W, q.h, hero ? 36 : 30); apply(an); };
   const fit = (an = true) => { cur = -1; frames.forEach(q => q.f.classList.remove('on')); fitRect(0, 0, WW, WH, 30); apply(an); };
-  const start = () => { const b = box(); s = hero ? .62 : .5; s = Math.min(s, (b.width - 40) / (W * 2 + GX)); tx = 20; ty = 20; apply(false); };
+  const start = () => { const b = box(); s = hero ? .62 : .5; s = Math.min(s, (b.width - 40) / (W * 2 + GX)); tx = 20; ty = 72; apply(false); };
   start();
   let drag = null, moved = 0;
   const down = e => { if (e.target.closest('.ui')) return; drag = { x: e.clientX, y: e.clientY, tx, ty }; moved = 0; el.setPointerCapture(e.pointerId); el.classList.add('drag'); };
   const move = e => { if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; moved = Math.max(moved, Math.abs(dx) + Math.abs(dy)); if (moved > 4) { tx = drag.tx + dx; ty = drag.ty + dy; apply(false); } };
-  const up = e => { if (!drag) return; el.classList.remove('drag'); const was = moved > 4; drag = null; if (!was) { const f = e.target.closest && e.target.closest('.f'); if (f) { const i = frames.findIndex(q => q.f === f); i === cur ? fit() : focus(i); } } };
+  const up = e => { if (!drag) return; el.classList.remove('drag'); const was = moved > 4; drag = null; if (!was) { const f = document.elementFromPoint(e.clientX, e.clientY)?.closest('.f'); if (f) { const i = frames.findIndex(q => q.f === f); i === cur ? fit() : focus(i); } } };
   const wheel = e => { if (!(e.ctrlKey || e.metaKey)) return; e.preventDefault(); const b = box(), mx = e.clientX - b.left, my = e.clientY - b.top, k = Math.exp(-e.deltaY * .0015), ns = Math.min(2, Math.max(.15, s * k)); tx = mx - (mx - tx) * ns / s; ty = my - (my - ty) * ns / s; s = ns; apply(false); };
   const pan = a => { const d = 160; if (a === 'l') tx += d; if (a === 'r') tx -= d; if (a === 'u') ty += d; if (a === 'd') ty -= d; apply(true); };
   ui.addEventListener('click', e => { const a = e.target.closest('button')?.dataset.a; if (!a) return; a === 'fit' ? fit() : pan(a); });

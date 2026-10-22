@@ -46,11 +46,12 @@ export default function mount(root, { mode, base }) {
   const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
   const el = document.createElement('div'); el.className = 'pv-dive-club' + (hero ? ' hero' : ''); el.style.setProperty('--logo', logo);
   const studio = base + 'studio/index.html';
-  el.innerHTML = `<div class="pv-dc-main"><div class="pv-dc-stage"><img alt="Dive Club studio interior, pixel-art village style" src="${base}public/media/dive-club/interior.jpg"><span class="pv-dc-cap">Dive Club studio</span><span class="pv-dc-brand"><i class="pv-dc-logo" role="img" aria-label="Dive Club"></i></span><button class="pv-dc-play" type="button">Press start</button></div>
-<div class="pv-dc-side"><div class="pv-dc-bubble" aria-live="off"><div class="pv-dc-q"></div><div class="pv-dc-who"></div><p class="pv-dc-line"></p><div class="pv-dc-dis"><b>Synthetic</b> <span></span></div></div><a class="pv-dc-full" href="${studio}">Full screen game</a></div></div><div class="pv-dc-hd"><i class="pv-dc-logo" role="img" aria-label="Dive Club"></i><span>The museum: five exhibits</span></div><div class="pv-dc-ex"></div><div class="pv-dc-credit">Dive Club name and logo belong to Dive Club. Fan project, made for Ridd and Tommy.</div>`;
+  const GAME_LIVE = false; // the playable studio is back in the workshop for polish; flip to true to re-enable
+  el.innerHTML = `<div class="pv-dc-main"><div class="pv-dc-stage"><img alt="Dive Club studio interior, pixel-art village style" src="${base}public/media/dive-club/interior.jpg"><span class="pv-dc-cap">Dive Club studio</span><span class="pv-dc-brand"><i class="pv-dc-logo" role="img" aria-label="Dive Club"></i></span>${GAME_LIVE ? '<button class="pv-dc-play" type="button">Press start</button>' : '<span class="pv-dc-play" aria-disabled="true">Playable studio: in the workshop</span>'}</div>
+<div class="pv-dc-side"><div class="pv-dc-bubble" aria-live="off"><div class="pv-dc-q"></div><div class="pv-dc-who"></div><p class="pv-dc-line"></p><div class="pv-dc-dis"><b>Synthetic</b> <span></span></div></div>${GAME_LIVE ? `<a class="pv-dc-full" href="${studio}">Full screen game</a>` : ''}</div></div><div class="pv-dc-hd"><i class="pv-dc-logo" role="img" aria-label="Dive Club"></i><span>The museum: five exhibits</span></div><div class="pv-dc-ex"></div><div class="pv-dc-credit">Dive Club name and logo belong to Dive Club. Fan project, made for Ridd and Tommy.</div>`;
   root.appendChild(el);
   const stage = el.querySelector('.pv-dc-stage'), play = el.querySelector('.pv-dc-play');
-  play.onclick = () => {
+  if (GAME_LIVE) play.onclick = () => {
     const f = document.createElement('iframe');
     f.src = studio; f.loading = 'lazy'; f.title = 'Dive Club studio game';
     f.setAttribute('allow', 'autoplay; fullscreen'); f.allowFullscreen = true;

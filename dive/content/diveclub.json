@@ -84,14 +84,10 @@
       {
         "label": "Ridd & Tommy Guides",
         "url": "https://claude.ai/artifact/2gxKfq38XGTDz2nKytaHtE"
-      },
-      {
-        "label": "Enter the studio",
-        "url": "studio/index.html"
       }
     ],
     "body": [
-      "I trained a small language model on each of Ridd's and Tommy's own speech from 317 public Dive Club episodes, then put a fast decision module on top. The studio lets you ask them questions. Every line there is curated and labeled synthetic.",
+      "I trained a small language model on each of Ridd's and Tommy's own speech from 317 public Dive Club episodes, then put a fast decision module on top. A walkable studio where you can ask them questions is in the workshop; every line in it is curated and labeled synthetic.",
       "I downloaded the episodes, transcribed them with Whisper, worked out who said what, then trained one LoRA per host on Qwen3.5-4B-Base. Held-out perplexity dropped for both, so the voice transferred.",
       "Judgment did not transfer. The models sound like the hosts but do not know what they would decide. The decision module did survive the backbone swap: 0.805 and 0.811 against 0.811 for plain Kev on 656 questions.",
       "Models, weights and data stay closed until Ridd and Tommy say yes."
