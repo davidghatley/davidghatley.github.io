@@ -1,7 +1,7 @@
 (function () {
   var G = window.SAUCE_GLYPHS || {};
   var NS = 'http://www.w3.org/2000/svg';
-  var GROUPS = ['diveclub', 'vaasf', 'kitchen', 'anime', 'tools'];
+  var GROUPS = ['vaasf', 'kitchen', 'anime', 'tools'];
   var PILL = { shipped: 'ok', working: 'info', prototype: 'info', research: 'mute', concept: 'mute' };
   var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }

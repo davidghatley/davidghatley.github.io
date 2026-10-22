@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 while true; do
   ok=1
   for f in site.js previews/*/preview.js; do node --check "$f" >/dev/null 2>&1 || { echo "$(date +%T) skip: $f"; ok=0; }; done
-  for f in content/*.json previews/*/meta.json studio/*.json; do python3 -m json.tool "$f" >/dev/null 2>&1 || { echo "$(date +%T) skip: $f"; ok=0; }; done
+  for f in content/*.json previews/*/meta.json; do python3 -m json.tool "$f" >/dev/null 2>&1 || { echo "$(date +%T) skip: $f"; ok=0; }; done
   if [ $ok = 1 ]; then
     ./make_dive.sh >/dev/null 2>&1 && rm -f dive/previews/_harness.html
     git add -A

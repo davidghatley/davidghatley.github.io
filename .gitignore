@@ -3,5 +3,4 @@ dive/studio/refs
 *.log
 autodeploy.log
 studio/*
-!studio/dialog.json
-!studio/exhibits.json
+drafts/
