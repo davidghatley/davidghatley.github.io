@@ -51,13 +51,14 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
   .site-h1 .ss-mast__c { font-size: 16px; line-height: 24px; position: relative; top: 2px; }
 }
 .muted { color: var(--ink-muted); }
+.nw { white-space: nowrap; }
 .acc { --accent: var(--acc-l, var(--cobalt-text)); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .acc { --accent: var(--acc-d, var(--acc-l, var(--cobalt-text))); } }
 :root[data-theme="dark"] .acc { --accent: var(--acc-d, var(--acc-l, var(--cobalt-text))); }
 
 /* ---------- glyphs and the pixel arrow ---------- */
 .glyph { display: block; width: var(--glyph); height: var(--glyph); color: var(--accent, var(--cobalt-text)); flex: none; }
-.glyph rect { animation: ss-appear var(--dur-cell) var(--ease-step) backwards; animation-delay: calc(var(--i) * var(--dur-cell)); }
+.glyph rect { animation: ss-appear var(--dur-cell) var(--ease-step) backwards; animation-delay: calc(var(--i, 0) * var(--dur-cell)); }
 .glyph.is-armed rect { animation-play-state: paused; visibility: hidden; }
 .parrow { display: block; width: 14px; height: 14px; flex: none; }   /* 7 x 2px cells, the cell of Stem 7 at 16px */
 .parrow--l { transform: scaleX(-1); }
@@ -127,12 +128,12 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 }
 /* phone: glyph, then the title on the lockup name's line (60px), tags, arrow */
 @media (max-width: 639px) {
-  .row__bar { grid-template-columns: 60px minmax(0, 1fr) auto 14px; column-gap: 0; }
+  .row__bar { grid-template-columns: 60px minmax(0, 1fr) auto 26px; column-gap: 0; }
   .row__n { display: none; }
   .row__bar > .glyph { grid-column: 1; }
   .row__title { grid-column: 2; }
   .row__tags { grid-column: 3; margin-left: var(--space-3); }
-  .row__arrow { grid-column: 4; margin-left: var(--space-3); }
+  .row__arrow { grid-column: 4; }
   .row__pad { margin-left: 0; }
   .open-btn { display: flex; justify-self: stretch; justify-content: center; height: 48px; border: 2px solid var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--paper)); box-sizing: border-box; }
 }
