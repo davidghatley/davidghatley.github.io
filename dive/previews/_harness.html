@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<script src="https://inflight.co/widget.js" data-org="aius9qpt" data-path="/dive" async></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preview harness</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@1,6..72,400&family=Jacquarda+Bastarda+9&display=swap">
+<link rel="stylesheet" href="../public/tokens.css">
+<link rel="stylesheet" href="../public/components.css">
+<style>
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/24px var(--font-sans); }
+  .frame { max-width: 1100px; margin: 32px auto; padding: 0 16px; }
+  .frame.hero { max-width: 1200px; }
+  .bar { font: 500 11px/16px var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 12px; }
+  #root { border-top: 1px solid var(--ink); padding-top: 16px; }
+</style>
+</head>
+<body>
+<div class="frame" id="frame">
+  <div class="bar" id="bar"></div>
+  <div id="root"></div>
+</div>
+<script type="module">
+  const q = new URLSearchParams(location.search);
+  const slug = q.get('slug'), mode = q.get('mode') || 'row';
+  if (q.get('theme')) document.documentElement.dataset.theme = q.get('theme');
+  document.getElementById('frame').classList.toggle('hero', mode === 'hero');
+  document.getElementById('bar').textContent = `${slug} · ${mode}`;
+  const mod = await import(`./${slug}/preview.js`);
+  mod.default(document.getElementById('root'), { mode, base: '../' });
+</script>
+</body>
+</html>

@@ -1,105 +1,105 @@
 [
- {
-  "slug": "anime-pipeline",
-  "title": "3D to anime pipeline",
-  "order": 8,
-  "glyph": [
-   "X.X.X",
-   "XXXXX",
-   "X...X",
-   "XXXXX",
-   "X.X.X"
-  ],
-  "status": "prototype",
-  "status_note": "Lab piece. The pipeline runs end to end on one card, but the series itself is pre-production: stills, storyboards and short test clips, no finished episode.",
-  "oneliner": "Gray-box Blender previz in, anime frames and clips out, on one GPU.",
-  "role": "I built the whole local pipeline and am using it to develop an original series, Meguri: the Blender previz scenes, the ComfyUI and video workflows, the storyboard boards, and the character looks.",
-  "when": "2026-10",
-  "hero": {
-   "src": "public/media/anime-pipeline/hero.jpg",
-   "alt": "Left: a gray-box Blender render of a mannequin climbing a hillside stair. Right: the same frame as a painted anime still, a girl in a yellow raincoat on the same stair."
-  },
-  "media": [
-   {
-    "src": "public/media/anime-pipeline/blockout-to-final.mp4",
-    "alt": "Looping muted clip: Blender blockout and depth pass above, the generated anime shot below.",
-    "caption": "The blockout becomes the shot: a depth pass from Blender steers the video model, and the stair stays where I put it."
-   },
-   {
-    "src": "public/media/anime-pipeline/previz-riso.jpg",
-    "alt": "Gray-box mannequin render beside a two-color riso-style version of the same stair frame.",
-    "caption": "Same previz frame, different look: the geometry survives, so I can swap the print style without redrawing the scene."
-   },
-   {
-    "src": "public/media/anime-pipeline/depth-passes.jpg",
-    "alt": "Line art, depth map and generated anime frame of a boy on a bicycle in a narrow street, stacked.",
-    "caption": "Line art and depth are the two inputs I hand the model; the bicycle shot is the result."
-   },
-   {
-    "src": "public/media/anime-pipeline/storyboard.jpg",
-    "alt": "A contact sheet of 30 storyboard thumbnails made from mannequin previz in different looks.",
-    "caption": "Thirty previz thumbnails in one board, each with lens, look and the reason for the shot, approved before any video is made."
-   },
-   {
-    "src": "public/media/anime-pipeline/character-turnaround.jpg",
-    "alt": "Front, side and back turnaround of a girl with a bob haircut in a yellow raincoat and navy sailor uniform.",
-    "caption": "A character turnaround, the reference the generations are held to."
-   }
-  ],
-  "spec": [
-   {
-    "label": "generations logged",
-    "value": "1,777",
-    "source": "logs/runs.jsonl line count (anime-pipeline repo), read 2026-10-22"
-   },
-   {
-    "label": "succeeded",
-    "value": "1,633",
-    "source": "logs/runs.jsonl, status == success, read 2026-10-22"
-   },
-   {
-    "label": "GB VRAM ceiling",
-    "value": "12",
-    "source": "AGENTS.md memory budget: nothing may need more than 12 GB of VRAM (one RTX 3060)"
-   },
-   {
-    "label": "fps",
-    "value": "24",
-    "source": "docs/manual/pipeline_manual.html"
-   },
-   {
-    "label": "storyboard thumbnails",
-    "value": "30",
-    "source": "project/meguri/review/media/board_ep01_board.jpg, 'previz v2 - 30 thumbnails'"
-   }
-  ],
-  "links": [
-   {
-    "label": "Anime Pipeline",
-    "url": "https://claude.ai/artifact/AWjUhS7DpnJ8XJat9bF2og"
-   },
-   {
-    "label": "Anime Pipeline Manual",
-    "url": "https://claude.ai/artifact/Jt4ULWyHagR8G9Uwrx6wnD"
-   },
-   {
-    "label": "Meguri Teaser PV",
-    "url": "https://claude.ai/artifact/7UDeTc9AvXdnsfGzpYfSjp"
-   },
-   {
-    "label": "Meguri Storyboard",
-    "url": "https://claude.ai/artifact/8zpCFpXUJBNnpv3rityUX7"
-   },
-   {
-    "label": "SHUTO Look Lab",
-    "url": "https://claude.ai/artifact/CQQhyiaWX9K7JtjHVeHzov"
-   }
-  ],
-  "body": [
-   "I can block a shot as gray boxes in Blender and get an anime frame back that keeps the same camera, stairs and figure placement. The hero image is one frame both ways; the loop is the same idea in motion.",
-   "The pipeline is Blender previz, then ComfyUI and a video model steered by depth and line passes, all on one 12 GB RTX 3060. Nothing is allowed to need more than 12 GB of VRAM, so I lean on 8-bit weights and tiled decode. Every generation is appended to a run log.",
-   "The test bed is an original series, Meguri, with two shows in development, SHUTO and SURI. I storyboard in previz first and only spend GPU time on video once a board is approved. Look Lab pages compare print styles on the same frames.",
-   "What I learned: depth is the operator. Once the previz carries the camera and layout, the style becomes a setting I can change, and most failures are about the model ignoring the scene rather than the scene being wrong. This is still a lab; the character consistency and shot-to-shot continuity are not solved."
-  ]
- }
+  {
+    "slug": "anime-pipeline",
+    "title": "3D to anime pipeline",
+    "order": 2,
+    "glyph": [
+      "X.X.X",
+      "XXXXX",
+      "X...X",
+      "XXXXX",
+      "X.X.X"
+    ],
+    "status": "prototype",
+    "status_note": "Lab piece. The pipeline runs end to end on one card, but the series itself is pre-production: stills, storyboards and short test clips, no finished episode.",
+    "oneliner": "Gray-box Blender previz in, anime frames and clips out, on one GPU.",
+    "role": "I built the whole local pipeline and am using it to develop an original series, Meguri: the Blender previz scenes, the ComfyUI and video workflows, the storyboard boards, and the character looks.",
+    "when": "2026-10",
+    "hero": {
+      "src": "public/media/anime-pipeline/hero.jpg",
+      "alt": "Left: a gray-box Blender render of a mannequin climbing a hillside stair. Right: the same frame as a painted anime still, a girl in a yellow raincoat on the same stair."
+    },
+    "media": [
+      {
+        "src": "public/media/anime-pipeline/blockout-to-final.mp4",
+        "alt": "Looping muted clip: Blender blockout and depth pass above, the generated anime shot below.",
+        "caption": "The blockout becomes the shot: a depth pass from Blender steers the video model, and the stair stays where I put it."
+      },
+      {
+        "src": "public/media/anime-pipeline/previz-riso.jpg",
+        "alt": "Gray-box mannequin render beside a two-color riso-style version of the same stair frame.",
+        "caption": "Same previz frame, different look: the geometry survives, so I can swap the print style without redrawing the scene."
+      },
+      {
+        "src": "public/media/anime-pipeline/depth-passes.jpg",
+        "alt": "Line art, depth map and generated anime frame of a boy on a bicycle in a narrow street, stacked.",
+        "caption": "Line art and depth are the two inputs I hand the model; the bicycle shot is the result."
+      },
+      {
+        "src": "public/media/anime-pipeline/storyboard.jpg",
+        "alt": "A contact sheet of 30 storyboard thumbnails made from mannequin previz in different looks.",
+        "caption": "Thirty previz thumbnails in one board, each with lens, look and the reason for the shot, approved before any video is made."
+      },
+      {
+        "src": "public/media/anime-pipeline/character-turnaround.jpg",
+        "alt": "Front, side and back turnaround of a girl with a bob haircut in a yellow raincoat and navy sailor uniform.",
+        "caption": "A character turnaround, the reference the generations are held to."
+      }
+    ],
+    "spec": [
+      {
+        "label": "generations logged",
+        "value": "1,777",
+        "source": "logs/runs.jsonl line count (anime-pipeline repo), read 2026-10-22"
+      },
+      {
+        "label": "succeeded",
+        "value": "1,633",
+        "source": "logs/runs.jsonl, status == success, read 2026-10-22"
+      },
+      {
+        "label": "GB VRAM ceiling",
+        "value": "12",
+        "source": "AGENTS.md memory budget: nothing may need more than 12 GB of VRAM (one RTX 3060)"
+      },
+      {
+        "label": "fps",
+        "value": "24",
+        "source": "docs/manual/pipeline_manual.html"
+      },
+      {
+        "label": "storyboard thumbnails",
+        "value": "30",
+        "source": "project/meguri/review/media/board_ep01_board.jpg, 'previz v2 - 30 thumbnails'"
+      }
+    ],
+    "links": [
+      {
+        "label": "Anime Pipeline",
+        "url": "https://claude.ai/artifact/AWjUhS7DpnJ8XJat9bF2og"
+      },
+      {
+        "label": "Anime Pipeline Manual",
+        "url": "https://claude.ai/artifact/Jt4ULWyHagR8G9Uwrx6wnD"
+      },
+      {
+        "label": "Meguri Teaser PV",
+        "url": "https://claude.ai/artifact/7UDeTc9AvXdnsfGzpYfSjp"
+      },
+      {
+        "label": "Meguri Storyboard",
+        "url": "https://claude.ai/artifact/8zpCFpXUJBNnpv3rityUX7"
+      },
+      {
+        "label": "SHUTO Look Lab",
+        "url": "https://claude.ai/artifact/CQQhyiaWX9K7JtjHVeHzov"
+      }
+    ],
+    "body": [
+      "I can block a shot as gray boxes in Blender and get an anime frame back that keeps the same camera, stairs and figure placement. The hero image is one frame both ways; the loop is the same idea in motion.",
+      "The pipeline is Blender previz, then ComfyUI and a video model steered by depth and line passes, all on one 12 GB RTX 3060. Nothing is allowed to need more than 12 GB of VRAM, so I lean on 8-bit weights and tiled decode. Every generation is appended to a run log.",
+      "The test bed is an original series, Meguri, with two shows in development, SHUTO and SURI. I storyboard in previz first and only spend GPU time on video once a board is approved. Look Lab pages compare print styles on the same frames.",
+      "What I learned: depth is the operator. Once the previz carries the camera and layout, the style becomes a setting I can change, and most failures are about the model ignoring the scene rather than the scene being wrong. This is still a lab; the character consistency and shot-to-shot continuity are not solved."
+    ]
+  }
 ]

@@ -1,0 +1,3 @@
+{ "accent": "#2f5fa8", "accent_dark": "#5cc8dc", "on_accent": "#f9f9f5", "label": "press start → studio",
+  "fonts": ["https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600;700&family=Hind:wght@400;500&family=Fragment+Mono&display=swap"],
+  "font_display": "'Be Vietnam Pro', var(--font-sans)" }

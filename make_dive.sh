@@ -6,7 +6,7 @@ set -e
 cd "$(dirname "$0")"
 rm -rf dive && mkdir dive
 cp index.html case.html site.css site.js dive/
-cp -r content public studio dive/
+cp -r content public studio previews dive/
 rm -rf dive/studio/refs
 python3 -I - <<'PY'
 import pathlib

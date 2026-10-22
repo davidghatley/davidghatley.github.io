@@ -1,0 +1,98 @@
+[demo] project: a copy of fixtures/tiny-grid (shortestPath in grid.mjs, 2 checks)
+check  says                                                           result
+unit   shortestPath answers the small cases.                          FAIL  (exit 1, 0.0s)
+maze   shortestPath finds the shortest route through the 21x21 room.  FAIL  {"pass":false,"score":0,"note":"shortest 76, got -2"}
+0 of 2 checks pass.
+[demo] bonfire run --replay fixtures/tiny-grid
+run r-20261022-135155 · tiny-grid · 4 agents · recorded replies (no model calls) · pid 3238142
+round 1  try    w1 w2 w3 w4 started
+  w1  step 1 saved (copy)
+  w2  step 1 saved (copy)
+  w3  step 1 saved (copy)
+  w4  step 1 saved (copy)
+  w1  step 2 saved (turn-1)
+  w2  step 2 saved (turn-1)
+  w4  step 2 saved (turn-1)
+  w3  step 2 saved (turn-1)
+[demo] all 4 agents mid-try:
+r-20261022-135155  RUNNING  pid 3238142
+  w1  step 2 saved  · Straight line: count the distance as if there were no walls.
+  w2  step 2 saved  · Breadth-first search from S, one ring of cells at a time.
+  w3  step 2 saved  · Depth-first search: follow one corridor until it ends, then back up.
+  w4  step 2 saved  · Breadth-first search with a written-out queue and comments.
+[demo] kill -9 3238142
+[demo] process gone:
+r-20261022-135155  INTERRUPTED  (no owner process)
+  w1  step 2 saved  · Straight line: count the distance as if there were no walls.
+  w2  step 2 saved  · Breadth-first search from S, one ring of cells at a time.
+  w3  step 2 saved  · Depth-first search: follow one corridor until it ends, then back up.
+  w4  step 2 saved  · Breadth-first search with a written-out queue and comments.
+[demo] restarting: bonfire resume
+resume r-20261022-135155 · same run, same agents · pid 3239518
+  w1  back to step 3 (2 saved)
+  w2  back to step 3 (2 saved)
+  w3  back to step 3 (2 saved)
+  w4  back to step 3 (2 saved)
+  w2  step 3 saved (turn-2)
+  w1  step 3 saved (turn-2)
+  w4  step 3 saved (turn-2)
+  w3  step 3 saved (turn-2)
+  w2  step 4 saved (turn-3)
+  w2  step 5 saved (snapshot)
+  w1  step 4 saved (turn-3)
+  w1  step 5 saved (snapshot)
+  w2  step 6 saved (score)
+  w2  try finished: 2/2 checks
+  w1  step 6 saved (score)
+  w1  try finished: 0/2 checks
+  w3  step 4 saved (turn-3)
+  w3  step 5 saved (snapshot)
+  w4  step 4 saved (turn-3)
+  w3  step 6 saved (score)
+  w3  try finished: 1/2 checks
+  w4  step 5 saved (turn-4)
+  w4  step 6 saved (snapshot)
+  w4  step 7 saved (score)
+  w4  try finished: 2/2 checks
+round 1  score  w1 0/2  w2 2/2  w3 1/2  w4 2/2
+round 1  pick   w2 (decision d-r1-select)
+PASS  every check passes · winner w2 · 1 resume, 0 finished steps re-run
+result: runs/r-20261022-135155/result/  (why: runs/r-20261022-135155/result/WHY.md)
+[demo] bonfire receipt --resumes
+r-20261022-135155  PASS  1 resume  1 decision
+
+tokens burned        in      out   calls
+  w1                3.2k      340       3
+  w2                3.3k      520       3
+  w3                3.2k      465       3
+  w4                5.5k     1.1k       4
+  total            15.1k     2.4k      13   (recorded replies: no real tokens burned)
+
+resumes: 1
+  steps re-run:   0 finished steps
+  unsaved steps restarted: 4 (w1:turn-2, w2:turn-2, w4:turn-2, w3:turn-2; their work was not saved yet)
+  calls billed twice: 0 (one tokens.jsonl line per request id)
+[demo] bonfire check inside runs/r-20261022-135155/result
+check  says                                                           result
+unit   shortestPath answers the small cases.                          PASS  (exit 0, 0.0s)
+maze   shortestPath finds the shortest route through the 21x21 room.  PASS  {"pass":true,"score":1,"note":"shortest 76, got 76"}
+2 of 2 checks pass.
+[demo] WHY.md:
+# Why w2
+
+Run r-20261022-135155, round 1, select = "pick". Result: **PASS**.
+
+Kept **w2** (Breadth-first search from S, one ring of cells at a time.) from branch `bonfire/r-20261022-135155/r1-w2` at 563721467967.
+
+w2 and w4 both passed 2 of 2 checks with the same score; w2 used fewer tokens (3800 vs 6530).
+
+| rank | agent | try | checks | score | tokens |
+|---|---|---|---|---|---|
+| 1 | w2 | done | 2/2 | 1 | 3800 |
+| 2 | w4 | done | 2/2 | 1 | 6530 |
+| 3 | w3 | done | 1/2 | 0.987 | 3655 |
+| 4 | w1 | done | 0/2 | 0 | 3500 |
+
+Ranking is fixed and has no AI in it: finished tries first, then most checks passed, fewest verified problems, highest score, fewest tokens.
+Runners-up: w4 (2/2), w3 (1/2), w1 (0/2).
+[demo] kept /tmp/claude-1000/-home-davidhatley-Projects-portfolio/ef338471-177c-4780-90c4-48b4aa037bbe/scratchpad/bonfire-demo-AtzDwX

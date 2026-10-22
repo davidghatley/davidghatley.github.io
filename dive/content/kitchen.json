@@ -1,446 +1,446 @@
 [
- {
-  "slug": "playdough",
-  "title": "playdough",
-  "order": 3,
-  "glyph": [
-   ".XXX.",
-   "XXXXX",
-   "X.X.X",
-   "XXXXX",
-   "X...X"
-  ],
-  "status": "prototype",
-  "status_note": "Contract, research and a landing page exist; the generator itself is not built.",
-  "oneliner": "One sentence in, a small game you can play from a link.",
-  "role": "I wrote the intent, the research behind it and the landing page, and I am steering the visual direction.",
-  "when": "2026-10",
-  "hero": {
-   "src": "public/media/playdough/hero.jpg",
-   "alt": "playdough title card, an original blob creature in two inks"
+  {
+    "slug": "playdough",
+    "title": "playdough",
+    "order": 5,
+    "glyph": [
+      ".XXX.",
+      "XXXXX",
+      "X.X.X",
+      "XXXXX",
+      "X...X"
+    ],
+    "status": "prototype",
+    "status_note": "Contract, research and a landing page exist; the generator itself is not built.",
+    "oneliner": "One sentence in, a small game you can play from a link.",
+    "role": "I wrote the intent, the research behind it and the landing page, and I am steering the visual direction.",
+    "when": "2026-10",
+    "hero": {
+      "src": "public/media/playdough/hero.jpg",
+      "alt": "playdough title card, an original blob creature in two inks"
+    },
+    "media": [
+      {
+        "src": "public/media/playdough/landing.jpg",
+        "alt": "playdough landing page at desktop width",
+        "caption": "The landing page, built from the Secret Sauce house style."
+      },
+      {
+        "src": "public/media/playdough/render-hero.jpg",
+        "alt": "Rendered isometric game diorama from the visuals worktree",
+        "caption": "A render from the visuals worktree: the look a generated game should have."
+      },
+      {
+        "src": "public/media/playdough/frog-pond.jpg",
+        "alt": "Isometric frog pond vignette",
+        "caption": "One of six vignettes, frog pond, used to test the pixel and ink-edge look."
+      }
+    ],
+    "spec": [
+      {
+        "label": "commits",
+        "value": "7",
+        "source": "git rev-list --count HEAD in the playdough repo, read 2026-10-22"
+      },
+      {
+        "label": "research notes",
+        "value": "4",
+        "source": "research/*.md in the playdough repo"
+      },
+      {
+        "label": "vignette renders",
+        "value": "6",
+        "source": "playdough-visuals worktree, visuals/out/vignette-*.png"
+      }
+    ],
+    "links": [
+      {
+        "label": "Kitchen Atlas",
+        "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
+      },
+      {
+        "label": "The Kitchen Tour",
+        "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
+      },
+      {
+        "label": "Kitchen Progress Board",
+        "url": "https://claude.ai/artifact/SCDiB5Dp3KsmYttDH9RWNB"
+      },
+      {
+        "label": "Landing Page Rack",
+        "url": "https://claude.ai/artifact/HMe2vNvVrQnm1cJrnKNygf"
+      },
+      {
+        "label": "Playdough Build Log",
+        "url": "https://claude.ai/artifact/TCkqB4rrLDau4eeghkKVjW"
+      }
+    ],
+    "body": [
+      "The goal: a stranger types one sentence, plays the result from a link, and gets a 20-second clip to share. That is the target, not a result. Today playdough is a contract, four research notes and a landing page.",
+      "It is a generator, not an engine. It sits on templates from mise_en_place and a design-brief step that turns a vague idea into a fun core loop before anything is built. A human playtest comes before anything is shared.",
+      "So far the useful work is visual: six rendered vignettes testing whether generated art can look deliberate. I learned to settle the look before the pipeline."
+    ]
   },
-  "media": [
-   {
-    "src": "public/media/playdough/landing.jpg",
-    "alt": "playdough landing page at desktop width",
-    "caption": "The landing page, built from the Secret Sauce house style."
-   },
-   {
-    "src": "public/media/playdough/render-hero.jpg",
-    "alt": "Rendered isometric game diorama from the visuals worktree",
-    "caption": "A render from the visuals worktree: the look a generated game should have."
-   },
-   {
-    "src": "public/media/playdough/frog-pond.jpg",
-    "alt": "Isometric frog pond vignette",
-    "caption": "One of six vignettes, frog pond, used to test the pixel and ink-edge look."
-   }
-  ],
-  "spec": [
-   {
-    "label": "commits",
-    "value": "7",
-    "source": "git rev-list --count HEAD in the playdough repo, read 2026-10-22"
-   },
-   {
-    "label": "research notes",
-    "value": "4",
-    "source": "research/*.md in the playdough repo"
-   },
-   {
-    "label": "vignette renders",
-    "value": "6",
-    "source": "playdough-visuals worktree, visuals/out/vignette-*.png"
-   }
-  ],
-  "links": [
-   {
-    "label": "Kitchen Atlas",
-    "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
-   },
-   {
-    "label": "The Kitchen Tour",
-    "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
-   },
-   {
-    "label": "Kitchen Progress Board",
-    "url": "https://claude.ai/artifact/SCDiB5Dp3KsmYttDH9RWNB"
-   },
-   {
-    "label": "Landing Page Rack",
-    "url": "https://claude.ai/artifact/HMe2vNvVrQnm1cJrnKNygf"
-   },
-   {
-    "label": "Playdough Build Log",
-    "url": "https://claude.ai/artifact/TCkqB4rrLDau4eeghkKVjW"
-   }
-  ],
-  "body": [
-   "The goal: a stranger types one sentence, plays the result from a link, and gets a 20-second clip to share. That is the target, not a result. Today playdough is a contract, four research notes and a landing page.",
-   "It is a generator, not an engine. It sits on templates from mise_en_place and a design-brief step that turns a vague idea into a fun core loop before anything is built. A human playtest comes before anything is shared.",
-   "So far the useful work is visual: six rendered vignettes testing whether generated art can look deliberate. I learned to settle the look before the pipeline."
-  ]
- },
- {
-  "slug": "mise_en_place",
-  "title": "Mise en Place",
-  "order": 4,
-  "glyph": [
-   "X.X.X",
-   ".....",
-   "X.X.X",
-   ".....",
-   "XXXXX"
-  ],
-  "status": "prototype",
-  "status_note": "Intent, landing page and a manual are written; the prep-pack tool is not built.",
-  "oneliner": "Preps a game project from one sentence so the agent skips setup.",
-  "role": "I defined the prep-pack idea, wrote the intent and the landing page, and drew its look.",
-  "when": "2026-10",
-  "hero": {
-   "src": "public/media/mise_en_place/hero.jpg",
-   "alt": "Mise en Place title card, prepped bowls on a tray"
+  {
+    "slug": "mise_en_place",
+    "title": "Mise en Place",
+    "order": 6,
+    "glyph": [
+      "X.X.X",
+      ".....",
+      "X.X.X",
+      ".....",
+      "XXXXX"
+    ],
+    "status": "prototype",
+    "status_note": "Intent, landing page and a manual are written; the prep-pack tool is not built.",
+    "oneliner": "Preps a game project from one sentence so the agent skips setup.",
+    "role": "I defined the prep-pack idea, wrote the intent and the landing page, and drew its look.",
+    "when": "2026-10",
+    "hero": {
+      "src": "public/media/mise_en_place/hero.jpg",
+      "alt": "Mise en Place title card, prepped bowls on a tray"
+    },
+    "media": [
+      {
+        "src": "public/media/mise_en_place/landing.jpg",
+        "alt": "Mise en Place landing page",
+        "caption": "The landing page: research, assets and references laid out before the cooking starts."
+      },
+      {
+        "src": "public/media/mise_en_place/card.jpg",
+        "alt": "Mise en Place portrait card",
+        "caption": "The portrait card, one of the generated social assets."
+      }
+    ],
+    "spec": [
+      {
+        "label": "commits",
+        "value": "10",
+        "source": "git rev-list --count HEAD in the mise_en_place repo, read 2026-10-22"
+      },
+      {
+        "label": "parts in a pack",
+        "value": "4",
+        "source": "site/copy.md: research, generated assets, references, an indexed folder"
+      }
+    ],
+    "links": [
+      {
+        "label": "Kitchen Atlas",
+        "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
+      },
+      {
+        "label": "The Kitchen Tour",
+        "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
+      },
+      {
+        "label": "Kitchen Progress Board",
+        "url": "https://claude.ai/artifact/SCDiB5Dp3KsmYttDH9RWNB"
+      },
+      {
+        "label": "Mise en Place Manual",
+        "url": "https://claude.ai/artifact/1mhQb2tfJL4niLenSHnyNF"
+      },
+      {
+        "label": "The First Shift",
+        "url": "https://claude.ai/artifact/ME44fH7nppDpgWpTfKfxDw"
+      }
+    ],
+    "body": [
+      "The target: give it one sentence about a game and it lays out a prep pack on disk, with a chosen template, an asset kit, a context brief and a manifest, before the agent starts. Zero setup steps for the agent is the goal. The tool does not exist yet.",
+      "What exists is the intent, a landing page, a manual, and a short list of lessons borrowed from my earlier research repos, including one finding that packing evidence loses more than searching for it.",
+      "I learned to write down what a tool is not. It is not an agent harness and not the decision model."
+    ]
   },
-  "media": [
-   {
-    "src": "public/media/mise_en_place/landing.jpg",
-    "alt": "Mise en Place landing page",
-    "caption": "The landing page: research, assets and references laid out before the cooking starts."
-   },
-   {
-    "src": "public/media/mise_en_place/card.jpg",
-    "alt": "Mise en Place portrait card",
-    "caption": "The portrait card, one of the generated social assets."
-   }
-  ],
-  "spec": [
-   {
-    "label": "commits",
-    "value": "10",
-    "source": "git rev-list --count HEAD in the mise_en_place repo, read 2026-10-22"
-   },
-   {
-    "label": "parts in a pack",
-    "value": "4",
-    "source": "site/copy.md: research, generated assets, references, an indexed folder"
-   }
-  ],
-  "links": [
-   {
-    "label": "Kitchen Atlas",
-    "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
-   },
-   {
-    "label": "The Kitchen Tour",
-    "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
-   },
-   {
-    "label": "Kitchen Progress Board",
-    "url": "https://claude.ai/artifact/SCDiB5Dp3KsmYttDH9RWNB"
-   },
-   {
-    "label": "Mise en Place Manual",
-    "url": "https://claude.ai/artifact/1mhQb2tfJL4niLenSHnyNF"
-   },
-   {
-    "label": "The First Shift",
-    "url": "https://claude.ai/artifact/ME44fH7nppDpgWpTfKfxDw"
-   }
-  ],
-  "body": [
-   "The target: give it one sentence about a game and it lays out a prep pack on disk, with a chosen template, an asset kit, a context brief and a manifest, before the agent starts. Zero setup steps for the agent is the goal. The tool does not exist yet.",
-   "What exists is the intent, a landing page, a manual, and a short list of lessons borrowed from my earlier research repos, including one finding that packing evidence loses more than searching for it.",
-   "I learned to write down what a tool is not. It is not an agent harness and not the decision model."
-  ]
- },
- {
-  "slug": "bonfire",
-  "title": "bonfire",
-  "order": 5,
-  "glyph": [
-   "..X..",
-   ".XX..",
-   ".XXX.",
-   "XX.XX",
-   "X.X.X"
-  ],
-  "status": "prototype",
-  "status_note": "Intent, a fork-base decision and a landing page; no harness code of its own yet.",
-  "oneliner": "Runs AI agents until the work passes your checks, even after a crash.",
-  "role": "I wrote the intent and the fork-base decision, and I am reusing the loop design from my older gauntlet repo.",
-  "when": "2026-10",
-  "hero": {
-   "src": "public/media/bonfire/hero.jpg",
-   "alt": "bonfire title card, a flame over crossed logs"
+  {
+    "slug": "bonfire",
+    "title": "bonfire",
+    "order": 7,
+    "glyph": [
+      "..X..",
+      ".XX..",
+      ".XXX.",
+      "XX.XX",
+      "X.X.X"
+    ],
+    "status": "prototype",
+    "status_note": "Intent, a fork-base decision and a landing page; no harness code of its own yet.",
+    "oneliner": "Runs AI agents until the work passes your checks, even after a crash.",
+    "role": "I wrote the intent and the fork-base decision, and I am reusing the loop design from my older gauntlet repo.",
+    "when": "2026-10",
+    "hero": {
+      "src": "public/media/bonfire/hero.jpg",
+      "alt": "bonfire title card, a flame over crossed logs"
+    },
+    "media": [
+      {
+        "src": "public/media/bonfire/landing.jpg",
+        "alt": "bonfire landing page",
+        "caption": "The landing page: the loop, the queued tasks and four worker lanes."
+      },
+      {
+        "src": "public/media/bonfire/card.jpg",
+        "alt": "bonfire portrait card",
+        "caption": "The portrait card."
+      }
+    ],
+    "spec": [
+      {
+        "label": "commits",
+        "value": "8",
+        "source": "git rev-list --count HEAD in the bonfire repo, read 2026-10-22"
+      },
+      {
+        "label": "decision records",
+        "value": "1",
+        "source": "docs/decisions/0001-fork-base.md"
+      },
+      {
+        "label": "old-repo tests inherited as reference",
+        "value": "67",
+        "source": "salvage-summary.md: gauntlet, 67 tests pass (reference only, no code moved)"
+      }
+    ],
+    "links": [
+      {
+        "label": "Kitchen Atlas",
+        "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
+      },
+      {
+        "label": "The Kitchen Tour",
+        "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
+      },
+      {
+        "label": "Kitchen Progress Board",
+        "url": "https://claude.ai/artifact/SCDiB5Dp3KsmYttDH9RWNB"
+      },
+      {
+        "label": "Landing Page Rack",
+        "url": "https://claude.ai/artifact/HMe2vNvVrQnm1cJrnKNygf"
+      }
+    ],
+    "body": [
+      "The target: one propose, evaluate, critique, verify loop fans out four parallel workers on a real task, and the run survives a forced restart. That demo has not run. bonfire is an intent file, a decision to build on an existing harness, and a landing page.",
+      "The loop itself comes from gauntlet, a small Python harness I built earlier. I am carrying its phases and its resume design as reference, not its code. See the old repos entry.",
+      "I learned that a harness needs durable state first, because model calls fail and long runs get killed."
+    ]
   },
-  "media": [
-   {
-    "src": "public/media/bonfire/landing.jpg",
-    "alt": "bonfire landing page",
-    "caption": "The landing page: the loop, the queued tasks and four worker lanes."
-   },
-   {
-    "src": "public/media/bonfire/card.jpg",
-    "alt": "bonfire portrait card",
-    "caption": "The portrait card."
-   }
-  ],
-  "spec": [
-   {
-    "label": "commits",
-    "value": "8",
-    "source": "git rev-list --count HEAD in the bonfire repo, read 2026-10-22"
-   },
-   {
-    "label": "decision records",
-    "value": "1",
-    "source": "docs/decisions/0001-fork-base.md"
-   },
-   {
-    "label": "old-repo tests inherited as reference",
-    "value": "67",
-    "source": "salvage-summary.md: gauntlet, 67 tests pass (reference only, no code moved)"
-   }
-  ],
-  "links": [
-   {
-    "label": "Kitchen Atlas",
-    "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
-   },
-   {
-    "label": "The Kitchen Tour",
-    "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
-   },
-   {
-    "label": "Kitchen Progress Board",
-    "url": "https://claude.ai/artifact/SCDiB5Dp3KsmYttDH9RWNB"
-   },
-   {
-    "label": "Landing Page Rack",
-    "url": "https://claude.ai/artifact/HMe2vNvVrQnm1cJrnKNygf"
-   }
-  ],
-  "body": [
-   "The target: one propose, evaluate, critique, verify loop fans out four parallel workers on a real task, and the run survives a forced restart. That demo has not run. bonfire is an intent file, a decision to build on an existing harness, and a landing page.",
-   "The loop itself comes from gauntlet, a small Python harness I built earlier. I am carrying its phases and its resume design as reference, not its code. See the old repos entry.",
-   "I learned that a harness needs durable state first, because model calls fail and long runs get killed."
-  ]
- },
- {
-  "slug": "nibble",
-  "title": "nibble",
-  "order": 6,
-  "glyph": [
-   "XXX..",
-   "XXXX.",
-   "XXXXX",
-   "XXXXX",
-   "XXXXX"
-  ],
-  "status": "research",
-  "status_note": "Experiments on a branch. The decider is not packaged or tested against a big model.",
-  "oneliner": "Answers an agent's multiple-choice questions fast and says how sure it is.",
-  "role": "I wrote the intent, run the experiments, and studied what my earlier classifier attempts got wrong.",
-  "when": "2026-10",
-  "hero": {
-   "src": "public/media/nibble/hero.jpg",
-   "alt": "nibble title card, a square with a bite taken out"
+  {
+    "slug": "nibble",
+    "title": "nibble",
+    "order": 8,
+    "glyph": [
+      "XXX..",
+      "XXXX.",
+      "XXXXX",
+      "XXXXX",
+      "XXXXX"
+    ],
+    "status": "research",
+    "status_note": "Experiments on a branch. The decider is not packaged or tested against a big model.",
+    "oneliner": "Answers an agent's multiple-choice questions fast and says how sure it is.",
+    "role": "I wrote the intent, run the experiments, and studied what my earlier classifier attempts got wrong.",
+    "when": "2026-10",
+    "hero": {
+      "src": "public/media/nibble/hero.jpg",
+      "alt": "nibble title card, a square with a bite taken out"
+    },
+    "media": [
+      {
+        "src": "public/media/nibble/landing.jpg",
+        "alt": "nibble landing page",
+        "caption": "The landing page for a small decision model with typed questions."
+      },
+      {
+        "src": "public/media/nibble/card.jpg",
+        "alt": "nibble portrait card",
+        "caption": "The portrait card."
+      }
+    ],
+    "spec": [
+      {
+        "label": "commits",
+        "value": "18 on all branches, 2 on main",
+        "source": "git rev-list --count --all, and git rev-list --count main, in the nibble repo, read 2026-10-22"
+      },
+      {
+        "label": "question types",
+        "value": "3",
+        "source": "INTENT.md: choose one, choose none, score"
+      },
+      {
+        "label": "experiments",
+        "value": "1",
+        "source": "nibble/experiments/001-shadcn-picker (branch exp/shadcn-picker): Kev-4B picker, fine-tune on rubric labels"
+      }
+    ],
+    "links": [
+      {
+        "label": "Kitchen Atlas",
+        "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
+      },
+      {
+        "label": "The Kitchen Tour",
+        "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
+      },
+      {
+        "label": "Kitchen Progress Board",
+        "url": "https://claude.ai/artifact/SCDiB5Dp3KsmYttDH9RWNB"
+      }
+    ],
+    "body": [
+      "The target is a small model that picks among typed options in an agent pipeline, returns calibrated odds, and beats a big model on speed. It builds on Kev, an open model. Speed and accuracy are not measured yet.",
+      "The first experiment has Kev-4B compose shadcn landing pages, then a fine-tune on rubric labels on my shared 3060. It is exploratory and lives on a branch.",
+      "My earlier classifiers taught me the most: one scored 44.5% on unseen wording at 97% confidence. Calibration on new phrasing is the real test."
+    ]
   },
-  "media": [
-   {
-    "src": "public/media/nibble/landing.jpg",
-    "alt": "nibble landing page",
-    "caption": "The landing page for a small decision model with typed questions."
-   },
-   {
-    "src": "public/media/nibble/card.jpg",
-    "alt": "nibble portrait card",
-    "caption": "The portrait card."
-   }
-  ],
-  "spec": [
-   {
-    "label": "commits",
-    "value": "18 on all branches, 2 on main",
-    "source": "git rev-list --count --all, and git rev-list --count main, in the nibble repo, read 2026-10-22"
-   },
-   {
-    "label": "question types",
-    "value": "3",
-    "source": "INTENT.md: choose one, choose none, score"
-   },
-   {
-    "label": "experiments",
-    "value": "1",
-    "source": "nibble/experiments/001-shadcn-picker (branch exp/shadcn-picker): Kev-4B picker, fine-tune on rubric labels"
-   }
-  ],
-  "links": [
-   {
-    "label": "Kitchen Atlas",
-    "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
-   },
-   {
-    "label": "The Kitchen Tour",
-    "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
-   },
-   {
-    "label": "Kitchen Progress Board",
-    "url": "https://claude.ai/artifact/SCDiB5Dp3KsmYttDH9RWNB"
-   }
-  ],
-  "body": [
-   "The target is a small model that picks among typed options in an agent pipeline, returns calibrated odds, and beats a big model on speed. It builds on Kev, an open model. Speed and accuracy are not measured yet.",
-   "The first experiment has Kev-4B compose shadcn landing pages, then a fine-tune on rubric labels on my shared 3060. It is exploratory and lives on a branch.",
-   "My earlier classifiers taught me the most: one scored 44.5% on unseen wording at 97% confidence. Calibration on new phrasing is the real test."
-  ]
- },
- {
-  "slug": "napkin",
-  "title": "napkin",
-  "order": 7,
-  "glyph": [
-   "XXXXX",
-   "XXXX.",
-   "XXX..",
-   "XX...",
-   "X...."
-  ],
-  "status": "research",
-  "status_note": "Spikes and a demo in worktrees. Roadmap phase 4, so not started in earnest.",
-  "oneliner": "A design canvas where you and an AI agent edit one component.",
-  "role": "I wrote the spec, ran spikes in separate worktrees for canvas, files, tokens and agents, and captured the demos.",
-  "when": "2026-10",
-  "hero": {
-   "src": "public/media/napkin/hero.jpg",
-   "alt": "napkin title card, a folded corner"
+  {
+    "slug": "napkin",
+    "title": "napkin",
+    "order": 4,
+    "glyph": [
+      "XXXXX",
+      "XXXX.",
+      "XXX..",
+      "XX...",
+      "X...."
+    ],
+    "status": "research",
+    "status_note": "Spikes and a demo in worktrees. Roadmap phase 4, so not started in earnest.",
+    "oneliner": "A design canvas where you and an AI agent edit one component.",
+    "role": "I wrote the spec, ran spikes in separate worktrees for canvas, files, tokens and agents, and captured the demos.",
+    "when": "2026-10",
+    "hero": {
+      "src": "public/media/napkin/hero.jpg",
+      "alt": "napkin title card, a folded corner"
+    },
+    "media": [
+      {
+        "src": "public/media/napkin/landing.jpg",
+        "alt": "napkin landing page",
+        "caption": "The landing page for a component canvas."
+      },
+      {
+        "src": "public/media/napkin/presence.jpg",
+        "alt": "Screenshot of the napkin canvas showing an agent's presence next to David's cursor",
+        "caption": "A spike: the agent shows up as a second cursor on the canvas."
+      },
+      {
+        "src": "public/media/napkin/after.jpg",
+        "alt": "Screenshot of the napkin canvas after the agent edited a component",
+        "caption": "Same file, after the agent's edit landed."
+      }
+    ],
+    "spec": [
+      {
+        "label": "commits",
+        "value": "6",
+        "source": "git rev-list --count HEAD in the napkin repo, read 2026-10-22"
+      },
+      {
+        "label": "spike worktrees",
+        "value": "12",
+        "source": "git worktree list for the napkin repo: 14 napkin-* worktrees minus docs and seo, counted 2026-10-22"
+      }
+    ],
+    "links": [
+      {
+        "label": "Kitchen Atlas",
+        "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
+      },
+      {
+        "label": "The Kitchen Tour",
+        "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
+      },
+      {
+        "label": "Kitchen Progress Board",
+        "url": "https://claude.ai/artifact/SCDiB5Dp3KsmYttDH9RWNB"
+      },
+      {
+        "label": "napkin Build Log",
+        "url": "https://claude.ai/artifact/T1AraR578q4f44JxMA7rrY"
+      },
+      {
+        "label": "napkin Dream",
+        "url": "https://claude.ai/artifact/Bcif8JFheSNc6XJ8cSbkHY"
+      }
+    ],
+    "body": [
+      "The target: an agent and I edit one component on a canvas at once, and the result is a real component file on disk. In the spikes, the two-cursor demo runs; it is not a product and I have not used it for real work.",
+      "The spikes are small on purpose and live in separate worktrees. The spec borrows a short list of invariants from my earlier precision-canvas repo and leaves the rest of it behind.",
+      "I learned to start from the file format, because files on disk stay the source of truth."
+    ]
   },
-  "media": [
-   {
-    "src": "public/media/napkin/landing.jpg",
-    "alt": "napkin landing page",
-    "caption": "The landing page for a component canvas."
-   },
-   {
-    "src": "public/media/napkin/presence.jpg",
-    "alt": "Screenshot of the napkin canvas showing an agent's presence next to David's cursor",
-    "caption": "A spike: the agent shows up as a second cursor on the canvas."
-   },
-   {
-    "src": "public/media/napkin/after.jpg",
-    "alt": "Screenshot of the napkin canvas after the agent edited a component",
-    "caption": "Same file, after the agent's edit landed."
-   }
-  ],
-  "spec": [
-   {
-    "label": "commits",
-    "value": "6",
-    "source": "git rev-list --count HEAD in the napkin repo, read 2026-10-22"
-   },
-   {
-    "label": "spike worktrees",
-    "value": "12",
-    "source": "git worktree list for the napkin repo: 14 napkin-* worktrees minus docs and seo, counted 2026-10-22"
-   }
-  ],
-  "links": [
-   {
-    "label": "Kitchen Atlas",
-    "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
-   },
-   {
-    "label": "The Kitchen Tour",
-    "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
-   },
-   {
-    "label": "Kitchen Progress Board",
-    "url": "https://claude.ai/artifact/SCDiB5Dp3KsmYttDH9RWNB"
-   },
-   {
-    "label": "napkin Build Log",
-    "url": "https://claude.ai/artifact/T1AraR578q4f44JxMA7rrY"
-   },
-   {
-    "label": "napkin Dream",
-    "url": "https://claude.ai/artifact/Bcif8JFheSNc6XJ8cSbkHY"
-   }
-  ],
-  "body": [
-   "The target: an agent and I edit one component on a canvas at once, and the result is a real component file on disk. In the spikes, the two-cursor demo runs; it is not a product and I have not used it for real work.",
-   "The spikes are small on purpose and live in separate worktrees. The spec borrows a short list of invariants from my earlier precision-canvas repo and leaves the rest of it behind.",
-   "I learned to start from the file format, because files on disk stay the source of truth."
-  ]
- },
- {
-  "slug": "kitchen-history",
-  "title": "The old repos",
-  "order": 13,
-  "glyph": [
-   "XXXXX",
-   "X...X",
-   "X.X.X",
-   "X...X",
-   "XXXXX"
-  ],
-  "status": "research",
-  "status_note": "Salvage audit, read-only; no old code was moved.",
-  "oneliner": "Five earlier AI repos, audited for what the kitchen keeps.",
-  "role": "I audited my own earlier repos for the kitchen: what to carry as a reference excerpt, and what to leave.",
-  "when": "2026-10",
-  "hero": {
-   "src": "public/media/kitchen-history/hero.jpg",
-   "alt": "Bonfire plate: a flame glyph with callouts"
-  },
-  "media": [
-   {
-    "src": "public/media/kitchen-history/finding.jpg",
-    "alt": "Bar chart: 73 required paragraphs, 70 found by search, 54 packed into the model",
-    "caption": "From local-mobile-research: evidence is lost after it is found, so allocation is the problem, not recall."
-   },
-   {
-    "src": "public/media/kitchen-history/lmr-ui.jpg",
-    "alt": "Screenshot of the local-mobile-research app",
-    "caption": "The lmr app from the same repo."
-   }
-  ],
-  "spec": [
-   {
-    "label": "gauntlet tests",
-    "value": "67",
-    "source": "salvage-summary.md, audit 2026-10-17"
-   },
-   {
-    "label": "system-one-mini unseen wording",
-    "value": "44.5%",
-    "source": "salvage-summary.md: at 97% confidence"
-   },
-   {
-    "label": "precision-canvas capabilities",
-    "value": "473",
-    "source": "salvage-summary.md: with no editor"
-   },
-   {
-    "label": "local-mobile-research tests",
-    "value": "518 + 94",
-    "source": "salvage-summary.md"
-   }
-  ],
-  "links": [
-   {
-    "label": "Kitchen Atlas",
-    "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
-   },
-   {
-    "label": "The Kitchen Tour",
-    "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
-   }
-  ],
-  "body": [
-   "I audited my earlier repos before building the kitchen. The default verdict was to leave. Nothing was copied wholesale; only excerpts with a provenance note moved into the new repos' reference docs.",
-   "gauntlet: a Python harness for propose, evaluate, critique, verify over git worktrees, with resume. Its loop and store design go to bonfire. It was never measured on real model runs.",
-   "system-a and system-one-mini: classifier experiments. system-a drifted into labeling a coding agent's next tool. system-one-mini was fast (4.95 ms p50) but scored 44.5% on unseen wording at 97% confidence and its final 86% held only in-domain. I carry those failures into nibble, not the code.",
-   "precision-canvas: meant as a component canvas, it became a spec programme with 473 capabilities and no editor. napkin takes a few invariants and checklists. local-mobile-research: an offline QA tournament whose lesson, that packing loses evidence rather than retrieval, goes to mise_en_place."
-  ]
- }
+  {
+    "slug": "kitchen-history",
+    "title": "The old repos",
+    "order": 11,
+    "glyph": [
+      "XXXXX",
+      "X...X",
+      "X.X.X",
+      "X...X",
+      "XXXXX"
+    ],
+    "status": "research",
+    "status_note": "Salvage audit, read-only; no old code was moved.",
+    "oneliner": "Five earlier AI repos, audited for what the kitchen keeps.",
+    "role": "I audited my own earlier repos for the kitchen: what to carry as a reference excerpt, and what to leave.",
+    "when": "2026-10",
+    "hero": {
+      "src": "public/media/kitchen-history/hero.jpg",
+      "alt": "Bonfire plate: a flame glyph with callouts"
+    },
+    "media": [
+      {
+        "src": "public/media/kitchen-history/finding.jpg",
+        "alt": "Bar chart: 73 required paragraphs, 70 found by search, 54 packed into the model",
+        "caption": "From local-mobile-research: evidence is lost after it is found, so allocation is the problem, not recall."
+      },
+      {
+        "src": "public/media/kitchen-history/lmr-ui.jpg",
+        "alt": "Screenshot of the local-mobile-research app",
+        "caption": "The lmr app from the same repo."
+      }
+    ],
+    "spec": [
+      {
+        "label": "gauntlet tests",
+        "value": "67",
+        "source": "salvage-summary.md, audit 2026-10-17"
+      },
+      {
+        "label": "system-one-mini unseen wording",
+        "value": "44.5%",
+        "source": "salvage-summary.md: at 97% confidence"
+      },
+      {
+        "label": "precision-canvas capabilities",
+        "value": "473",
+        "source": "salvage-summary.md: with no editor"
+      },
+      {
+        "label": "local-mobile-research tests",
+        "value": "518 + 94",
+        "source": "salvage-summary.md"
+      }
+    ],
+    "links": [
+      {
+        "label": "Kitchen Atlas",
+        "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
+      },
+      {
+        "label": "The Kitchen Tour",
+        "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
+      }
+    ],
+    "body": [
+      "I audited my earlier repos before building the kitchen. The default verdict was to leave. Nothing was copied wholesale; only excerpts with a provenance note moved into the new repos' reference docs.",
+      "gauntlet: a Python harness for propose, evaluate, critique, verify over git worktrees, with resume. Its loop and store design go to bonfire. It was never measured on real model runs.",
+      "system-a and system-one-mini: classifier experiments. system-a drifted into labeling a coding agent's next tool. system-one-mini was fast (4.95 ms p50) but scored 44.5% on unseen wording at 97% confidence and its final 86% held only in-domain. I carry those failures into nibble, not the code.",
+      "precision-canvas: meant as a component canvas, it became a spec programme with 473 capabilities and no editor. napkin takes a few invariants and checklists. local-mobile-research: an offline QA tournament whose lesson, that packing loses evidence rather than retrieval, goes to mise_en_place."
+    ]
+  }
 ]

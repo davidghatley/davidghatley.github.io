@@ -3,8 +3,10 @@
   var NS = 'http://www.w3.org/2000/svg';
   var GROUPS = ['diveclub', 'vaasf', 'kitchen', 'anime', 'tools'];
   var PILL = { shipped: 'ok', working: 'info', prototype: 'info', research: 'mute', concept: 'mute' };
+  var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function caseUrl(slug) { return 'case.html?p=' + encodeURIComponent(slug); }
   function glyphSvg(rows, anim) {
     var s = document.createElementNS(NS, 'svg');
     s.setAttribute('viewBox', '0 0 5 5'); s.setAttribute('class', 'glyph'); s.setAttribute('shape-rendering', 'crispEdges'); s.setAttribute('fill', 'currentColor'); s.setAttribute('aria-hidden', 'true');
@@ -15,7 +17,7 @@
     if (anim) s.classList.add('is-armed');
     return s;
   }
-  // header mark
+  function replay(g) { g.classList.add('is-armed'); void g.getBoundingClientRect(); g.classList.remove('is-armed'); g.querySelectorAll('rect').forEach(function (r) { r.style.animation = 'none'; void r.getBoundingClientRect(); r.style.animation = ''; }); }
   var mk = document.getElementById('mk');
   if (mk && G.mark) G.mark.forEach(function (r, y) { for (var x = 0; x < 7; x++) if (r[x] === 'X') { var q = document.createElementNS(NS, 'rect'); q.setAttribute('x', x); q.setAttribute('y', y); q.setAttribute('width', 1); q.setAttribute('height', 1); mk.appendChild(q); } });
 
@@ -40,40 +42,100 @@
     list.forEach(function (s) { var x = el('span', '', '<i>' + esc(s.label) + '</i> ' + esc(s.value)); if (s.source) x.title = 'Source: ' + s.source.replace(/~\/Projects\/|\/home\/[^ ]+?\/Projects\//g, ''); d.appendChild(x); });
     return d;
   }
-  function head(p, n) {
-    return el('div', 'ss-plate__head', '<span class="ss-label">PLATE ' + n + ' · ' + esc(p.title).toUpperCase() + '</span><span class="ss-pill ss-pill--' + (PILL[p.status] || 'mute') + '">' + esc(p.status) + '</span>');
-  }
+  function pill(p) { return '<span class="ss-pill ss-pill--' + (PILL[p.status] || 'mute') + '">' + esc(p.status) + '</span>'; }
   function load() {
     return Promise.all(GROUPS.map(function (g) {
       return fetch('content/' + g + '.json').then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; });
     })).then(function (a) { return [].concat.apply([], a).filter(function (p) { return p && p.slug; }).sort(function (x, y) { return (x.order || 99) - (y.order || 99); }); });
   }
-  function arm(root) {
-    var gs = root.querySelectorAll('.glyph');
-    if (!('IntersectionObserver' in window)) return;
-    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.remove('is-armed'); io.unobserve(e.target); } }); }, { threshold: 0.3 });
-    gs.forEach(function (g) { g.classList.add('is-armed'); io.observe(g); });
+  function loadMeta(p) {
+    return fetch('previews/' + p.slug + '/meta.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }).then(function (m) { p.meta = m || {}; return p; });
+  }
+  function applyFonts(m, base) {
+    (m.fonts || []).forEach(function (u) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = String(u).replace('{base}', base || './'); document.head.appendChild(l); });
+  }
+  function applyAccent(node, m) {
+    if (m.font_display) node.style.setProperty('--font-title', m.font_display);
+    node.classList.add('acc');
+    if (m.accent) node.style.setProperty('--acc-l', m.accent);
+    if (m.accent_dark) node.style.setProperty('--acc-d', m.accent_dark);
+  }
+  // mount a preview into root; resolves to a cleanup fn. Falls back to the hero image, uncropped.
+  function mountPreview(p, root, mode, base) {
+    return import('./previews/' + p.slug + '/preview.js').then(function (mod) {
+      var c = mod.default(root, { mode: mode, base: base });
+      return typeof c === 'function' ? c : function () {};
+    }).catch(function () {
+      root.innerHTML = '';
+      if (p.hero) { var i = el('img'); i.src = p.hero.src; i.alt = p.hero.alt || ''; root.appendChild(i); }
+      return function () {};
+    });
   }
 
   function home() {
     var track = document.getElementById('work');
-    load().then(function (ps) {
+    var open = null, hoverT = null;
+    var touch = window.matchMedia && matchMedia('(hover: none)').matches;
+    function expand(r) {
+      if (open && open !== r) collapse(open);
+      if (r.classList.contains('is-open')) return;
+      open = r; r.classList.add('is-open'); r.querySelector('.row__bar').setAttribute('aria-expanded', 'true');
+      var g = r.querySelector('.glyph'); if (g) replay(g); if (!r._fonts) { r._fonts = 1; applyFonts(r._p.meta, './'); }
+      var pv = r.querySelector('.row__preview'), p = r._p;
+      r._token = {};
+      var t = r._token;
+      mountPreview(p, pv, 'row', './').then(function (c) { if (r._token === t && r.classList.contains('is-open')) r._cleanup = c; else c(); });
+    }
+    function collapse(r) {
+      r.classList.remove('is-open'); r.querySelector('.row__bar').setAttribute('aria-expanded', 'false');
+      var c = r._cleanup; r._cleanup = null; r._token = null;
+      if (c) c();
+      var pv = r.querySelector('.row__preview');
+      setTimeout(function () { if (!r.classList.contains('is-open')) pv.innerHTML = ''; }, 300);
+      if (open === r) open = null;
+    }
+    function go(r, e) {
+      var p = r._p;
+      var g = r.querySelector('.glyph'); if (g) g.style.viewTransitionName = 'glyph-' + p.slug;
+      var pv = r.querySelector('.row__preview'); if (r.classList.contains('is-open')) pv.style.viewTransitionName = 'hero-' + p.slug;
+    }
+    load().then(function (ps) { return Promise.all(ps.map(loadMeta)); }).then(function (ps) {
       track.innerHTML = '';
-      ps.forEach(function (p, i) {
-        var pl = el('article', 'ss-plate plate-work'); pl.id = p.slug;
-        pl.appendChild(head(p, i + 1));
-        var body = el('div', 'plate-work__body'), main = el('div', 'plate-work__main');
-        body.appendChild(glyphSvg(p.glyph));
-        if (p.hero) main.appendChild(zoomBtn(p.hero, p.title));
-        main.appendChild(el('h2', 'work-title', '<a href="case.html?p=' + encodeURIComponent(p.slug) + '">' + esc(p.title) + '</a>'));
-        main.appendChild(el('p', 'oneliner', esc(p.oneliner)));
-        if (p.role) main.appendChild(el('p', 'role', esc(p.role)));
-        if (p.status_note) main.appendChild(el('p', 'ss-plate__cap', esc(p.status_note)));
-        var s = spec(p.spec); if (s) main.appendChild(s);
-        main.appendChild(el('a', 'work-go', 'Case study &rarr;')).href = 'case.html?p=' + encodeURIComponent(p.slug);
-        body.appendChild(main); pl.appendChild(body); track.appendChild(pl);
+      var hd = el('div', 'index-head', '<span class="px16">INDEX</span><span class="px16">' + ps.length + ' PROJECTS</span>'); track.appendChild(hd);
+      ps.forEach(function (p, idx) {
+        var r = el('article', 'row'); r.id = p.slug; r._p = p; applyAccent(r, p.meta);
+        var bar = el('div', 'row__bar'); bar.tabIndex = 0; bar.setAttribute('role', 'button'); bar.setAttribute('aria-expanded', 'false'); bar.setAttribute('aria-controls', 'pn-' + p.slug);
+        bar.appendChild(glyphSvg(p.glyph));
+        bar.appendChild(el('span', 'chip'));
+        bar.insertBefore(el('span', 'row__n', String(idx + 1).padStart(2, '0')), bar.firstChild);
+        var h = el('h2', 'row__title', '<a href="' + caseUrl(p.slug) + '">' + esc(p.title) + '</a>'); bar.appendChild(h);
+        bar.appendChild(el('p', 'row__one', esc(p.oneliner)));
+        bar.appendChild(el('span', 'row__pill', pill(p)));
+        bar.appendChild(el('span', 'row__arrow', '&rarr;')).setAttribute('aria-hidden', 'true');
+        var panel = el('div', 'row__panel'); panel.id = 'pn-' + p.slug;
+        var inner = el('div', 'row__inner'), pad = el('div', 'row__pad');
+        pad.appendChild(el('p', 'row__one-m', esc(p.oneliner)));
+        pad.appendChild(el('div', 'row__preview'));
+        if (p.status_note) pad.appendChild(el('p', 'row__note', esc(p.status_note)));
+        var ob = el('a', 'open-btn', 'Open case study &rarr;'); ob.href = caseUrl(p.slug); pad.appendChild(ob);
+        inner.appendChild(pad); panel.appendChild(inner);
+        r.appendChild(bar); r.appendChild(panel); track.appendChild(r);
+        // interactions
+        r.addEventListener('pointerenter', function (e) { if (e.pointerType !== 'mouse') return; clearTimeout(hoverT); hoverT = setTimeout(function () { expand(r); }, 120); });
+        r.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') clearTimeout(hoverT); });
+        bar.addEventListener('focus', function () { if (!touch) expand(r); });
+        bar.addEventListener('click', function (e) { if (e.target.closest('a')) { go(r); return; } if (r.classList.contains('is-open')) collapse(r); else expand(r); });
+        bar.addEventListener('keydown', function (e) {
+          if (e.target !== bar) return;
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); r.classList.contains('is-open') ? collapse(r) : expand(r); }
+        });
+        ob.addEventListener('click', function () { go(r); });
       });
-      arm(track);
+      track.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') clearTimeout(hoverT); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) collapse(open); });
+      var q = new URLSearchParams(location.search).get('open');
+      if (q) { var t = document.getElementById(q); if (t && t._p) { expand(t); t.scrollIntoView({ block: 'nearest' }); } }
+      if (location.hash && !q) { var hh = document.getElementById(location.hash.slice(1)); if (hh) hh.scrollIntoView(); }
     });
   }
 
@@ -84,40 +146,49 @@
       var i = ps.findIndex(function (p) { return p.slug === slug; });
       root.innerHTML = '';
       if (i < 0) { root.appendChild(el('p', '', 'No such project. <a href="index.html#work">Back to the work</a>.')); return; }
-      var p = ps[i];
-      document.title = p.title + ' · David Hatley';
-      var pl = el('article', 'ss-plate'); pl.appendChild(head(p, i + 1));
-      var body = el('div', 'plate-work__body'), main = el('div', 'plate-work__main');
-      body.appendChild(glyphSvg(p.glyph));
-      if (p.hero) main.appendChild(zoomBtn(p.hero, p.title));
-      var s = spec(p.spec); if (s) main.appendChild(s);
-      body.appendChild(main); pl.appendChild(body);
-      root.appendChild(el('a', 'back', '&larr; All work')).href = 'index.html#work';
-      root.appendChild(el('h1', 'case-h', esc(p.title)));
-      root.appendChild(pl);
-      var col = el('div', 'case-col');
-      col.appendChild(el('p', 'oneliner', esc(p.oneliner)));
-      if (p.role) col.appendChild(el('p', '', esc(p.role)));
-      if (p.status_note) col.appendChild(el('p', 'ss-plate__cap', esc(p.status_note)));
-      (p.body || []).forEach(function (t) { col.appendChild(el('p', '', esc(t))); });
-      root.appendChild(col);
-      var figs = el('div', 'figs');
-      (p.media || []).forEach(function (m, k) {
-        var f = el('figure', 'ss-plate fig'); f.style.margin = 0;
-        f.appendChild(el('div', 'ss-plate__head', '<span class="ss-label">FIG ' + (k + 1) + ' · ' + esc(p.title).toUpperCase() + '</span>'));
-        f.appendChild(media(m, m.caption));
-        if (m.caption) f.appendChild(el('figcaption', 'ss-plate__cap', esc(m.caption)));
-        figs.appendChild(f);
+      var p = ps[i], pr = ps[i - 1], nx = ps[i + 1];
+      return Promise.all([loadMeta(p), pr ? loadMeta(pr) : 0, nx ? loadMeta(nx) : 0]).then(function () {
+        document.title = p.title + ' · David Hatley';
+        applyAccent(root, p.meta); applyFonts(p.meta, './');
+        root.appendChild(el('a', 'back', '&larr; All work')).href = 'index.html#work';
+        var top = el('div', 'case-top'); var g = glyphSvg(p.glyph); g.style.viewTransitionName = 'glyph-' + p.slug; top.appendChild(g);
+        top.appendChild(el('h1', 'case-h', esc(p.title)));
+        top.appendChild(el('span', '', pill(p)).firstChild);
+        top.appendChild(el('span', 'px16 case-n', 'No. ' + String(i + 1).padStart(2, '0') + ' / ' + ps.length));
+        root.appendChild(top);
+        var hero = el('div', 'case-hero'); hero.style.viewTransitionName = 'hero-' + p.slug; root.appendChild(hero);
+        mountPreview(p, hero, 'hero', './');
+        var col = el('div', 'case-col');
+        col.appendChild(el('p', 'oneliner', esc(p.oneliner)));
+        if (p.role) col.appendChild(el('p', '', esc(p.role)));
+        if (p.status_note) col.appendChild(el('p', 'ss-plate__cap', esc(p.status_note)));
+        (p.body || []).forEach(function (t) { col.appendChild(el('p', '', esc(t))); });
+        var s = spec(p.spec); if (s) col.appendChild(s);
+        root.appendChild(col);
+        var figs = el('div', 'figs');
+        (p.media || []).forEach(function (m, k) {
+          var f = el('figure', 'ss-plate fig');
+          f.appendChild(el('div', 'ss-plate__head', '<span class="ss-label">FIG ' + (k + 1) + ' · ' + esc(p.title).toUpperCase() + '</span>'));
+          f.appendChild(media(m, m.caption));
+          if (m.caption) f.appendChild(el('figcaption', 'ss-plate__cap', esc(m.caption)));
+          figs.appendChild(f);
+        });
+        root.appendChild(figs);
+        var yt = (p.links || []).map(function (l) { var m = /youtube\.com\/watch\?(?:[^#]*&)?v=([\w-]{6,20})/.exec(l.url || ''); return m ? { id: m[1], l: l } : null; }).filter(Boolean);
+        yt.forEach(function (y) { var f = el('figure', 'ss-plate fig fig--yt'); f.appendChild(el('div', 'ss-plate__head', '<span class="ss-label">VIDEO · ' + esc(y.l.label).toUpperCase() + '</span>')); var w = el('div', 'yt'); var fr = el('iframe'); fr.src = 'https://www.youtube-nocookie.com/embed/' + y.id; fr.loading = 'lazy'; fr.title = y.l.label || 'Video'; fr.setAttribute('allow', 'accelerometer; encrypted-media; picture-in-picture'); fr.allowFullscreen = true; fr.referrerPolicy = 'strict-origin-when-cross-origin'; w.appendChild(fr); f.appendChild(w); root.appendChild(f); });
+        if (p.links && p.links.length) { var ul = el('ul', 'links'); p.links.forEach(function (l) { ul.appendChild(el('li', '', '<a href="' + esc(l.url) + '">' + esc(l.label) + ' &rarr;</a>')); }); root.appendChild(ul); }
+        var pn = el('nav', 'pn'); pn.setAttribute('aria-label', 'More work');
+        function link(q, left) {
+          if (!q) return el('span');
+          var a = el('a'); a.href = caseUrl(q.slug);
+          var gg = glyphSvg(q.glyph); gg.style.color = q.meta.accent || ''; var t = el('span', '', esc(q.title));
+          if (left) { a.appendChild(document.createTextNode('← ')); a.appendChild(gg); a.appendChild(t); } else { a.appendChild(t); a.appendChild(gg); a.appendChild(document.createTextNode(' →')); }
+          a.addEventListener('click', function () { gg.style.viewTransitionName = 'glyph-' + q.slug; });
+          return a;
+        }
+        pn.appendChild(link(pr, true)); pn.appendChild(link(nx, false));
+        root.appendChild(pn);
       });
-      root.appendChild(figs);
-      var yt = (p.links || []).map(function (l) { var m = /youtube\.com\/watch\?(?:[^#]*&)?v=([\w-]{6,20})/.exec(l.url || ''); return m ? { id: m[1], l: l } : null; }).filter(Boolean);
-      yt.forEach(function (y) { var f = el('figure', 'ss-plate fig fig--yt'); f.style.margin = 0; f.appendChild(el('div', 'ss-plate__head', '<span class="ss-label">VIDEO · ' + esc(y.l.label).toUpperCase() + '</span>')); var w = el('div', 'yt'); var fr = el('iframe'); fr.src = 'https://www.youtube-nocookie.com/embed/' + y.id; fr.loading = 'lazy'; fr.title = y.l.label || 'Video'; fr.setAttribute('allow', 'accelerometer; encrypted-media; picture-in-picture'); fr.allowFullscreen = true; fr.referrerPolicy = 'strict-origin-when-cross-origin'; w.appendChild(fr); f.appendChild(w); root.appendChild(f); });
-      if (p.links && p.links.length) { var ul = el('ul', 'links'); p.links.forEach(function (l) { ul.appendChild(el('li', '', '<a href="' + esc(l.url) + '">' + esc(l.label) + ' &rarr;</a>')); }); root.appendChild(ul); }
-      var pr = ps[i - 1], nx = ps[i + 1], pn = el('nav', 'pn');
-      pn.appendChild(pr ? el('a', '', '&larr; ' + esc(pr.title)) : el('span')); if (pr) pn.firstChild.href = 'case.html?p=' + pr.slug;
-      var nn = nx ? el('a', '', esc(nx.title) + ' &rarr;') : el('span'); if (nx) nn.href = 'case.html?p=' + nx.slug; pn.appendChild(nn);
-      root.appendChild(pn);
-      arm(root);
     });
   }
   if (window.PAGE === 'case') casePage(); else home();

@@ -32,7 +32,7 @@ let dialogData = fallbackDialog, exhibitData = fallbackExhibits;
 let obstacles = { outside: [], inside: [] }, targets = [], activeTarget = null;
 let keys = new Set(), route = [], transition = false, opened = false, speakerId = null;
 let lines = [], lineIndex = 0, fullText = '', typed = 0, typeElapsed = 0, typing = false;
-let seenDisclaimer = false, previousFocus = null, audio = null, muted = false, pendingTarget = null;
+let seenDisclaimer = false, audio = null, muted = false, pendingTarget = null;
 let time = 0, lastTime = 0, cameraFocus = new THREE.Vector3(0, 0, 0);
 const raycaster = new THREE.Raycaster(), mouse = new THREE.Vector2();
 const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -270,7 +270,7 @@ function character(kind) {
   } else {
     for (let i = 0; i < 11; i++) { const a = i * 2.4; const spike = mesh(body, geo.cone, hair, [Math.sin(a) * .35, 1.99, Math.cos(a) * .22], [.17, .47, .17]); spike.rotation.z = -.5 + Math.sin(a) * .45; spike.rotation.x = Math.cos(a) * .5; }
   }
-  const face = panel(body, faceTexture('happy'), 0, 1.58, .445, .83, .83);
+  const face = panel(body, faceTexture('happy'), 0, 1.58, .475, .83, .83);
   root.userData = { body, face, kind };
   return root;
 }
@@ -285,6 +285,7 @@ async function init() {
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6)); renderer.setSize(innerWidth, innerHeight);
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
   renderer.domElement.tabIndex = 0; renderer.domElement.setAttribute('aria-label', 'Village. Move with WASD or arrow keys. Press E near the door, hosts, or exhibits.');
   $('world').append(renderer.domElement);
   scene = new THREE.Scene(); scene.background = new THREE.Color('#d7e6cb');
@@ -315,7 +316,7 @@ async function init() {
 function resize() {
   if (!renderer) return;
   const aspect = innerWidth / innerHeight;
-  const h = aspect < .8 ? 21 : aspect < 1.2 ? 18 : 16;
+  const h = aspect < .8 ? 24 : aspect < 1.2 ? 18 : 16;
   camera.left = -h * aspect / 2; camera.right = h * aspect / 2; camera.top = h / 2; camera.bottom = -h / 2;
   camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight);
 }
@@ -371,12 +372,12 @@ function blip(letter) {
 }
 function stopMovement() { keys.clear(); route = []; pendingTarget = null; if (scene?.userData.marker) scene.userData.marker.visible = false; }
 function openShell(name, caption) {
-  previousFocus = document.activeElement; stopMovement(); opened = true; $('dialog').hidden = false; $('speaker').textContent = name; $('dialog-caption').textContent = caption;
+  stopMovement(); opened = true; $('dialog').hidden = false; $('speaker').textContent = name; $('dialog-caption').textContent = caption;
   $('choices').replaceChildren(); $('exhibit-content').replaceChildren(); $('exhibit-content').hidden = true; $('speech').hidden = false; $('first-disclaimer').hidden = true; $('continue').hidden = true; $('interact').hidden = true; $('close-dialog').focus();
 }
 function closeDialog() {
   opened = false; typing = false; $('dialog').hidden = true; if (speakerId) setExpression(hosts[speakerId], 'happy'); speakerId = null;
-  if (previousFocus?.isConnected && !previousFocus.hidden) previousFocus.focus(); else renderer.domElement.focus();
+  renderer.domElement.focus();
 }
 function startHost(id) {
   const data = dialogData.hosts[id]; openShell(data.name || id, 'A SYNTHETIC CONVERSATION'); speakerId = id;
@@ -389,7 +390,7 @@ function showLine() {
   setExpression(hosts[speakerId], line.expression); typing = !reducedMotion;
   if (reducedMotion) finishLine();
 }
-function finishLine() { typing = false; typed = fullText.length; $('speech').textContent = fullText; $('speech-announcement').textContent = fullText; if (lineIndex < lines.length - 1) { $('continue').textContent = 'Continue ↓'; } else showQuestions(); }
+function finishLine() { typing = false; typed = fullText.length; $('speech').textContent = fullText; $('speech-announcement').textContent = fullText; if (lineIndex < lines.length - 1) { $('continue').textContent = 'Continue ↓'; } else { showQuestions(); if (document.activeElement === $('continue')) $('choices').firstElementChild?.focus(); } }
 function showQuestions() {
   $('continue').hidden = true; $('choices').replaceChildren();
   const valid = dialogData.questions.filter(q => q && typeof q.text === 'string' && normalizeLines(q.answers?.[speakerId]).length).slice(0, 4);
@@ -443,11 +444,13 @@ function bindEvents() {
     if (e.button !== 0 || opened || transition) return;
     renderer.domElement.focus(); unlockAudio(); mouse.set(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1); raycaster.setFromCamera(mouse, camera);
     let point = new THREE.Vector3(); pendingTarget = null;
+    const doorHit = room === 'outside' && raycaster.ray.intersectBox(new THREE.Box3(new THREE.Vector3(-.75, 0, -.1), new THREE.Vector3(.75, 2.7, .25)), new THREE.Vector3());
     if (room === 'inside') {
       const hits = raycaster.intersectObjects(Object.values(hosts), true);
       if (hits.length) { let object = hits[0].object; while (object.parent && !object.userData.kind) object = object.parent; pendingTarget = targets.find(t => t.type === 'host' && t.id === object.userData.kind); if (pendingTarget) point.copy(pendingTarget.position).add(new THREE.Vector3(0, 0, 1.2)); }
     }
-    if (!pendingTarget && !raycaster.ray.intersectPlane(groundPlane, point)) return;
+    if (doorHit) point.set(0, 0, .2);
+    else if (!pendingTarget && !raycaster.ray.intersectPlane(groundPlane, point)) return;
     route = pathTo(point);
     if (route.length) { scene.userData.marker.position.set(point.x, .16, point.z); scene.userData.marker.visible = true; }
     else if (pendingTarget && player.position.distanceTo(pendingTarget.position) < pendingTarget.radius) { activeTarget = pendingTarget; interact(); }
