@@ -1,7 +1,7 @@
 [
   {
     "slug": "anime-pipeline",
-    "title": "3D to anime pipeline",
+    "title": "anime pipeline",
     "order": 2,
     "glyph": [
       "X.X.X",
@@ -10,7 +10,7 @@
       "XXXXX",
       "X.X.X"
     ],
-    "status": "prototype",
+    "status": "in use",
     "status_note": "Lab piece. The pipeline runs end to end on one card, but the series itself is pre-production: stills, storyboards and short test clips, no finished episode.",
     "oneliner": "Gray-box Blender previz in, anime frames and clips out, on one GPU.",
     "role": "I built the whole local pipeline and am using it to develop an original series, Meguri: the Blender previz scenes, the ComfyUI and video workflows, the storyboard boards, and the character looks.",

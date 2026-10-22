@@ -108,3 +108,5 @@ body { background: var(--paper); color: var(--ink); font: var(--type-body); marg
 .row.is-open .row__arrow { pointer-events: auto; }
 .row__title { pointer-events: none; }
 .case-body { min-width: 0; }
+
+.index-legend { margin: var(--space-2) 0 var(--space-3); }

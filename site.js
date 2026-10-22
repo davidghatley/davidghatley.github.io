@@ -2,7 +2,7 @@
   var G = window.SAUCE_GLYPHS || {};
   var NS = 'http://www.w3.org/2000/svg';
   var GROUPS = ['vaasf', 'kitchen', 'anime', 'tools'];
-  var PILL = { shipped: 'ok', working: 'info', prototype: 'info', research: 'mute', concept: 'mute' };
+  var PILL = { shipped: 'ok', 'in use': 'ok', working: 'info', prototype: 'info', research: 'mute', concept: 'mute' };
   var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -102,6 +102,7 @@
     load().then(function (ps) { return Promise.all(ps.map(loadMeta)); }).then(function (ps) {
       track.innerHTML = '';
       var hd = el('div', 'index-head', '<span class="px16">INDEX</span><span class="px16">' + ps.length + ' PROJECTS</span>'); track.appendChild(hd);
+      track.appendChild(el('p', 'index-legend ss-label', 'Most to least finished: shipped &middot; in use &middot; prototype &middot; research'));
       ps.forEach(function (p, idx) {
         var r = el('article', 'row'); r.id = p.slug; r._p = p; applyAccent(r, p.meta);
         var bar = el('div', 'row__bar'); bar.tabIndex = 0; bar.setAttribute('role', 'button'); bar.setAttribute('aria-expanded', 'false'); bar.setAttribute('aria-controls', 'pn-' + p.slug);

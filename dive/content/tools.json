@@ -1,7 +1,7 @@
 [
   {
     "slug": "secret-sauce",
-    "title": "Secret Sauce",
+    "title": "secret sauce",
     "order": 9,
     "glyph": [
       "XXXXX",
@@ -10,7 +10,7 @@
       "X...X",
       "XXXXX"
     ],
-    "status": "working",
+    "status": "in use",
     "status_note": "In daily use across my projects; five commits in, the lint rules still change weekly.",
     "oneliner": "My house design system, with tools that enforce it.",
     "role": "I designed the system, drew the Stem 7 pixel font, and built the asset generator and the automated art director.",
@@ -76,7 +76,7 @@
   },
   {
     "slug": "workbench",
-    "title": "The workbench",
+    "title": "the workbench",
     "order": 10,
     "glyph": [
       "XXXXX",

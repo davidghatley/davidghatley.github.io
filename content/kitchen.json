@@ -83,7 +83,7 @@
   },
   {
     "slug": "mise_en_place",
-    "title": "Mise en Place",
+    "title": "mise en place",
     "order": 6,
     "glyph": [
       "X.X.X",
@@ -94,7 +94,7 @@
     ],
     "status": "prototype",
     "status_note": "Intent, landing page and a manual are written; the prep-pack tool is not built.",
-    "oneliner": "Preps a game project from one sentence so the agent skips setup.",
+    "oneliner": "Preps any project from one sentence so the agent skips setup.",
     "role": "I defined the prep-pack idea, wrote the intent and the landing page, and drew its look.",
     "when": "2026-10",
     "hero": {
@@ -156,7 +156,7 @@
       }
     ],
     "body": [
-      "The target: give it one sentence about a game and it lays out a prep pack on disk, with a chosen template, an asset kit, a context brief and a manifest, before the agent starts. Zero setup steps for the agent is the goal. The tool does not exist yet.",
+      "The target: give it one sentence about any project and it lays out a prep pack on disk, with a chosen template, an asset kit, a context brief and a manifest, before the agent starts. Zero setup steps for the agent is the goal. The tool does not exist yet.",
       "What exists is the intent, a landing page, a manual, and a short list of lessons borrowed from my earlier research repos, including one finding that packing evidence loses more than searching for it.",
       "I learned to write down what a tool is not. It is not an agent harness and not the decision model."
     ]
@@ -406,7 +406,7 @@
   },
   {
     "slug": "kitchen-history",
-    "title": "The old repos",
+    "title": "the old repos",
     "order": 11,
     "glyph": [
       "XXXXX",
@@ -466,6 +466,26 @@
       {
         "label": "The Kitchen Tour",
         "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
+      },
+      {
+        "label": "GitHub: gauntlet",
+        "url": "https://github.com/davidghatley/gauntlet"
+      },
+      {
+        "label": "GitHub: system-a",
+        "url": "https://github.com/davidghatley/system-a"
+      },
+      {
+        "label": "GitHub: system-one-mini",
+        "url": "https://github.com/davidghatley/system-one-mini"
+      },
+      {
+        "label": "GitHub: primitive",
+        "url": "https://github.com/davidghatley/primitive"
+      },
+      {
+        "label": "GitHub: benchlet",
+        "url": "https://github.com/davidghatley/benchlet"
       }
     ],
     "body": [

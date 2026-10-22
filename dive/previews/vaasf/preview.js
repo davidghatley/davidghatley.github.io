@@ -15,19 +15,18 @@ export default function mount(root, { mode, base }) {
 .pv-vaasf figcaption b{display:block;font-style:normal;font-weight:400;font-variant:all-small-caps;letter-spacing:.12em;color:var(--bl);font-size:${hero ? '17px' : '13px'}}
 .pv-vaasf .board{display:grid;grid-template-columns:340fr 327fr 244fr;gap:${hero ? '40px 36px' : '0 14px'};align-items:start}
 .pv-vaasf .mid{display:grid;gap:${hero ? '36px' : '10px'}}
-.pv-vaasf .small{grid-column:1/3;display:${hero ? 'flex' : 'none'};flex-wrap:wrap;align-items:flex-start;gap:28px;border-top:1px solid var(--ln);padding-top:28px}
-.pv-vaasf .small figure{flex:0 0 auto}
-.pv-vaasf .small img{height:200px;width:auto;max-width:100%}
-.pv-vaasf .site-col{grid-row:span 2}
+.pv-vaasf .small{grid-column:1/3;grid-column:1/-1;display:${hero ? 'flex' : 'none'};flex-wrap:nowrap;align-items:flex-start;gap:28px;border-top:1px solid var(--ln);padding-top:28px}
+.pv-vaasf .small figure{flex:1 1 0}
+.pv-vaasf .small img{width:100%;height:auto}
 .pv-vaasf .head{display:${hero ? 'flex' : 'none'};justify-content:space-between;align-items:baseline;margin-bottom:28px;border-bottom:1px solid var(--ln);padding-bottom:10px}
 .pv-vaasf .head h3{margin:0;font:italic 400 28px/32px 'DM Serif Display',serif;color:var(--tx)}
 .pv-vaasf .head span{font-variant:all-small-caps;letter-spacing:.12em;color:var(--bl)}
 @media (max-width:760px){
  .pv-vaasf{padding:16px}
  .pv-vaasf .board{grid-template-columns:minmax(0,1fr);gap:28px}
- .pv-vaasf .small,.pv-vaasf .site-col{grid-column:auto;grid-row:auto}
+ .pv-vaasf .site-col{grid-column:auto}
  .pv-vaasf .small{flex-wrap:wrap;gap:20px}
- .pv-vaasf .small img{height:150px}
+ .pv-vaasf .small figure{flex:0 0 calc(50% - 10px)}
  .pv-vaasf .cover,.pv-vaasf .site-col{max-width:340px}
 }`;
   document.head.appendChild(st);
@@ -47,5 +46,16 @@ ${f('s2.jpg', 'Spread of pages 4 and 5, Young Artists Division listings.', 'Page
 ${f('s6.jpg', 'Spread of pages 12 and 13, high school and middle school listings.', 'Pages 12-13', 'Listings, continued')}
 ${f('thanks.jpg', 'Back cover reading Gracias over a blue painted figure with sponsor logos.', 'Page 16', 'Back cover')}
 </div></div>`;
-  return () => { st.remove(); fl.remove(); el.remove(); };
+  const mq = matchMedia('(max-width:760px)');
+  const board = el.querySelector('.board'), cv = el.querySelector('.cover img'), mid = el.querySelector('.mid'), fig = mid.querySelector('figure');
+  [['masterclass', .773], ['s2', 1.546], ['s6', 1.546], ['thanks', .773]].forEach(([k, a], i) => { el.querySelectorAll('.small figure')[i].style.flexGrow = a; });
+  function lay() {
+    if (mq.matches) { board.style.gridTemplateColumns = ''; return; }
+    const cs = getComputedStyle(board), g = parseFloat(cs.columnGap) || 0, gm = parseFloat(getComputedStyle(mid).rowGap) || 0;
+    const W = board.clientWidth, cap = fig.offsetHeight - fig.querySelector('img').offsetHeight;
+    const k = (gm + cap) / 1.2941, wc = (W - 2 * g + k) / 2.7165;
+    board.style.gridTemplateColumns = `${wc}px ${wc - k}px ${wc * .7165}px`;
+  }
+  const ro = new ResizeObserver(lay); ro.observe(board); mq.addEventListener('change', lay); lay();
+  return () => { ro.disconnect(); mq.removeEventListener('change', lay); st.remove(); fl.remove(); el.remove(); };
 }
