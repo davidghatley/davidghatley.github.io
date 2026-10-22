@@ -10,7 +10,7 @@
       "X...X",
       "XXXXX"
     ],
-    "status": "in use",
+    "status": "design system",
     "status_note": "In daily use across my projects; five commits in, the lint rules still change weekly.",
     "oneliner": "My house design system, with tools that enforce it.",
     "role": "I designed the system, drew the Stem 7 pixel font, and built the asset generator and the automated art director.",
@@ -72,11 +72,12 @@
       "This whole portfolio is dressed in it. Secret Sauce is two inks, cobalt and vermilion, on plaster, with vermilion allowed once per surface and no gradients, glows or rounded cards.",
       "A system only holds if something enforces it, so sauce-lint acts as an automated art director that flags a page when it breaks the rules, and sauce make generates cards, banners, splash screens and favicons from the same tokens. Stem 7, a pixel face drawn on the grid of my mark, sets the type.",
       "What I learned: rules written as lint checks survive; rules written as prose get argued with."
-    ]
+    ],
+    "category": "design system"
   },
   {
-    "slug": "workbench",
-    "title": "the workbench",
+    "slug": "rack10",
+    "title": "rack 10",
     "order": 10,
     "glyph": [
       "XXXXX",
@@ -85,23 +86,23 @@
       "X.X.X",
       "X.X.X"
     ],
-    "status": "research",
-    "status_note": "Three side projects: the recipe manual is published, the corpus is captions-only (Whisper not started), the rack is designed with STLs, print status not recorded here.",
-    "oneliner": "A shared-GPU recipe manual, a transcript corpus, and a 3D-printed rack.",
-    "role": "I wrote the manual, set up the download and transcription pipeline, and modelled the rack in OpenSCAD.",
+    "status": "prototype",
+    "status_note": "Designed and exported as 61 STLs with a fit coupon; print status is not recorded here.",
+    "oneliner": "A 10-inch modular rack that prints with no screws.",
+    "role": "I designed it in OpenSCAD: every part, joint and tolerance coupon.",
     "when": "2026-10",
     "hero": {
-      "src": "public/media/workbench/hero.jpg",
+      "src": "public/media/rack10/hero.jpg",
       "alt": "Render of the assembled 10-inch rack in OpenSCAD"
     },
     "media": [
       {
-        "src": "public/media/workbench/exploded.jpg",
+        "src": "public/media/rack10/exploded.jpg",
         "alt": "Exploded view of the rack parts",
         "caption": "Exploded view: every part is a parametric OpenSCAD module."
       },
       {
-        "src": "public/media/workbench/bay.jpg",
+        "src": "public/media/rack10/bay.jpg",
         "alt": "Front view of one rack bay",
         "caption": "One bay from the front, as modelled before slicing."
       }
@@ -118,36 +119,27 @@
         "source": "find rack10 -name '*.scad'"
       },
       {
-        "label": "videos in corpus",
-        "value": "463",
-        "source": "lines in research-corpus/manifest.jsonl"
+        "label": "outer size",
+        "value": "254 W × 336 D mm",
+        "source": "rack10 README"
       },
       {
-        "label": "cleaned caption files",
-        "value": "380",
-        "source": "files in research-corpus/captions"
+        "label": "one level",
+        "value": "4U (177.8 mm)",
+        "source": "rack10 README"
       },
       {
-        "label": "audio files downloaded",
-        "value": "172",
-        "source": "opus/m4a files under research-corpus/youtube"
-      },
-      {
-        "label": "Whisper transcripts",
+        "label": "fasteners",
         "value": "0",
-        "source": "research-corpus/transcripts is empty"
+        "source": "rack10 README: printed joints only"
       }
     ],
-    "links": [
-      {
-        "label": "RTX 3060 Recipe Manual",
-        "url": "https://claude.ai/artifact/1wvjvf1CzKEFP8zaEPaa8N"
-      }
-    ],
+    "links": [],
     "body": [
-      "One RTX 3060 serves every project on my machine, so I wrote the RTX 3060 Recipe Manual: what fits in 12 GB, what runs together, and how to take turns without out-of-memory crashes.",
-      "Beside it sit a YouTube research corpus (463 videos catalogued, 380 with cleaned captions, audio queued for local Whisper) and a 10-inch rack for the home network, modelled in OpenSCAD with 61 STLs.",
-      "What I learned: boring infrastructure written down once saves every later session."
-    ]
+      "rack 10 is a 10-inch modular rack for a home lab, designed for a small 180 mm printer. Every part fits the bed, prints without supports and joins the others with printed joints only: no screws, inserts or magnets.",
+      "Levels are 4U and stack; trays slide in at any U on tongues that run in grooves. Dovetail tabs, crossbar necks and bowtie keys lock the walls together, and a fit coupon at four clearances (0.10 to 0.25 mm) sets the tolerance before the real print.",
+      "What I learned: design the joint you can test first. The coupon decides the clearance, and every part rebuilds from one parameter."
+    ],
+    "category": "hardware"
   }
 ]

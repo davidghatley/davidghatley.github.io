@@ -10,7 +10,7 @@
       "XXXXX",
       "X.X.X"
     ],
-    "status": "in use",
+    "status": "generative art",
     "status_note": "Lab piece. The pipeline runs end to end on one card, but the series itself is pre-production: stills, storyboards and short test clips, no finished episode.",
     "oneliner": "Gray-box Blender previz in, anime frames and clips out, on one GPU.",
     "role": "I built the whole local pipeline and am using it to develop an original series, Meguri: the Blender previz scenes, the ComfyUI and video workflows, the storyboard boards, and the character looks.",
@@ -100,6 +100,7 @@
       "The pipeline is Blender previz, then ComfyUI and a video model steered by depth and line passes, all on one 12 GB RTX 3060. Nothing is allowed to need more than 12 GB of VRAM, so I lean on 8-bit weights and tiled decode. Every generation is appended to a run log.",
       "The test bed is an original series, Meguri, with two shows in development, SHUTO and SURI. I storyboard in previz first and only spend GPU time on video once a board is approved. Look Lab pages compare print styles on the same frames.",
       "What I learned: depth is the operator. Once the previz carries the camera and layout, the style becomes a setting I can change, and most failures are about the model ignoring the scene rather than the scene being wrong. This is still a lab; the character consistency and shot-to-shot continuity are not solved."
-    ]
+    ],
+    "category": "generative art"
   }
 ]

@@ -1,7 +1,7 @@
 (function () {
   var G = window.SAUCE_GLYPHS || {};
   var NS = 'http://www.w3.org/2000/svg';
-  var GROUPS = ['vaasf', 'kitchen', 'anime', 'tools'];
+  var GROUPS = ['vaasf', 'kitchen', 'anime', 'tools', 'lmr'];
   var PILL = { shipped: 'ok', 'in use': 'ok', working: 'info', prototype: 'info', research: 'mute', concept: 'mute' };
   var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
@@ -42,7 +42,7 @@
     list.forEach(function (s) { var x = el('span', '', '<i>' + esc(s.label) + '</i> ' + esc(s.value)); if (s.source) x.title = 'Source: ' + s.source.replace(/~\/Projects\/|\/home\/[^ ]+?\/Projects\//g, ''); d.appendChild(x); });
     return d;
   }
-  function pill(p) { return '<span class="ss-pill ss-pill--' + (PILL[p.status] || 'mute') + '">' + esc(p.status) + '</span>'; }
+  function pill(p) { var c = p.category || p.status; var h = '<span class="ss-pill ss-pill--info">' + esc(c) + '</span>'; if (p.status && p.status !== c) h += ' <span class="ss-pill ss-pill--mute">' + esc(p.status) + '</span>'; return h; }
   function load() {
     return Promise.all(GROUPS.map(function (g) {
       return fetch('content/' + g + '.json').then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; });
@@ -102,7 +102,6 @@
     load().then(function (ps) { return Promise.all(ps.map(loadMeta)); }).then(function (ps) {
       track.innerHTML = '';
       var hd = el('div', 'index-head', '<span class="px16">INDEX</span><span class="px16">' + ps.length + ' PROJECTS</span>'); track.appendChild(hd);
-      track.appendChild(el('p', 'index-legend ss-label', 'Most to least finished: shipped &middot; in use &middot; prototype &middot; research'));
       ps.forEach(function (p, idx) {
         var r = el('article', 'row'); r.id = p.slug; r._p = p; applyAccent(r, p.meta);
         var bar = el('div', 'row__bar'); bar.tabIndex = 0; bar.setAttribute('role', 'button'); bar.setAttribute('aria-expanded', 'false'); bar.setAttribute('aria-controls', 'pn-' + p.slug);

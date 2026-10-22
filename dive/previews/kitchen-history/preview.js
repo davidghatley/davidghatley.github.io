@@ -57,9 +57,9 @@ export default function mount(root, { mode }) {
   const oy = i => top + i * step, ny = i => top + i * step;
   const NW = 250, NH = 64, LX = 0, RX = W - NW - 1;
   const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Salvage map: five old repos on the left, five new repos on the right, with a line for each excerpt carried over');
+  svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Salvage map: five earlier experiments on the left, five new repos on the right, with a line for each excerpt carried over');
   const h = (t, a = {}, p = svg) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); p.appendChild(e); return e; };
-  h('text', { x: LX, y: 14, class: 'tag' }).textContent = 'old repos';
+  h('text', { x: LX, y: 14, class: 'tag' }).textContent = 'earlier experiments';
   h('text', { x: W, y: 14, class: 'tag', 'text-anchor': 'end' }).textContent = 'new kitchen repos';
   h('text', { x: W / 2, y: 16, class: 'px', 'text-anchor': 'middle' }).textContent = 'AUDIT 2026-10-17';
   const oi = Object.fromEntries(OLD.map((o, i) => [o[0], i])), ni = Object.fromEntries(NEW.map((n, i) => [n, i]));

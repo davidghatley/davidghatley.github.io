@@ -10,7 +10,7 @@
       "XXXXX",
       "X...X"
     ],
-    "status": "prototype",
+    "status": "software",
     "status_note": "Contract, research and a landing page exist; the generator itself is not built.",
     "oneliner": "One sentence in, a small game you can play from a link.",
     "role": "I wrote the intent, the research behind it and the landing page, and I am steering the visual direction.",
@@ -79,7 +79,8 @@
       "The goal: a stranger types one sentence, plays the result from a link, and gets a 20-second clip to share. That is the target, not a result. Today playdough is a contract, four research notes and a landing page.",
       "It is a generator, not an engine. It sits on templates from mise_en_place and a design-brief step that turns a vague idea into a fun core loop before anything is built. A human playtest comes before anything is shared.",
       "So far the useful work is visual: six rendered vignettes testing whether generated art can look deliberate. I learned to settle the look before the pipeline."
-    ]
+    ],
+    "category": "software"
   },
   {
     "slug": "mise_en_place",
@@ -92,7 +93,7 @@
       ".....",
       "XXXXX"
     ],
-    "status": "prototype",
+    "status": "software",
     "status_note": "Intent, landing page and a manual are written; the prep-pack tool is not built.",
     "oneliner": "Preps any project from one sentence so the agent skips setup.",
     "role": "I defined the prep-pack idea, wrote the intent and the landing page, and drew its look.",
@@ -159,7 +160,8 @@
       "The target: give it one sentence about any project and it lays out a prep pack on disk, with a chosen template, an asset kit, a context brief and a manifest, before the agent starts. Zero setup steps for the agent is the goal. The tool does not exist yet.",
       "What exists is the intent, a landing page, a manual, and a short list of lessons borrowed from my earlier research repos, including one finding that packing evidence loses more than searching for it.",
       "I learned to write down what a tool is not. It is not an agent harness and not the decision model."
-    ]
+    ],
+    "category": "software"
   },
   {
     "slug": "bonfire",
@@ -172,7 +174,7 @@
       "XX.XX",
       "X.X.X"
     ],
-    "status": "prototype",
+    "status": "software",
     "status_note": "A core slice runs on a working branch (not yet merged or published); the full live demo on a real task has not run.",
     "oneliner": "Runs AI agents until the work passes your checks, even after a crash.",
     "role": "I wrote the intent and the fork-base decision, and I am reusing the loop design from my older gauntlet repo.",
@@ -238,9 +240,10 @@
     ],
     "body": [
       "A core slice now runs on a working branch: four workers take a round on a small test task, the run is killed with kill -9 mid-round, and it resumes from its event log and still picks a winner, with no finished step re-run. That run used recorded model replies. The target is the same loop (propose, evaluate, critique, verify) on a real task with live models; that demo has not run yet.",
-      "The loop itself comes from gauntlet, a small Python harness I built earlier. I am carrying its phases and its resume design as reference, not its code. See the old repos entry.",
+      "The loop itself comes from gauntlet, a small Python harness I built earlier. I am carrying its phases and its resume design as reference, not its code. See other experiments.",
       "I learned that a harness needs durable state first, because model calls fail and long runs get killed."
-    ]
+    ],
+    "category": "software"
   },
   {
     "slug": "nibble",
@@ -253,7 +256,7 @@
       "XXXXX",
       "XXXXX"
     ],
-    "status": "research",
+    "status": "prototype",
     "status_note": "Experiments on a branch. The decider is not packaged or tested against a big model.",
     "oneliner": "Answers an agent's multiple-choice questions fast and says how sure it is.",
     "role": "I wrote the intent, run the experiments, and studied what my earlier classifier attempts got wrong.",
@@ -317,7 +320,8 @@
       "The target is a small model that picks among typed options in an agent pipeline, returns calibrated odds, and beats a big model on speed. It builds on Kev, an open model. A first comparison on 50 held-out prompts: Kev-0.8B on CPU scored 0.88 against 1.0 for Sonnet and ran about 1.3x faster. That sample is too small to call, and the gap is real.",
       "The first experiment has Kev-4B compose shadcn landing pages, then a fine-tune on rubric labels on my shared 3060. It is exploratory and lives on a branch.",
       "My earlier classifiers taught me the most: one scored 44.5% on unseen wording at 97% confidence. Calibration on new phrasing is the real test."
-    ]
+    ],
+    "category": "software"
   },
   {
     "slug": "napkin",
@@ -330,7 +334,7 @@
       "XX...",
       "X...."
     ],
-    "status": "research",
+    "status": "software",
     "status_note": "Spikes and a demo in worktrees. Roadmap phase 4, so not started in earnest.",
     "oneliner": "A design canvas where you and an AI agent edit one component.",
     "role": "I wrote the spec, ran spikes in separate worktrees for canvas, files, tokens and agents, and captured the demos.",
@@ -402,11 +406,12 @@
       "The target: an agent and I edit one component on a canvas at once, and the result is a real component file on disk. In the spikes, the two-cursor demo runs; it is not a product and I have not used it for real work.",
       "The spikes are small on purpose and live in separate worktrees. The spec borrows a short list of invariants from my earlier precision-canvas repo and leaves the rest of it behind.",
       "I learned to start from the file format, because files on disk stay the source of truth."
-    ]
+    ],
+    "category": "software"
   },
   {
     "slug": "kitchen-history",
-    "title": "the old repos",
+    "title": "other experiments",
     "order": 11,
     "glyph": [
       "XXXXX",
@@ -415,9 +420,9 @@
       "X...X",
       "XXXXX"
     ],
-    "status": "research",
+    "status": "archived",
     "status_note": "Salvage audit, read-only; no old code was moved.",
-    "oneliner": "Five earlier AI repos, audited for what the kitchen keeps.",
+    "oneliner": "Five earlier AI experiments, and what my newer projects kept from them.",
     "role": "I audited my own earlier repos for the kitchen: what to carry as a reference excerpt, and what to leave.",
     "when": "2026-10",
     "hero": {
@@ -493,6 +498,7 @@
       "gauntlet: a Python harness for propose, evaluate, critique, verify over git worktrees, with resume. Its loop and store design go to bonfire. It was never measured on real model runs.",
       "system-a and system-one-mini: classifier experiments. system-a drifted into labeling a coding agent's next tool. system-one-mini was fast (4.95 ms p50) but scored 44.5% on unseen wording at 97% confidence and its final 86% held only in-domain. I carry those failures into nibble, not the code.",
       "precision-canvas: meant as a component canvas, it became a spec programme with 473 capabilities and no editor. napkin takes a few invariants and checklists. local-mobile-research: an offline QA tournament whose lesson, that packing loses evidence rather than retrieval, goes to mise_en_place."
-    ]
+    ],
+    "category": "software"
   }
 ]

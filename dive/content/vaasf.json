@@ -10,10 +10,10 @@
       "X.X.X",
       "X...X"
     ],
-    "status": "shipped",
+    "status": "client work",
     "status_note": "Festival runs Oct 23-25, 2026; program, awards book and site are live or at the printer. Code rebuild of the site is planned, not started.",
-    "oneliner": "Program, site and application for an Albuquerque art song festival.",
-    "role": "I am the only designer and developer on the festival: Webflow site, application, printed program and awards program.",
+    "oneliner": "I'm the festival's designer: the printed program, the website and the application.",
+    "role": "I'm the designer for the Vocal Artistry Art Song Festival: the printed program, the awards program, the Webflow site and the application.",
     "when": "2022-2026",
     "hero": {
       "src": "public/media/vaasf/hero.jpg",
@@ -80,6 +80,7 @@
       "The booklet is a Python script that fills HTML pages from the repertoire data and prints each one to PDF. A late schedule change is a data edit and a rebuild, not a layout rework. It replaced a first draft built in Canva.",
       "Next, after the festival, I plan to rebuild the site in code with one application form that takes payment. Nothing of that is built yet.",
       "What I learned: with a small nonprofit, the deadline is the design brief. A real PDF in front of the board by noon beat any talk about options."
-    ]
+    ],
+    "category": "client work"
   }
 ]
