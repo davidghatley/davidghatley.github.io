@@ -72,7 +72,7 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 .cat__head { position: relative; display: flex; justify-content: space-between; height: 32px; padding-top: var(--space-1); box-sizing: border-box; color: var(--ink); }
 .cat__head::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--line-hair); background: var(--ink); }
 .cat__label { font: inherit; margin: 0; }
-.cat__n { color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.cat__n { color: var(--ink-muted); font-variant-numeric: tabular-nums; margin-right: -2px; }   /* Stem 7 has a 1-cell (2px) right bearing; the ink ends on the edge */
 
 .row { position: relative; }
 .row::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--line-hair); background: var(--rule); }
@@ -89,14 +89,16 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 .row__bar > * { grid-row: 1; }
 .row__bar:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .row__n { grid-column: 1; margin-top: calc(var(--rowb) - 16px); color: var(--ink-muted); font-variant-numeric: tabular-nums; }
-.row__bar > .glyph { grid-column: 2; margin-top: calc(var(--rowb) - 7px - var(--glyph) / 2); }        /* centred on the title's cap height (14px) */
+.row__bar > .glyph { grid-column: 2; margin-top: calc(var(--rowb) - 7px - var(--glyph) / 2); margin-bottom: -24px; }   /* centred on the title's cap height; the text, not the glyph, sets the row height */
 .row__title { grid-column: 3 / span 3; margin: calc(var(--rowb) - 19px) 0 0; padding-bottom: 2px; pointer-events: none;
   font-family: var(--font-display); font-weight: 850; font-size: 20px; line-height: 24px; font-stretch: var(--stretch-expanded); letter-spacing: -.01em; overflow-wrap: anywhere; }
 .row.is-open .row__title { font-family: var(--font-title, var(--font-display)); }
 .row__one { grid-column: 6 / span 5; margin: calc(var(--rowb) - 17px) 0 0; color: var(--ink-muted); font: var(--type-body); }
 .row__tags { grid-column: -3 / span 2; justify-self: start; display: flex; gap: var(--space-1); margin-top: calc(var(--rowb) - 14px); }
-.tag { display: block; box-sizing: border-box; height: 20px; padding: 1px 5px; border: var(--line-hair) solid var(--rule); color: var(--ink-muted);
-  font-family: var(--font-mono); font-weight: 500; font-size: 11px; line-height: 16px; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+/* Plex Mono 11px advances 6.6px; 1.4px tracking makes every character exactly 8px (2 cells), so the frame lands on
+   whole pixels. The right pad is 1.4px short to absorb the trailing tracking. Baseline: 1 + 1 + 12 = 14 in the box. */
+.tag { display: block; box-sizing: border-box; height: 20px; padding: 1px 4px 1px 5px; border: var(--line-hair) solid var(--rule); color: var(--ink-muted);
+  font-family: var(--font-mono); font-weight: 500; font-size: 11px; line-height: 16px; letter-spacing: 1.4px; text-transform: uppercase; white-space: nowrap; }
 .row__arrow { grid-column: -2; justify-self: end; margin-top: calc(var(--rowb) - 14px); color: var(--ink-muted); pointer-events: none;
   transition: transform var(--dur-move) var(--ease-move); }
 .row.is-open .row__arrow { transform: rotate(90deg); color: var(--accent); pointer-events: auto; }

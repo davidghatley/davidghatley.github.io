@@ -133,7 +133,7 @@
     function mix(a, b, f) { return 'rgb(' + a.map(function (x, i) { return Math.round(x + (b[i] - x) * f); }).join(',') + ')'; }
     function build() {
       var paper = rgb('--paper'), ink = rgb('--ink'), dark = paper[0] + paper[1] + paper[2] < 384;
-      var f = dark ? 0.045 : 0.06;   // light: about 4.5 L* darker; dark: about 4.8 L* lighter
+      var f = dark ? 0.055 : 0.06;   // light: about 4.5 L* darker; dark: about 5.9 L* lighter
       var cols = [mix(paper, ink, f), mix(paper, ink, f * 0.5), mix(paper, rgb('--cobalt'), dark ? 0.5 : 0.4), mix(paper, rgb('--vermilion'), dark ? 0.6 : 0.5)];
       atlas = document.createElement('canvas'); atlas.width = NR * C * dpr; atlas.height = cols.length * C * dpr;
       var a = atlas.getContext('2d'); a.scale(dpr, dpr); a.font = '16px "Stem 7"'; a.textBaseline = 'alphabetic';
@@ -145,7 +145,7 @@
       W = document.documentElement.clientWidth; H = window.innerHeight + C;
       cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.width = W + 'px'; cv.style.height = H + 'px';
       var b = site.getBoundingClientRect(); x0 = Math.round(b.left); cw = Math.round(b.width);
-      verm = x0 >= 3 * C ? { c: -2, r: Math.round(window.innerHeight / C * 0.62) + 3 } : null;   // one vermilion cell, in the left margin
+      verm = x0 >= 6 * C ? { c: -Math.round(x0 / C / 2), r: Math.round(window.innerHeight / C * 0.62) + 3 } : null;   // one vermilion cell, mid left margin
       build();
     }
     function hash(x, y, z) { var h = (x * 374761393 + y * 668265263 + z * 2147483647 + seed * 1442695041) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; }
@@ -190,8 +190,9 @@
           var ddx = xs + 8 - mx, d2 = ddx * ddx + ddy * ddy;
           if (d2 < R2) v += 0.28 * (1 - Math.sqrt(d2) / R);
           if (band && !inCol) v += 0.12;
-          if (inCol) v -= 0.08;
+          if (inCol) v -= 0.16;   // the text column keeps only the peaks, at half strength
           var i = Math.floor((v - 0.5) * 2.4 * NR), kk = inCol ? 1 : 0, code = 0;
+          if (verm && c === verm.c && r === verm.r) i = 5;
           if (i >= 1) { if (i >= NR) i = NR - 1;
             if (!inCol) { if (verm && c === verm.c && r === verm.r) kk = 3; else if (i > 2 && hash(c, r, 7) < 0.02) kk = 2; }
             code = kk * NR + i; }
