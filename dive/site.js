@@ -37,7 +37,7 @@
   function spec(list) {
     if (!list || !list.length) return null;
     var d = el('div', 'ss-spec');
-    list.forEach(function (s) { d.appendChild(el('span', '', '<i>' + esc(s.label) + '</i> ' + esc(s.value) + (s.source ? ' <i>(' + esc(s.source) + ')</i>' : ''))); });
+    list.forEach(function (s) { var x = el('span', '', '<i>' + esc(s.label) + '</i> ' + esc(s.value)); if (s.source) x.title = 'Source: ' + s.source.replace(/~\/Projects\/|\/home\/[^ ]+?\/Projects\//g, ''); d.appendChild(x); });
     return d;
   }
   function head(p, n) {
