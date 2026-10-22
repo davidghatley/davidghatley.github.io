@@ -9,8 +9,10 @@
 @property --col { syntax: "<length>"; inherits: true; initial-value: 64px; }
 @property --w { syntax: "<length>"; inherits: true; initial-value: 944px; }
 @property --x0 { syntax: "<length>"; inherits: true; initial-value: 16px; }
-html { -webkit-text-size-adjust: 100%; }
-body { background: var(--paper); color: var(--ink); font: var(--type-body); margin: 0; container-type: inline-size; }
+/* paper lives on html: body is the inline-size container (for cqw), and containment stops body's background
+   from propagating, which would paint it over the ascii field */
+html { -webkit-text-size-adjust: 100%; background: var(--paper); }
+body { background: transparent; color: var(--ink); font: var(--type-body); margin: 0; container-type: inline-size; }
 .site {
   --b: 4px;                  /* baseline unit = the lockup cell */
   --g: 16px;                 /* gutter, 4 cells */
@@ -84,6 +86,7 @@ body { background: var(--paper); color: var(--ink); font: var(--type-body); marg
    last baseline, and the bar pads the rest (--rowtail - 7) so the row ends --rowtail under the last baseline. */
 .row__bar { display: grid; grid-template-columns: repeat(var(--n), var(--col)); column-gap: var(--g); align-items: start;
   padding-bottom: calc(var(--rowtail) - 7px); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.row__bar > * { grid-row: 1; }
 .row__bar:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .row__n { grid-column: 1; margin-top: calc(var(--rowb) - 16px); color: var(--ink-muted); font-variant-numeric: tabular-nums; }
 .row__bar > .glyph { grid-column: 2; margin-top: calc(var(--rowb) - 7px - var(--glyph) / 2); }        /* centred on the title's cap height (14px) */

@@ -148,40 +148,59 @@
       verm = x0 >= 3 * C ? { c: -2, r: Math.round(window.innerHeight / C * 0.62) + 3 } : null;   // one vermilion cell, in the left margin
       build();
     }
-    // value noise in (x, y, t), smoothstep-interpolated
     function hash(x, y, z) { var h = (x * 374761393 + y * 668265263 + z * 2147483647 + seed * 1442695041) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; }
-    function sm(v) { return v * v * (3 - 2 * v); }
-    function noise(x, y, z) {
-      var xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z), xf = sm(x - xi), yf = sm(y - yi), zf = sm(z - zi);
-      function L(zz) { var a = hash(xi, yi, zz), b = hash(xi + 1, yi, zz), c = hash(xi, yi + 1, zz), d = hash(xi + 1, yi + 1, zz);
-        return a + (b - a) * xf + (c - a + (d - c - b + a) * xf) * yf; }
-      var p = L(zi), q = L(zi + 1); return p + (q - p) * zf;
+    // the field: four slow plane waves at odd angles. Each cos(kx*c + ky*r + w*t) splits into per-column and
+    // per-row tables (cos a cos b - sin a sin b), so a frame costs O(columns + rows) trig and two multiplies a cell.
+    var WAVES = [[0.13, 0.21, 0.07, 0.32], [-0.23, 0.09, -0.05, 0.26], [0.07, -0.17, 0.04, 0.22], [0.41, 0.33, 0.11, 0.2]];
+    var tc = [], tr = [];
+    function tables(cMin, cMax, rTop, nR) {
+      WAVES.forEach(function (wv, k) {
+        var ac = tc[k] || (tc[k] = { c: [], s: [] }), ar = tr[k] || (tr[k] = { c: [], s: [] }), ph = wv[2] * t + seed;
+        for (var c = cMin; c < cMax; c++) { var a = wv[0] * c + ph; ac.c[c - cMin] = Math.cos(a); ac.s[c - cMin] = Math.sin(a); }
+        for (var j = 0; j < nR; j++) { var b = wv[1] * (rTop + j); ar.c[j] = Math.cos(b); ar.s[j] = Math.sin(b); }
+      });
     }
+    var prev = null;   // last frame's code per cell; only cells whose code changes are cleared and redrawn
     function draw() {
       var t0 = performance.now(), sy = Math.round(window.scrollY), rTop = Math.floor(sy / C);
-      r0 = rTop; cv.style.transform = 'translate3d(0,' + (rTop * C - sy) + 'px,0)';
-      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
+      var cMin = -Math.ceil(x0 / C), cMax = Math.ceil((W - x0) / C), nR = Math.ceil(H / C), s = C * dpr, nC = cMax - cMin;
+      cv.style.transform = 'translate3d(0,' + (rTop * C - sy) + 'px,0)';
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      if (dirty || !prev || prev.length !== nC * nR || Math.abs(rTop - r0) >= nR) { ctx.clearRect(0, 0, cv.width, cv.height); prev = new Int16Array(nC * nR); }
+      else if (rTop !== r0) {   // scrolled by whole cells: move the pixels and the codes, then only new rows draw
+        var d = rTop - r0, sh = d * s, keep = cv.height - Math.abs(sh);
+        ctx.globalCompositeOperation = 'copy';
+        ctx.drawImage(cv, 0, Math.max(0, sh), cv.width, keep, 0, Math.max(0, -sh), cv.width, keep);
+        ctx.globalCompositeOperation = 'source-over';
+        if (d > 0) { prev.copyWithin(0, d * nC); prev.fill(-1, (nR - d) * nC); ctx.clearRect(0, keep, cv.width, cv.height - keep); }
+        else { prev.copyWithin(-d * nC, 0, (nR + d) * nC); prev.fill(-1, 0, -d * nC); ctx.clearRect(0, 0, cv.width, -sh); }
+      }
+      r0 = rTop;
       if (!atlas) return;
-      var cMin = -Math.ceil(x0 / C), cMax = Math.ceil((W - x0) / C), nR = Math.ceil(H / C), s = C * dpr, z = t * 0.09;
-      var lo = x0 - C, hi = x0 + cw + C, ob = null;
+      tables(cMin, cMax, rTop, nR);
+      var lo = x0 - C, hi = x0 + cw + C, ob = null, nW = WAVES.length;
       if (FIELD.open) { var rb = FIELD.open.getBoundingClientRect(); ob = [rb.top + sy, rb.bottom + sy]; }
-      var mx = mouse.x, my = mouse.y + sy, R = 6 * C;
+      var mx = mouse.x, my = mouse.y + sy, R = 6 * C, R2 = R * R;
       for (var j = 0; j < nR; j++) {
-        var r = rTop + j, yDoc = r * C, dy = Math.round(j * s);
+        var r = rTop + j, yDoc = r * C, dy = Math.round(j * s), band = ob && yDoc + C > ob[0] && yDoc < ob[1], ddy = yDoc + 8 - my;
         for (var c = cMin; c < cMax; c++) {
-          var xs = x0 + c * C, inCol = xs >= lo && xs + C <= hi;
-          var v = noise(c / 9, r / 6, z) * 0.7 + noise(c / 3.5, r / 2.5, z * 1.7 + 40) * 0.3;
-          var ddx = xs + 8 - mx, ddy = yDoc + 8 - my, d2 = ddx * ddx + ddy * ddy;
-          if (d2 < R * R) v += 0.28 * (1 - Math.sqrt(d2) / R);
-          if (ob && !inCol && yDoc + C > ob[0] && yDoc < ob[1]) v += 0.12;
+          var q = c - cMin, xs = x0 + c * C, inCol = xs >= lo && xs + C <= hi, v = 0;
+          for (var k = 0; k < nW; k++) { var A = tc[k], B = tr[k]; v += WAVES[k][3] * (A.c[q] * B.c[j] - A.s[q] * B.s[j]); }
+          v = 0.5 + v * 0.5;
+          var ddx = xs + 8 - mx, d2 = ddx * ddx + ddy * ddy;
+          if (d2 < R2) v += 0.28 * (1 - Math.sqrt(d2) / R);
+          if (band && !inCol) v += 0.12;
           if (inCol) v -= 0.08;
-          var i = Math.floor((v - 0.46) * 2.2 * NR); if (i < 1) continue; if (i >= NR) i = NR - 1;
-          var k = inCol ? 1 : 0;
-          if (!inCol) { if (verm && c === verm.c && r === verm.r) k = 3; else if (hash(c, r, 7) < 0.012) k = 2; }
-          ctx.drawImage(atlas, i * s, k * s, s, s, Math.round((xs) * dpr), dy, s, s);
+          var i = Math.floor((v - 0.5) * 2.4 * NR), kk = inCol ? 1 : 0, code = 0;
+          if (i >= 1) { if (i >= NR) i = NR - 1;
+            if (!inCol) { if (verm && c === verm.c && r === verm.r) kk = 3; else if (i > 2 && hash(c, r, 7) < 0.02) kk = 2; }
+            code = kk * NR + i; }
+          var at = j * nC + q; if (prev[at] === code) continue; prev[at] = code;
+          var dx = Math.round(xs * dpr); ctx.clearRect(dx, dy, s, s);
+          if (code) ctx.drawImage(atlas, i * s, kk * s, s, s, dx, dy, s, s);
         }
       }
-      FIELD.ms = performance.now() - t0; dirty = false;
+      FIELD.ms = window.__fieldms = performance.now() - t0; dirty = false;
     }
     function step() { if (mq.matches || !visible || document.hidden) { timer = 0; return; } t++; draw(); timer = setTimeout(step, 2 * cell()); }
     function cell() { var d = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dur-cell')) || 70; return Math.max(60, d); }
