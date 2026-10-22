@@ -110,6 +110,8 @@
         figs.appendChild(f);
       });
       root.appendChild(figs);
+      var yt = (p.links || []).map(function (l) { var m = /youtube\.com\/watch\?(?:[^#]*&)?v=([\w-]{6,20})/.exec(l.url || ''); return m ? { id: m[1], l: l } : null; }).filter(Boolean);
+      yt.forEach(function (y) { var f = el('figure', 'ss-plate fig fig--yt'); f.style.margin = 0; f.appendChild(el('div', 'ss-plate__head', '<span class="ss-label">VIDEO · ' + esc(y.l.label).toUpperCase() + '</span>')); var w = el('div', 'yt'); var fr = el('iframe'); fr.src = 'https://www.youtube-nocookie.com/embed/' + y.id; fr.loading = 'lazy'; fr.title = y.l.label || 'Video'; fr.setAttribute('allow', 'accelerometer; encrypted-media; picture-in-picture'); fr.allowFullscreen = true; fr.referrerPolicy = 'strict-origin-when-cross-origin'; w.appendChild(fr); f.appendChild(w); root.appendChild(f); });
       if (p.links && p.links.length) { var ul = el('ul', 'links'); p.links.forEach(function (l) { ul.appendChild(el('li', '', '<a href="' + esc(l.url) + '">' + esc(l.label) + ' &rarr;</a>')); }); root.appendChild(ul); }
       var pr = ps[i - 1], nx = ps[i + 1], pn = el('nav', 'pn');
       pn.appendChild(pr ? el('a', '', '&larr; ' + esc(pr.title)) : el('span')); if (pr) pn.firstChild.href = 'case.html?p=' + pr.slug;

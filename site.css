@@ -58,3 +58,5 @@ body { background: var(--paper); color: var(--ink); font: var(--type-body); marg
 @media (max-width: 640px) { .plate-work__body { grid-template-columns: minmax(0,1fr); } .glyph { width: 32px; height: 32px; } .ss-plate:not(.hero) { padding-inline: var(--space-3); } .site-h1 { font-size: 32px; line-height: 36px; } .site-h1 .ss-mast__c { font-size: 25px; line-height: 32px; } .hero img { aspect-ratio: 16/9; max-height: none; } }
 .glyph.is-armed rect { animation-play-state: paused; visibility: hidden; }
 .ss-spec > span { min-width: 0; overflow-wrap: anywhere; } .plate-work .ss-spec, .fig .ss-spec { text-transform: none; letter-spacing: .04em; }
+.yt { position: relative; aspect-ratio: 16 / 9; }
+.yt iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }

@@ -11,8 +11,8 @@
    ".XXX."
   ],
   "status": "research",
-  "status_note": "Working research: models run locally, closed, and not yet shown to Ridd and Tommy.",
-  "oneliner": "Two Dive Club hosts as persona models with a fast decision head.",
+  "status_note": "Working research. The models run locally and stay closed; Ridd and Tommy have not seen them.",
+  "oneliner": "Small language models trained on two Dive Club hosts' own speech.",
   "role": "I scraped, transcribed, diarized, trained and evaluated all of it myself, on one RTX 3060.",
   "when": "2026-10",
   "hero": {
@@ -30,17 +30,22 @@
    {
     "label": "episodes",
     "value": "317",
-    "source": "data/transcripts file stats"
+    "source": "data/transcripts/stats.json (system1-personas repo)"
+   },
+   {
+    "label": "words transcribed, all speakers",
+    "value": "2,557,006",
+    "source": "sum of the four speaker word counts in data/transcripts/stats.json: Ridd 585,273, Tommy 259,971, guests 1,709,295, unknown 2,467. It counts diarized transcript words, not training tokens."
    },
    {
     "label": "Ridd words",
     "value": "585,273",
-    "source": "diarized transcripts, speaker-attributed"
+    "source": "diarized transcripts, words attributed to Ridd (stats.json)"
    },
    {
     "label": "Tommy words",
     "value": "259,971",
-    "source": "diarized transcripts, speaker-attributed"
+    "source": "diarized transcripts, words attributed to Tommy (stats.json)"
    },
    {
     "label": "base model",
@@ -86,9 +91,9 @@
    }
   ],
   "body": [
-   "I trained a small language model on each of Ridd's and Tommy's own speech from 317 public Dive Club episodes, then put a fast decision module on top. The studio lets you ask them questions; every line there is a curated, labeled synthetic line.",
-   "To get there I downloaded the episodes, transcribed them with Whisper, and diarized who said what, then trained one LoRA per host on Qwen3.5-4B-Base. Held-out perplexity dropped for both, so the voice transferred.",
-   "The honest part: judgment did not transfer. The model sounds like them but does not know what they would decide. The decision module did survive the backbone swap, 0.805 and 0.811 against 0.811 for plain Kev on 656 questions.",
+   "I trained a small language model on each of Ridd's and Tommy's own speech from 317 public Dive Club episodes, then put a fast decision module on top. The studio lets you ask them questions. Every line there is curated and labeled synthetic.",
+   "I downloaded the episodes, transcribed them with Whisper, worked out who said what, then trained one LoRA per host on Qwen3.5-4B-Base. Held-out perplexity dropped for both, so the voice transferred.",
+   "Judgment did not transfer. The models sound like the hosts but do not know what they would decide. The decision module did survive the backbone swap: 0.805 and 0.811 against 0.811 for plain Kev on 656 questions.",
    "Models, weights and data stay closed until Ridd and Tommy say yes."
   ]
  }
