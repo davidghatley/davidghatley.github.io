@@ -1,1 +1,7 @@
-{ "accent": "#2236b0", "accent_dark": "#6a80ee", "on_accent": "#f9f9f5", "label": "live Stem 7 specimen", "font_display": "var(--font-pixel)" }
+{
+  "accent": "#16181d",
+  "accent_dark": "#ecebe4",
+  "on_accent": "#f9f9f5",
+  "label": "live Stem 7 specimen",
+  "font_display": "var(--font-pixel)"
+}

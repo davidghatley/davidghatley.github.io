@@ -1,1 +1,6 @@
-{ "accent": "#555a61", "accent_dark": "#a2a7ad", "on_accent": "#f9f9f5", "label": "salvage map" }
+{
+  "accent": "#7a6f5a",
+  "accent_dark": "#b8ab8f",
+  "on_accent": "#f9f9f5",
+  "label": "salvage map"
+}

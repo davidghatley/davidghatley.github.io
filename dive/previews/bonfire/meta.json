@@ -1,3 +1,10 @@
-{ "accent": "#ee5228", "on_accent": "#16181d", "label": "kill -9 → resumed replay",
+{
+  "accent": "#d9481f",
+  "on_accent": "#16181d",
+  "label": "kill -9 \u2192 resumed replay",
   "font_display": "Archivo",
-  "fonts": ["https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap"] }
+  "fonts": [
+    "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+  ],
+  "accent_dark": "#ff6a3d"
+}

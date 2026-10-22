@@ -1,1 +1,6 @@
-{ "accent": "#2f8f9d", "accent_dark": "#3fb0bd", "on_accent": "#16181d", "label": "STL turntable + renders" }
+{
+  "accent": "#a5562b",
+  "accent_dark": "#e3925f",
+  "on_accent": "#f9f9f5",
+  "label": "STL turntable + renders"
+}
