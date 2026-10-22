@@ -58,16 +58,7 @@
         "source": "PNG files in samples/png"
       }
     ],
-    "links": [
-      {
-        "label": "Secret Sauce v2.1",
-        "url": "https://claude.ai/artifact/EVzKkAegdQrE3yAEXLNarQ"
-      },
-      {
-        "label": "Secret Sauce v2 Manual",
-        "url": "https://claude.ai/artifact/9iyQzshNXwXtJCjPNynd2g"
-      }
-    ],
+    "links": [],
     "body": [
       "This whole portfolio is dressed in it. Secret Sauce is two inks, cobalt and vermilion, on plaster, with vermilion allowed once per surface and no gradients, glows or rounded cards.",
       "A system only holds if something enforces it, so sauce-lint acts as an automated art director that flags a page when it breaks the rules, and sauce make generates cards, banners, splash screens and favicons from the same tokens. Stem 7, a pixel face drawn on the grid of my mark, sets the type.",

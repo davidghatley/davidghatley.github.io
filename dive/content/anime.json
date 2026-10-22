@@ -73,28 +73,7 @@
         "source": "project/meguri/review/media/board_ep01_board.jpg, 'previz v2 - 30 thumbnails'"
       }
     ],
-    "links": [
-      {
-        "label": "Anime Pipeline",
-        "url": "https://claude.ai/artifact/AWjUhS7DpnJ8XJat9bF2og"
-      },
-      {
-        "label": "Anime Pipeline Manual",
-        "url": "https://claude.ai/artifact/Jt4ULWyHagR8G9Uwrx6wnD"
-      },
-      {
-        "label": "Meguri Teaser PV",
-        "url": "https://claude.ai/artifact/7UDeTc9AvXdnsfGzpYfSjp"
-      },
-      {
-        "label": "Meguri Storyboard",
-        "url": "https://claude.ai/artifact/8zpCFpXUJBNnpv3rityUX7"
-      },
-      {
-        "label": "SHUTO Look Lab",
-        "url": "https://claude.ai/artifact/CQQhyiaWX9K7JtjHVeHzov"
-      }
-    ],
+    "links": [],
     "body": [
       "I can block a shot as gray boxes in Blender and get an anime frame back that keeps the same camera, stairs and figure placement. The hero image is one frame both ways; the loop is the same idea in motion.",
       "The pipeline is Blender previz, then ComfyUI and a video model steered by depth and line passes, all on one 12 GB RTX 3060. Nothing is allowed to need more than 12 GB of VRAM, so I lean on 8-bit weights and tiled decode. Every generation is appended to a run log.",

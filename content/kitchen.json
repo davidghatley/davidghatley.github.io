@@ -53,28 +53,7 @@
         "source": "playdough-visuals worktree, visuals/out/vignette-*.png"
       }
     ],
-    "links": [
-      {
-        "label": "Kitchen Atlas",
-        "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
-      },
-      {
-        "label": "The Kitchen Tour",
-        "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
-      },
-      {
-        "label": "Kitchen Progress Board",
-        "url": "https://claude.ai/artifact/SCDiB5Dp3KsmYttDH9RWNB"
-      },
-      {
-        "label": "Landing Page Rack",
-        "url": "https://claude.ai/artifact/HMe2vNvVrQnm1cJrnKNygf"
-      },
-      {
-        "label": "Playdough Build Log",
-        "url": "https://claude.ai/artifact/TCkqB4rrLDau4eeghkKVjW"
-      }
-    ],
+    "links": [],
     "body": [
       "The goal: a stranger types one sentence, plays the result from a link, and gets a 20-second clip to share. That is the target, not a result. Today playdough is a contract, four research notes and a landing page.",
       "It is a generator, not an engine. It sits on templates from mise_en_place and a design-brief step that turns a vague idea into a fun core loop before anything is built. A human playtest comes before anything is shared.",
@@ -127,26 +106,6 @@
       }
     ],
     "links": [
-      {
-        "label": "Kitchen Atlas",
-        "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
-      },
-      {
-        "label": "The Kitchen Tour",
-        "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
-      },
-      {
-        "label": "Kitchen Progress Board",
-        "url": "https://claude.ai/artifact/SCDiB5Dp3KsmYttDH9RWNB"
-      },
-      {
-        "label": "Mise en Place Manual",
-        "url": "https://claude.ai/artifact/1mhQb2tfJL4niLenSHnyNF"
-      },
-      {
-        "label": "The First Shift",
-        "url": "https://claude.ai/artifact/ME44fH7nppDpgWpTfKfxDw"
-      },
       {
         "label": "Landing page",
         "url": "https://davidghatley.github.io/mise_en_place/"
@@ -214,22 +173,6 @@
     ],
     "links": [
       {
-        "label": "Kitchen Atlas",
-        "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
-      },
-      {
-        "label": "The Kitchen Tour",
-        "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
-      },
-      {
-        "label": "Kitchen Progress Board",
-        "url": "https://claude.ai/artifact/SCDiB5Dp3KsmYttDH9RWNB"
-      },
-      {
-        "label": "Landing Page Rack",
-        "url": "https://claude.ai/artifact/HMe2vNvVrQnm1cJrnKNygf"
-      },
-      {
         "label": "Landing page",
         "url": "https://davidghatley.github.io/bonfire/"
       },
@@ -295,18 +238,6 @@
       }
     ],
     "links": [
-      {
-        "label": "Kitchen Atlas",
-        "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
-      },
-      {
-        "label": "The Kitchen Tour",
-        "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
-      },
-      {
-        "label": "Kitchen Progress Board",
-        "url": "https://claude.ai/artifact/SCDiB5Dp3KsmYttDH9RWNB"
-      },
       {
         "label": "Landing page",
         "url": "https://davidghatley.github.io/nibble/"
@@ -374,26 +305,6 @@
     ],
     "links": [
       {
-        "label": "Kitchen Atlas",
-        "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
-      },
-      {
-        "label": "The Kitchen Tour",
-        "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
-      },
-      {
-        "label": "Kitchen Progress Board",
-        "url": "https://claude.ai/artifact/SCDiB5Dp3KsmYttDH9RWNB"
-      },
-      {
-        "label": "napkin Build Log",
-        "url": "https://claude.ai/artifact/T1AraR578q4f44JxMA7rrY"
-      },
-      {
-        "label": "napkin Dream",
-        "url": "https://claude.ai/artifact/Bcif8JFheSNc6XJ8cSbkHY"
-      },
-      {
         "label": "Landing page",
         "url": "https://davidghatley.github.io/napkin/"
       },
@@ -451,14 +362,6 @@
       {
         "label": "lmr: now its own project",
         "url": "case.html?p=lmr"
-      },
-      {
-        "label": "Kitchen Atlas",
-        "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
-      },
-      {
-        "label": "The Kitchen Tour",
-        "url": "https://claude.ai/artifact/3LjsVPX5AD9zoUFqTmgZ41"
       },
       {
         "label": "GitHub: gauntlet",
