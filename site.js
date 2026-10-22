@@ -72,6 +72,27 @@
     ARROW.forEach(function (r, y) { for (var x = 0; x < 7; x++) if (r[x] === 'X') { var q = document.createElementNS(NS, 'rect'); q.setAttribute('x', x); q.setAttribute('y', y); q.setAttribute('width', 1); q.setAttribute('height', 1); s.appendChild(q); } });
     return s;
   }
+  // a row title: the real text once for assistive tech, and one aria-hidden span per character for the stepped
+  // swap into the project's own face. Per-project open styles that meta.json doesn't carry live here.
+  var TITLE_OPEN = { vaasf: { tcase: 'uppercase', d: '48px', p: '32px' } };   // DM Serif Display in capitals, a step up
+  function titleEl(p) {
+    var h = el('h3', 'row__title'); h.appendChild(el('span', 'sr-only', esc(p.title)));
+    var v = el('span', 'tt'); v.setAttribute('aria-hidden', 'true');
+    Array.from(String(p.title)).forEach(function (c) { var q = el('span', 'ch'); q.textContent = c; v.appendChild(q); });
+    h.appendChild(v); return h;
+  }
+  function swapTitle(r, on) {
+    clearInterval(r._swap); r._swap = 0;
+    var m = r._p.meta || {};
+    if (!m.font_display) return;
+    var cs = [].slice.call(r.querySelectorAll('.row__title .ch'));
+    var todo = cs.filter(function (c) { return c.classList.contains('ch--on') !== on; });
+    if (!on) todo.reverse();   // in left to right, out right to left
+    if (REDUCED || !todo.length) { todo.forEach(function (c) { c.classList.toggle('ch--on', on); }); return; }
+    var dur = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dur-cell')) || 70, i = 0;
+    function tick() { var c = todo[i++]; if (c) c.classList.toggle('ch--on', on); if (i >= todo.length) { clearInterval(r._swap); r._swap = 0; } }
+    tick(); if (i < todo.length) r._swap = setInterval(tick, dur);
+  }
   // keep a block of unknown height (a preview, a bespoke case page) a whole number of 4px baselines tall,
   // so everything after it stays on the baseline grid
   function snap4(node) {
@@ -99,6 +120,8 @@
     node.classList.add('acc');
     if (m.accent) node.style.setProperty('--acc-l', m.accent);
     if (m.accent_dark) node.style.setProperty('--acc-d', m.accent_dark);
+    var to = TITLE_OPEN[node.id];
+    if (to) { node.style.setProperty('--to-case', to.tcase); node.style.setProperty('--to-d', to.d); node.style.setProperty('--to-p', to.p); }
   }
   // mount a preview into root; resolves to a cleanup fn. Falls back to the hero image, uncropped.
   function mountPreview(p, root, mode, base) {
@@ -250,13 +273,14 @@
       if (r.classList.contains('is-open')) return;
       open = r; r.classList.add('is-open'); FIELD.open = r; r.querySelector('.row__bar').setAttribute('aria-expanded', 'true');
       var g = r.querySelector('.glyph'); if (g) replay(g); if (!r._fonts) { r._fonts = 1; applyFonts(r._p.meta, './'); }
+      swapTitle(r, true);
       var pv = r.querySelector('.row__preview'), p = r._p;
       r._token = {};
       var t = r._token;
       mountPreview(p, pv, 'row', './').then(function (c) { if (r._token === t && r.classList.contains('is-open')) r._cleanup = c; else c(); });
     }
     function collapse(r) {
-      r.classList.remove('is-open'); r.querySelector('.row__bar').setAttribute('aria-expanded', 'false');
+      r.classList.remove('is-open'); r.querySelector('.row__bar').setAttribute('aria-expanded', 'false'); swapTitle(r, false);
       var c = r._cleanup; r._cleanup = null; r._token = null;
       if (c) c();
       var pv = r.querySelector('.row__preview');
@@ -285,7 +309,7 @@
         var bar = el('div', 'row__bar'); bar.tabIndex = 0; bar.setAttribute('role', 'button'); bar.setAttribute('aria-expanded', 'false'); bar.setAttribute('aria-controls', 'pn-' + p.slug);
         bar.appendChild(el('span', 'row__n', String(idx + 1).padStart(2, '0')));
         bar.appendChild(glyphSvg(p.glyph));
-        bar.appendChild(el('h3', 'row__title', esc(p.title)));
+        bar.appendChild(titleEl(p));
         bar.appendChild(el('p', 'row__one', esc(p.oneliner)));
         var tg = tags(p); if (tg) bar.appendChild(el('span', 'row__tags', tg));
         var ar = el('a', 'row__arrow'); ar.appendChild(parrow()); ar.href = caseUrl(p.slug); ar.tabIndex = -1; ar.setAttribute('aria-hidden', 'true'); bar.appendChild(ar);

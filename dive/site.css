@@ -24,6 +24,9 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
   --step: calc(var(--col) + var(--g));          /* one column + one gutter */
   --rowb: 40px;              /* first baseline inside an index row */
   --rowtail: 28px;           /* last baseline to the row's bottom edge */
+  --tpx: 16px;               /* row titles and section heads: Stem 7 at 16 (phone) or 32 */
+  --tlh: 20px;               /* their line box; Stem 7's baseline is at 7/8 em + half the leading */
+  --tbl: 16px;               /* their baseline offset in that box */
   --glyph: 40px;             /* 5 x 8px cells */
   box-sizing: border-box; max-width: none; width: var(--w); margin: 0 0 0 var(--x0);
   padding: var(--space-6) 0 0; display: block;
@@ -32,7 +35,7 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
   .site { --n: 8; --m: max(28px, env(safe-area-inset-left), env(safe-area-inset-right));   /* 7 cells = the mark */
     --col: round(down, (100cqw - 2 * var(--m) - 7 * var(--g)) / 8, 4px);
     --x0: round(down, (100cqw - var(--w)) / 2, 4px);
-    --rowb: 44px; --rowtail: 32px; padding-top: var(--space-8); }
+    --rowb: 48px; --rowtail: 20px; --tpx: 32px; --tlh: 40px; --tbl: 32px; padding-top: var(--space-8); }
 }
 @media (min-width: 1024px) { .site { --n: 12; --col: 64px; } }
 .site > * { margin: 0; min-width: 0; }
@@ -70,10 +73,13 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 /* ---------- index: sections by category ---------- */
 .index { margin-top: var(--space-16); }
 .cat + .cat { margin-top: var(--space-12); }
-.cat__head { position: relative; display: flex; justify-content: space-between; height: 32px; padding-top: var(--space-1); box-sizing: border-box; color: var(--ink); }
+.cat__head { position: relative; display: flex; justify-content: space-between; height: 32px; padding-top: var(--space-1); box-sizing: border-box; color: var(--ink);
+  font-size: var(--tpx); line-height: var(--tlh); text-transform: none; }
+/* 32px heads: 48px tall, baseline 32, descenders end at 40, ink rule in the last pixel row */
+@media (min-width: 640px) { .cat__head { height: 48px; padding-top: 0; } }
 .cat__head::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--line-hair); background: var(--ink); }
 .cat__label { font: inherit; margin: 0; }
-.cat__n { color: var(--ink-muted); font-variant-numeric: tabular-nums; margin-right: -2px; }   /* Stem 7 has a 1-cell (2px) right bearing; the ink ends on the edge */
+.cat__n { color: var(--ink-muted); font-variant-numeric: tabular-nums; font-size: 16px; line-height: 20px; margin: calc(var(--tbl) - 16px) -2px 0 0; }   /* 16px on the label's baseline; Stem 7's 2px right bearing hangs so the ink ends on the edge */
 
 .row { position: relative; }
 .row::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--line-hair); background: var(--rule); }
@@ -83,24 +89,32 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 .row.is-open::before { background: color-mix(in srgb, var(--accent) 9%, var(--paper)); }
 .row.is-open::after { background: var(--accent); }
 
-/* Every bar item hangs from the top edge so its first baseline sits at --rowb; each box ends 7px under its
-   last baseline, and the bar pads the rest (--rowtail - 7) so the row ends --rowtail under the last baseline. */
+/* Every bar item hangs from the top edge so its first baseline sits at --rowb; each text box ends 8px under its
+   last baseline, and the bar pads the rest (--rowtail - 8) so the row ends --rowtail under the last baseline. */
 .row__bar { display: grid; grid-template-columns: repeat(var(--n), var(--col)); column-gap: var(--g); align-items: start;
-  padding-bottom: calc(var(--rowtail) - 7px); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  padding-bottom: calc(var(--rowtail) - 8px); cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .row__bar > * { grid-row: 1; }
 .row__bar:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .row__n { grid-column: 1; margin-top: calc(var(--rowb) - 16px); color: var(--ink-muted); font-variant-numeric: tabular-nums; }
-.row__bar > .glyph { grid-column: 2; margin-top: calc(var(--rowb) - 7px - var(--glyph) / 2); margin-bottom: -24px; }   /* centred on the title's cap height; the text, not the glyph, sets the row height */
-.row__title { grid-column: 3 / span 3; margin: calc(var(--rowb) - 19px) 0 0; padding-bottom: 2px; pointer-events: none;
-  font-family: var(--font-display); font-weight: 850; font-size: 20px; line-height: 24px; font-stretch: var(--stretch-expanded); letter-spacing: -.01em; overflow-wrap: anywhere; }
-.row.is-open .row__title { font-family: var(--font-title, var(--font-display)); }
-.row__one { grid-column: 6 / span 5; margin: calc(var(--rowb) - 17px) 0 0; color: var(--ink-muted); font: var(--type-body); }
+.row__bar > .glyph { grid-column: 2; margin-top: calc(var(--rowb) - var(--tpx) * 7 / 16 - var(--glyph) / 2); margin-bottom: -24px; }   /* centred on the title's cap height (7/8 em); the text, not the glyph, sets the row height */
+.row__title { grid-column: 3 / span 4; margin: calc(var(--rowb) - var(--tbl)) 0 0; padding-bottom: calc(8px - var(--tlh) + var(--tbl)); pointer-events: none;
+  font-family: var(--font-pixel); font-weight: 400; font-size: var(--tpx); line-height: var(--tlh); letter-spacing: 0; text-transform: none;
+  -webkit-font-smoothing: none; font-synthesis: none; overflow-wrap: anywhere; }
+/* the open swap: each character steps into the project's own face (meta.json font_display) one --dur-cell at a
+   time. line-height 0 keeps every character out of the line box, so the Stem 7 strut holds the baseline and the
+   row height while faces and sizes change. */
+.row__title .ch { line-height: 0; }
+.row__title .ch--on { font-family: var(--font-title, var(--font-pixel)); font-weight: 800; font-size: var(--to-d, var(--tpx)); text-transform: var(--to-case, none);
+  -webkit-font-smoothing: auto; font-synthesis: none; }
+@media (max-width: 639px) { .row__title .ch--on { font-size: var(--to-p, var(--tpx)); } }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.row__one { grid-column: 7 / span 4; margin: calc(var(--rowb) - 17px) 0 0; padding-bottom: 1px; color: var(--ink-muted); font: var(--type-body); }
 .row__tags { grid-column: -3 / span 2; justify-self: start; display: flex; gap: var(--space-1); margin-top: calc(var(--rowb) - 14px); }
 /* Plex Mono 11px advances 6.6px; 1.4px tracking makes every character exactly 8px (2 cells), so the frame lands on
    whole pixels. The right pad is 1.4px short to absorb the trailing tracking. Baseline: 1 + 1 + 12 = 14 in the box. */
 .tag { display: block; box-sizing: border-box; height: 20px; padding: 1px 4px 1px 5px; border: var(--line-hair) solid var(--rule); color: var(--ink-muted);
   font-family: var(--font-mono); font-weight: 500; font-size: 11px; line-height: 16px; letter-spacing: 1.4px; text-transform: uppercase; white-space: nowrap; }
-.row__arrow { grid-column: -2; justify-self: end; margin-top: calc(var(--rowb) - 14px); color: var(--ink-muted); pointer-events: none;
+.row__arrow { grid-column: -2; justify-self: end; margin-top: calc(var(--rowb) - var(--tpx) * 7 / 16 - 7px); color: var(--ink-muted); pointer-events: none;
   transition: transform var(--dur-move) var(--ease-move); }
 .row.is-open .row__arrow { transform: rotate(90deg); color: var(--accent); pointer-events: auto; }
 
@@ -124,7 +138,6 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 @media (max-width: 1023px) {
   .row__one { display: none; }
   .row__one-m { display: block; }
-  .row__title { grid-column: 3 / span 4; }
 }
 /* phone: glyph, then the title on the lockup name's line (60px), tags, arrow */
 @media (max-width: 639px) {
@@ -135,7 +148,9 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
   .row__tags { grid-column: 3; margin-left: var(--space-3); }
   .row__arrow { grid-column: 4; }
   .row__pad { margin-left: 0; }
-  .open-btn { display: flex; justify-self: stretch; justify-content: center; height: 48px; border: 2px solid var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--paper)); box-sizing: border-box; }
+  /* 48px touch target; the label hangs at 16 (baseline 32 on the grid, cap 18-32, within 1px of the frame's centre) */
+  .open-btn { display: flex; justify-self: stretch; justify-content: center; align-items: flex-start; height: 48px; padding-top: 14px; border: 2px solid var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--paper)); box-sizing: border-box; }
+  .open-btn .parrow { margin-top: 2px; }
 }
 
 /* ---------- about ---------- */
