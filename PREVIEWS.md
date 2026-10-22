@@ -37,3 +37,14 @@ previews/_harness.html?slug=<slug>&mode=row|hero mounts one preview standalone (
 until then, make your own temporary test page in previews/<slug>/test.html and delete it at the end).
 Server: python3 -m http.server 8791 in ~/Projects/portfolio (probably already running).
 Screenshot: chromium --headless=new --disable-gpu --hide-scrollbars --virtual-time-budget=5000 --screenshot=OUT --window-size=1280,900 URL
+
+## v3 addition: bespoke case pages (previews/<slug>/case.js)
+Each project's case page must be unique, not the shared template. A project provides:
+export default function renderCase(root, { project, base, meta }) { ...; return () => { /* cleanup */ } }
+- project = its entry from content/*.json (title, body[], media[], spec[], links[], status, status_note, role, when, glyph).
+- root is an empty <main> region below the site header (lockup + back link) and above the shared footer (prev/next). The shell renders NOTHING else when case.js exists: you own the title, the hero (you may mount your own preview.js in "hero" mode), the story, the media, the spec and the links.
+- Design the page as a piece about THIS project: its own structure, rhythm and section types (e.g. VAASF reads like the printed program; bonfire reads like an incident report or run log; napkin reads like a canvas file; nibble like a lab notebook with charts; anime like a production storyboard; the workbench like an engineering drawing sheet; the old repos like an archive ledger). Use the project's own fonts from meta.json and Stem 7 (var(--font-pixel), 16/32/48/72/120px only).
+- Keep the copy from project.body (you may split it across sections and pull a phrase into a headline, but invent no claims). Every media item and link must appear. Images are never cropped.
+- Must include the view-transition names on the title glyph (glyph-<slug>) and the hero (hero-<slug>) so the transition from the index works.
+- Inject one scoped <style> (.cs-<slug>) and remove it on cleanup. Under 30KB. Light + dark. Reduced motion. Phone width 400px with no sideways scroll.
+- Test: case.html?p=<slug> once the shell supports case.js (it falls back to the template if case.js is missing or throws).

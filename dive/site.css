@@ -103,3 +103,8 @@ body { background: var(--paper); color: var(--ink); font: var(--type-body); marg
 .row.is-open .row__title, .case-h { font-family: var(--font-title, var(--font-display)); }
 .back { font-family: var(--font-pixel); font-size: 16px; letter-spacing: 0; }
 .ss-spec { font-family: var(--font-mono); }
+
+.row__arrow { text-decoration: none; pointer-events: none; }
+.row.is-open .row__arrow { pointer-events: auto; }
+.row__title { pointer-events: none; }
+.case-body { min-width: 0; }

@@ -173,7 +173,7 @@
       "X.X.X"
     ],
     "status": "prototype",
-    "status_note": "Intent, a fork-base decision and a landing page; no harness code of its own yet.",
+    "status_note": "A core slice runs on a working branch (not yet merged or published); the full live demo on a real task has not run.",
     "oneliner": "Runs AI agents until the work passes your checks, even after a crash.",
     "role": "I wrote the intent and the fork-base decision, and I am reusing the loop design from my older gauntlet repo.",
     "when": "2026-10",
@@ -237,7 +237,7 @@
       }
     ],
     "body": [
-      "The target: one propose, evaluate, critique, verify loop fans out four parallel workers on a real task, and the run survives a forced restart. That demo has not run. bonfire is an intent file, a decision to build on an existing harness, and a landing page.",
+      "A core slice now runs on a working branch: four workers take a round on a small test task, the run is killed with kill -9 mid-round, and it resumes from its event log and still picks a winner, with no finished step re-run. That run used recorded model replies. The target is the same loop (propose, evaluate, critique, verify) on a real task with live models; that demo has not run yet.",
       "The loop itself comes from gauntlet, a small Python harness I built earlier. I am carrying its phases and its resume design as reference, not its code. See the old repos entry.",
       "I learned that a harness needs durable state first, because model calls fail and long runs get killed."
     ]
@@ -314,7 +314,7 @@
       }
     ],
     "body": [
-      "The target is a small model that picks among typed options in an agent pipeline, returns calibrated odds, and beats a big model on speed. It builds on Kev, an open model. Speed and accuracy are not measured yet.",
+      "The target is a small model that picks among typed options in an agent pipeline, returns calibrated odds, and beats a big model on speed. It builds on Kev, an open model. A first comparison on 50 held-out prompts: Kev-0.8B on CPU scored 0.88 against 1.0 for Sonnet and ran about 1.3x faster. That sample is too small to call, and the gap is real.",
       "The first experiment has Kev-4B compose shadcn landing pages, then a fine-tune on rubric labels on my shared 3060. It is exploratory and lives on a branch.",
       "My earlier classifiers taught me the most: one scored 44.5% on unseen wording at 97% confidence. Calibration on new phrasing is the real test."
     ]

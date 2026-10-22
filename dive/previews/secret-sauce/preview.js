@@ -1,5 +1,5 @@
 // Secret Sauce: a live specimen. Type in Stem 7, watch the project glyphs build, flip the theme, browse real `sauce make` output.
-const FILES = ['anime', 'diveclub', 'kitchen', 'tools', 'vaasf'];
+const FILES = ['anime', 'kitchen', 'tools', 'vaasf'];
 const SHEET = [
   ['make-card-napkin.jpg', 'card · napkin', 640, 800],
   ['make-title-playdough.jpg', 'title · playdough', 1280, 720],

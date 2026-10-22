@@ -1,14 +1,14 @@
 // anime-pipeline preview: four synced stages of the same shot (S01_SH050) + previz/final wipe.
 export default function mount(root, { mode, base }) {
   const M = base + 'public/media/anime-pipeline/';
-  const hero = mode === 'hero';
+  const hero = mode === 'hero' || mode === 'strip';
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const gifs = { previz: 'sh050-previz.gif', depth: 'sh050-depth.gif', line: 'sh050-line.gif', final: 'sh050-final.gif' };
   const A = '#c93a24';
   const css = document.createElement('style');
   css.textContent = `
 .pv-anime-pipeline{--acc:${A};display:grid;gap:16px;color:var(--ink);font:400 14px/20px var(--font-sans)}
-.pv-anime-pipeline.hero{grid-template-columns:minmax(0,1fr) minmax(0,300px);align-items:start;gap:24px}
+.pv-anime-pipeline.hero{grid-template-columns:minmax(0,1fr)${mode === 'hero' ? ' minmax(0,300px)' : ''};align-items:start;gap:24px}
 .pv-anime-pipeline .lab{font:500 11px/16px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
 .pv-anime-pipeline .stages{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0;align-items:stretch}
 .pv-anime-pipeline .st{padding:0 10px;border-left:1px solid var(--rule);min-width:0;display:flex;flex-direction:column;gap:6px}
@@ -60,7 +60,7 @@ export default function mount(root, { mode, base }) {
   <input class="rng" type="range" min="0" max="100" value="50" aria-label="Wipe between previz and final">
  </div>
 </div>
-${hero ? `<div class="sb"><div class="lab">Storyboard contact sheet</div><img src="${M}storyboard.jpg" alt="Storyboard contact sheet for Meguri" loading="lazy"></div>` : ''}`;
+${mode === 'hero' ? `<div class="sb"><div class="lab">Storyboard contact sheet</div><img src="${M}storyboard.jpg" alt="Storyboard contact sheet for Meguri" loading="lazy"></div>` : ''}`;
   root.appendChild(el);
 
   const imgs = [...el.querySelectorAll('img[data-g]')];
@@ -101,9 +101,9 @@ ${hero ? `<div class="sb"><div class="lab">Storyboard contact sheet</div><img sr
   function paint(idx) { for (const [c, x] of views) x.drawImage(frames[c.dataset.g][idx], 0, 0); }
   function tick(now) {
     if (!alive) return;
-    const p = ((now - t0) / 5100) % 1;
+    const el0 = Math.max(0, now - t0), p = (el0 / 5100) % 1;
     fc.textContent = 'F ' + String(Math.floor(p * 41)).padStart(3, '0') + '/041';
-    if (ready && !reduce) paint(Math.min(N - 1, Math.floor(((now - t0) / 1000 * FPS) % N)));
+    if (ready && !reduce) paint(Math.min(N - 1, Math.floor((el0 / 1000 * FPS) % N)));
     fill.style.width = (p * 100) + '%';
     if (!hovering && !dragged && !reduce) set(50 + 45 * Math.sin((now - t0) / 2400));
     raf = requestAnimationFrame(tick);

@@ -108,10 +108,10 @@
         bar.appendChild(glyphSvg(p.glyph));
         bar.appendChild(el('span', 'chip'));
         bar.insertBefore(el('span', 'row__n', String(idx + 1).padStart(2, '0')), bar.firstChild);
-        var h = el('h2', 'row__title', '<a href="' + caseUrl(p.slug) + '">' + esc(p.title) + '</a>'); bar.appendChild(h);
+        var h = el('h2', 'row__title', esc(p.title)); bar.appendChild(h);
         bar.appendChild(el('p', 'row__one', esc(p.oneliner)));
         bar.appendChild(el('span', 'row__pill', pill(p)));
-        bar.appendChild(el('span', 'row__arrow', '&rarr;')).setAttribute('aria-hidden', 'true');
+        var ar = el('a', 'row__arrow', '&rarr;'); ar.href = caseUrl(p.slug); ar.tabIndex = -1; ar.setAttribute('aria-hidden', 'true'); bar.appendChild(ar);
         var panel = el('div', 'row__panel'); panel.id = 'pn-' + p.slug;
         var inner = el('div', 'row__inner'), pad = el('div', 'row__pad');
         pad.appendChild(el('p', 'row__one-m', esc(p.oneliner)));
@@ -121,9 +121,6 @@
         inner.appendChild(pad); panel.appendChild(inner);
         r.appendChild(bar); r.appendChild(panel); track.appendChild(r);
         // interactions
-        r.addEventListener('pointerenter', function (e) { if (e.pointerType !== 'mouse') return; clearTimeout(hoverT); hoverT = setTimeout(function () { expand(r); }, 120); });
-        r.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') clearTimeout(hoverT); });
-        bar.addEventListener('focus', function () { if (!touch) expand(r); });
         bar.addEventListener('click', function (e) { if (e.target.closest('a')) { go(r); return; } if (r.classList.contains('is-open')) collapse(r); else expand(r); });
         bar.addEventListener('keydown', function (e) {
           if (e.target !== bar) return;
@@ -131,10 +128,9 @@
         });
         ob.addEventListener('click', function () { go(r); });
       });
-      track.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') clearTimeout(hoverT); });
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) collapse(open); });
       var q = new URLSearchParams(location.search).get('open');
-      if (q) { var t = document.getElementById(q); if (t && t._p) { expand(t); t.scrollIntoView({ block: 'nearest' }); } }
+      if (q) { /* test hook only */ var t = document.getElementById(q); if (t && t._p) { expand(t); t.scrollIntoView({ block: 'nearest' }); } }
       if (location.hash && !q) { var hh = document.getElementById(location.hash.slice(1)); if (hh) hh.scrollIntoView(); }
     });
   }
@@ -148,15 +144,17 @@
       if (i < 0) { root.appendChild(el('p', '', 'No such project. <a href="index.html#work">Back to the work</a>.')); return; }
       var p = ps[i], pr = ps[i - 1], nx = ps[i + 1];
       return Promise.all([loadMeta(p), pr ? loadMeta(pr) : 0, nx ? loadMeta(nx) : 0]).then(function () {
+        var top0 = el('a', 'back', '&larr; Index'); top0.href = 'index.html#work'; root.appendChild(top0);
+        var m = el('div', 'case-body'); root.appendChild(m);
         document.title = p.title + ' · David Hatley';
         applyAccent(root, p.meta); applyFonts(p.meta, './');
-        root.appendChild(el('a', 'back', '&larr; All work')).href = 'index.html#work';
+                function template() {
         var top = el('div', 'case-top'); var g = glyphSvg(p.glyph); g.style.viewTransitionName = 'glyph-' + p.slug; top.appendChild(g);
         top.appendChild(el('h1', 'case-h', esc(p.title)));
         top.appendChild(el('span', '', pill(p)).firstChild);
         top.appendChild(el('span', 'px16 case-n', 'No. ' + String(i + 1).padStart(2, '0') + ' / ' + ps.length));
-        root.appendChild(top);
-        var hero = el('div', 'case-hero'); hero.style.viewTransitionName = 'hero-' + p.slug; root.appendChild(hero);
+        m.appendChild(top);
+        var hero = el('div', 'case-hero'); hero.style.viewTransitionName = 'hero-' + p.slug; m.appendChild(hero);
         mountPreview(p, hero, 'hero', './');
         var col = el('div', 'case-col');
         col.appendChild(el('p', 'oneliner', esc(p.oneliner)));
@@ -164,7 +162,7 @@
         if (p.status_note) col.appendChild(el('p', 'ss-plate__cap', esc(p.status_note)));
         (p.body || []).forEach(function (t) { col.appendChild(el('p', '', esc(t))); });
         var s = spec(p.spec); if (s) col.appendChild(s);
-        root.appendChild(col);
+        m.appendChild(col);
         var figs = el('div', 'figs');
         (p.media || []).forEach(function (m, k) {
           var f = el('figure', 'ss-plate fig');
@@ -173,10 +171,17 @@
           if (m.caption) f.appendChild(el('figcaption', 'ss-plate__cap', esc(m.caption)));
           figs.appendChild(f);
         });
-        root.appendChild(figs);
+        m.appendChild(figs);
         var yt = (p.links || []).map(function (l) { var m = /youtube\.com\/watch\?(?:[^#]*&)?v=([\w-]{6,20})/.exec(l.url || ''); return m ? { id: m[1], l: l } : null; }).filter(Boolean);
-        yt.forEach(function (y) { var f = el('figure', 'ss-plate fig fig--yt'); f.appendChild(el('div', 'ss-plate__head', '<span class="ss-label">VIDEO · ' + esc(y.l.label).toUpperCase() + '</span>')); var w = el('div', 'yt'); var fr = el('iframe'); fr.src = 'https://www.youtube-nocookie.com/embed/' + y.id; fr.loading = 'lazy'; fr.title = y.l.label || 'Video'; fr.setAttribute('allow', 'accelerometer; encrypted-media; picture-in-picture'); fr.allowFullscreen = true; fr.referrerPolicy = 'strict-origin-when-cross-origin'; w.appendChild(fr); f.appendChild(w); root.appendChild(f); });
-        if (p.links && p.links.length) { var ul = el('ul', 'links'); p.links.forEach(function (l) { ul.appendChild(el('li', '', '<a href="' + esc(l.url) + '">' + esc(l.label) + ' &rarr;</a>')); }); root.appendChild(ul); }
+        yt.forEach(function (y) { var f = el('figure', 'ss-plate fig fig--yt'); f.appendChild(el('div', 'ss-plate__head', '<span class="ss-label">VIDEO · ' + esc(y.l.label).toUpperCase() + '</span>')); var w = el('div', 'yt'); var fr = el('iframe'); fr.src = 'https://www.youtube-nocookie.com/embed/' + y.id; fr.loading = 'lazy'; fr.title = y.l.label || 'Video'; fr.setAttribute('allow', 'accelerometer; encrypted-media; picture-in-picture'); fr.allowFullscreen = true; fr.referrerPolicy = 'strict-origin-when-cross-origin'; w.appendChild(fr); f.appendChild(w); m.appendChild(f); });
+        if (p.links && p.links.length) { var ul = el('ul', 'links'); p.links.forEach(function (l) { ul.appendChild(el('li', '', '<a href="' + esc(l.url) + '">' + esc(l.label) + ' &rarr;</a>')); }); m.appendChild(ul); }
+        }
+        var done = function () { template(); };
+        var cu = 'previews/' + p.slug + '/case.js';
+        fetch(cu, { method: 'HEAD' }).then(function (r) { if (!r.ok) throw 0; return import('./' + cu); }).then(function (mod) {
+          try { var c = mod.default(m, { project: p, base: './', meta: p.meta }); if (typeof c === 'function') window.addEventListener('pagehide', c); }
+          catch (e) { m.innerHTML = ''; template(); }
+        }).catch(function () { m.innerHTML = ''; template(); });
         var pn = el('nav', 'pn'); pn.setAttribute('aria-label', 'More work');
         function link(q, left) {
           if (!q) return el('span');
