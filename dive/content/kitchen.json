@@ -422,25 +422,14 @@
     ],
     "status": "archived",
     "status_note": "Salvage audit, read-only; no old code was moved.",
-    "oneliner": "Five earlier AI experiments, and what my newer projects kept from them.",
+    "oneliner": "Four earlier AI experiments, and what my newer projects kept from them.",
     "role": "I audited my own earlier repos for the kitchen: what to carry as a reference excerpt, and what to leave.",
     "when": "2026-10",
     "hero": {
       "src": "public/media/kitchen-history/hero.jpg",
       "alt": "Bonfire plate: a flame glyph with callouts"
     },
-    "media": [
-      {
-        "src": "public/media/kitchen-history/finding.jpg",
-        "alt": "Bar chart: 73 required paragraphs, 70 found by search, 54 packed into the model",
-        "caption": "From local-mobile-research: evidence is lost after it is found, so allocation is the problem, not recall."
-      },
-      {
-        "src": "public/media/kitchen-history/lmr-ui.jpg",
-        "alt": "Screenshot of the local-mobile-research app",
-        "caption": "The lmr app from the same repo."
-      }
-    ],
+    "media": [],
     "spec": [
       {
         "label": "gauntlet tests",
@@ -456,14 +445,13 @@
         "label": "precision-canvas capabilities",
         "value": "473",
         "source": "salvage-summary.md: with no editor"
-      },
-      {
-        "label": "local-mobile-research tests",
-        "value": "518 + 94",
-        "source": "salvage-summary.md"
       }
     ],
     "links": [
+      {
+        "label": "lmr: now its own project",
+        "url": "case.html?p=lmr"
+      },
       {
         "label": "Kitchen Atlas",
         "url": "https://claude.ai/artifact/9WUP9HqErgUqum6kNQHru3"
@@ -494,10 +482,11 @@
       }
     ],
     "body": [
-      "I audited my earlier repos before building the kitchen. The default verdict was to leave. Nothing was copied wholesale; only excerpts with a provenance note moved into the new repos' reference docs.",
+      "I audited my earlier repos before building the kitchen. The default verdict was to leave. Nothing was copied wholesale; only excerpts with a provenance note moved into the new repos' reference docs. Four of them stayed experiments; lmr grew into a project of its own.",
       "gauntlet: a Python harness for propose, evaluate, critique, verify over git worktrees, with resume. Its loop and store design go to bonfire. It was never measured on real model runs.",
       "system-a and system-one-mini: classifier experiments. system-a drifted into labeling a coding agent's next tool. system-one-mini was fast (4.95 ms p50) but scored 44.5% on unseen wording at 97% confidence and its final 86% held only in-domain. I carry those failures into nibble, not the code.",
-      "precision-canvas: meant as a component canvas, it became a spec programme with 473 capabilities and no editor. napkin takes a few invariants and checklists. local-mobile-research: an offline QA tournament whose lesson, that packing loses evidence rather than retrieval, goes to mise_en_place."
+      "precision-canvas: meant as a component canvas, it became a spec programme with 473 capabilities and no editor. napkin takes a few invariants and checklists.",
+      "lmr, an offline QA assistant I first audited here, is now its own project with its own page. It still gave mise_en_place one line, the finding that packing loses evidence rather than retrieval, plus a minimum-difference rule to nibble."
     ],
     "category": "software"
   }

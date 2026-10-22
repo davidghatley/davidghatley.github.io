@@ -110,3 +110,5 @@ body { background: var(--paper); color: var(--ink); font: var(--type-body); marg
 .case-body { min-width: 0; }
 
 .index-legend { margin: var(--space-2) 0 var(--space-3); }
+/* phone: the category pills drop under the title so the title keeps its width */
+@media (max-width: 760px) { .row__pill { grid-column: 4 / 6; grid-row: 2; justify-self: start; display: flex; gap: var(--space-1); flex-wrap: wrap; } }

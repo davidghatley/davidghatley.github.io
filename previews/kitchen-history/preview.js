@@ -24,7 +24,7 @@ const OLD = [
   ['system-a', '47 MB', 'Meant to pick primitives; it cloned habits.'],
   ['system-one-mini', '44.5%', 'Fast, and wrong off the script.'],
   ['precision-canvas', '473 caps', 'A spec programme with no pixels.'],
-  ['local-mobile-research', '518+94', 'Packing, not search, lost the evidence.'],
+  ['lmr', 'own page', 'Now its own project, not an experiment.'],
 ];
 const NEW = ['bonfire', 'nibble', 'napkin', 'mise_en_place', 'playdough'];
 // [old, new, label, detail]
@@ -35,16 +35,16 @@ const LINKS = [
   ['system-one-mini', 'bonfire', 'worktree noise', 'One lesson: worktree noise, on-disk handoff.'],
   ['system-one-mini', 'nibble', 'retrospective', 'Retrospective excerpt: shared-state speed, and the collapse on unseen wording (44.5% at 97% confidence).'],
   ['precision-canvas', 'napkin', 'invariants, checklists', 'INV-01/03/04/06/08, the AGT-01..28 and COD-01..21 checklists, a condensed transaction model, four test ideas.'],
-  ['local-mobile-research', 'mise_en_place', 'packing beats search', '"Packing beats searching" finding, the per-stage required-item survival metric, real-token budgets.'],
-  ['local-mobile-research', 'nibble', 'min. difference rule', 'The minimum-meaningful-difference rule.'],
-  ['local-mobile-research', 'playdough', 'lessons only', 'Lessons only, no files.'],
+  ['lmr', 'mise_en_place', 'packing beats search', '"Packing beats searching" finding, the per-stage required-item survival metric, real-token budgets.'],
+  ['lmr', 'nibble', 'min. difference rule', 'The minimum-meaningful-difference rule.'],
+  ['lmr', 'playdough', 'lessons only', 'Lessons only, no files.'],
 ];
 const LEFT = {
   gauntlet: 'the code, wholesale',
   'system-a': 'all code and data',
   'system-one-mini': 'the 5-head code',
   'precision-canvas': 'the 620 KB spec, governance',
-  'local-mobile-research': 'the app, the freeze process',
+  lmr: 'the app, the freeze process',
 };
 const NS = 'http://www.w3.org/2000/svg';
 
@@ -57,9 +57,9 @@ export default function mount(root, { mode }) {
   const oy = i => top + i * step, ny = i => top + i * step;
   const NW = 250, NH = 64, LX = 0, RX = W - NW - 1;
   const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Salvage map: five earlier experiments on the left, five new repos on the right, with a line for each excerpt carried over');
+  svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Salvage map: four earlier experiments and lmr, which is now its own project, on the left; five new repos on the right; a line for each excerpt carried over');
   const h = (t, a = {}, p = svg) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); p.appendChild(e); return e; };
-  h('text', { x: LX, y: 14, class: 'tag' }).textContent = 'earlier experiments';
+  h('text', { x: LX, y: 14, class: 'tag' }).textContent = 'four experiments + lmr';
   h('text', { x: W, y: 14, class: 'tag', 'text-anchor': 'end' }).textContent = 'new kitchen repos';
   h('text', { x: W / 2, y: 16, class: 'px', 'text-anchor': 'middle' }).textContent = 'AUDIT 2026-10-17';
   const oi = Object.fromEntries(OLD.map((o, i) => [o[0], i])), ni = Object.fromEntries(NEW.map((n, i) => [n, i]));

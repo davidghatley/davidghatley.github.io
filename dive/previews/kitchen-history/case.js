@@ -37,7 +37,7 @@ const ROWS = [
   ['system-a', 'b4407e5', 'Laya (ModernBERT) fine-tuned to predict a coding agent\'s next tool category. 458 files, 47 MB.', 'To nibble: the model-card evidence table and the positive-control-first rule. To bonfire: one line on durable retries.', 'Left behind: all code and data.', 'Meant to pick primitives; it cloned habits.'],
   ['system-one-mini', '4e08635', 'DistilBERT plus five fixed heads over synthetic diagnosis states. 4.95 ms p50; 44.5% on unseen wording at 97% confidence.', 'To nibble: the retrospective excerpt. To bonfire: one lesson on worktree noise.', 'Left behind: the 5-head code.', 'Fast, and wrong off the script.'],
   ['precision-canvas', '1ac4ce3', 'A conformance harness: 620 KB frozen spec, 473 capabilities, 14 invariants. No editor.', 'To napkin: INV-01/03/04/06/08, the AGT and COD checklists, a condensed transaction model, four test ideas.', 'Left behind: the spec and the governance.', 'A spec programme with no pixels.'],
-  ['local-mobile-research', '29b6284', 'Offline Wikipedia QA retrieval tournament under a 1k-token budget. 518 + 94 tests.', 'To mise_en_place: the packing finding, the survival metric, real-token budgets. To nibble: a minimum-meaningful-difference rule. To playdough: lessons only.', 'Left behind: the app and the freeze process.', 'Packing, not search, lost the evidence.'],
+  ['lmr', 'now its own project', 'Offline Wikipedia QA assistant. Now a project with its own page: case.html?p=lmr.', 'To mise_en_place: the packing finding, the survival metric, real-token budgets. To nibble: a minimum-meaningful-difference rule. To playdough: lessons only.', 'Left behind here: nothing; the app lives on its own page.', 'Packing, not search, lost the evidence.'],
 ];
 const NS = 'http://www.w3.org/2000/svg';
 function glyph(rows) { const s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', '0 0 5 5'); s.setAttribute('shape-rendering', 'crispEdges'); s.setAttribute('fill', 'currentColor'); s.setAttribute('aria-hidden', 'true'); rows.forEach((r, y) => [...r].forEach((c, x) => { if (c === 'X') { const e = document.createElementNS(NS, 'rect'); e.setAttribute('x', x); e.setAttribute('y', y); e.setAttribute('width', 1); e.setAttribute('height', 1); s.appendChild(e); } })); return s; }
@@ -51,11 +51,11 @@ export default async function renderCase(root, { project: p, base }) {
     <h2>Curator's note</h2><div class="note">${p.body.map(t => `<p>${esc(t)}</p>`).join('')}</div>
     <h2>The ledger</h2>
     <table class="ledger"><thead><tr><th>repo @ commit</th><th>what it was</th><th>what was carried</th><th>epitaph</th></tr></thead><tbody>
-    ${ROWS.map(r => `<tr><td><span class="nm">${r[0]}</span><br><span class="px">@${r[1]}</span></td><td>${esc(r[2])}</td><td>${esc(r[3])}<span class="lb">${esc(r[4])}</span></td><td class="ep">${esc(r[5])}</td></tr>`).join('')}</tbody></table>
+    ${ROWS.map(r => `<tr><td><span class="nm">${r[0] === 'lmr' ? `<a href="case.html?p=lmr">lmr</a>` : r[0]}</span><br><span class="px">${/^[0-9a-f]{7}$/.test(r[1]) ? '@' + r[1] : esc(r[1])}</span></td><td>${esc(r[2])}</td><td>${esc(r[3])}<span class="lb">${esc(r[4])}</span></td><td class="ep">${esc(r[5])}</td></tr>`).join('')}</tbody></table>
     <h2>Fold-out plate</h2><div class="plate"><div class="cap">SALVAGE MAP</div><div class="hero"></div></div>
-    <h2>Plates</h2><div class="plates">${p.media.map((m, i) => `<figure><img src="${base + m.src}" alt="${esc(m.alt)}"><figcaption>Plate ${i + 1}. ${esc(m.caption)}</figcaption></figure>`).join('')}</div>
+    ${p.media.length ? '<h2>Plates</h2>' : ''}<div class="plates">${p.media.map((m, i) => `<figure><img src="${base + m.src}" alt="${esc(m.alt)}"><figcaption>Plate ${i + 1}. ${esc(m.caption)}</figcaption></figure>`).join('')}</div>
     <h2>Tallies</h2><div class="tally">${p.spec.map(s => `<div><div class="v">${esc(s.value)}</div><div class="l">${esc(s.label)}</div><small>${esc(s.source)}</small></div>`).join('')}</div>
-    ${p.links.length ? `<h2>See also</h2><ul>${p.links.map(l => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a></li>`).join('')}</ul>` : ''}
+    ${p.links.length ? `<h2>See also</h2><ul>${p.links.map(l => `<li><a href="${esc(l.url)}"${/^https?:/.test(l.url) ? " target=\"_blank\" rel=\"noopener\"" : ""}>${esc(l.label)}</a></li>`).join('')}</ul>` : ''}
     <div class="colo">${esc(p.role)} ${esc(p.status_note)} ${esc(p.when)}</div>`;
   const g = glyph(p.glyph); g.style.viewTransitionName = 'glyph-' + p.slug; el.querySelector('.gl').appendChild(g);
   const hero = el.querySelector('.hero'); hero.style.viewTransitionName = 'hero-' + p.slug;
