@@ -3,7 +3,13 @@
     "slug": "lmr",
     "title": "lmr",
     "order": 4,
-    "glyph": [".XXX.", "X...X", "X...X", ".XXX.", "....X"],
+    "glyph": [
+      ".XXX.",
+      "X...X",
+      "X...X",
+      ".XXX.",
+      "....X"
+    ],
     "status": "software",
     "status_note": "A working desktop app: CLI, local web UI, 518 tests and a 19-page manual. Not an Android app; no number is a phone measurement.",
     "oneliner": "An offline research assistant that shows its work, in about five seconds.",
@@ -42,16 +48,53 @@
       }
     ],
     "spec": [
-      { "label": "needed paragraphs found by search", "value": "70 of 73 (96%)", "source": "docs/manual/index.html Fig. 4.1, experiments/results (loss_attribution_B1_bm25_dev_core.json), dev split" },
-      { "label": "reach the model", "value": "54 of 73", "source": "docs/manual/index.html Fig. 4.1, BM25 packet completion on dev, 1,000-token budget" },
-      { "label": "reranker gain, pooled", "value": "+26 paragraphs (13 points)", "source": "docs/manual/index.html Fig. 5.1: 195 required paragraphs, Wilson 95% intervals; threshold 18 items" },
-      { "label": "default depth", "value": "160 of 195 at k=100", "source": "docs/manual/data/bench_dev.json and bench_shadow_dev.json (lmr bench, 6 threads)" },
-      { "label": "exact match with perfect evidence", "value": "14.6%", "source": "experiments/baselines/GENERATOR_FLOOR_REPORT.md, 137 analysable questions" },
-      { "label": "tests", "value": "518", "source": "README.md; tests/ (plus 77 in data_tools/, 17 in corpus/)" },
-      { "label": "freeze reviews", "value": "8, 7 sent back", "source": "docs/ROUND0_CLOSURE.md" },
-      { "label": "manual", "value": "19 pages", "source": "docs/manual/pdf/manual.pdf, pdfinfo" }
+      {
+        "label": "needed paragraphs found by search",
+        "value": "70 of 73 (96%)",
+        "source": "docs/manual/index.html Fig. 4.1, experiments/results (loss_attribution_B1_bm25_dev_core.json), dev split"
+      },
+      {
+        "label": "reach the model",
+        "value": "54 of 73",
+        "source": "docs/manual/index.html Fig. 4.1, BM25 packet completion on dev, 1,000-token budget"
+      },
+      {
+        "label": "reranker gain, pooled",
+        "value": "+26 paragraphs (13 points)",
+        "source": "docs/manual/index.html Fig. 5.1: 195 required paragraphs, Wilson 95% intervals; threshold 18 items"
+      },
+      {
+        "label": "default depth",
+        "value": "160 of 195 at k=100",
+        "source": "docs/manual/data/bench_dev.json and bench_shadow_dev.json (lmr bench, 6 threads)"
+      },
+      {
+        "label": "exact match with perfect evidence",
+        "value": "14.6%",
+        "source": "experiments/baselines/GENERATOR_FLOOR_REPORT.md, 137 analysable questions"
+      },
+      {
+        "label": "tests",
+        "value": "518",
+        "source": "README.md; tests/ (plus 77 in data_tools/, 17 in corpus/)"
+      },
+      {
+        "label": "freeze reviews",
+        "value": "8, 7 sent back",
+        "source": "docs/ROUND0_CLOSURE.md"
+      },
+      {
+        "label": "manual",
+        "value": "19 pages",
+        "source": "docs/manual/pdf/manual.pdf, pdfinfo"
+      }
     ],
-    "links": [],
+    "links": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/davidghatley/local-mobile-research"
+      }
+    ],
     "body": [
       "lmr is an offline research assistant that shows its work. You ask a question about 297 Wikipedia articles; BM25 keyword search finds the paragraphs, a 17M reranker decides which of them fit a 1,000-token budget, and a local 1.5B model writes the answer. It takes about five seconds on a laptop CPU with no network, and it ships with a command line, a local web UI and a 19-page manual. The repo is private, so there is no link.",
       "The finding is why I built it this way. Search was already good: BM25 found 70 of the 73 paragraphs the dev questions needed, 96%. The evidence was lost afterwards, because only 54 of those reached the model. The 17M reranker found nothing new. It reordered what BM25 had, acting as an allocator, and 13 points more of the needed evidence reached the model (pooled across 195 required paragraphs, non-overlapping 95% intervals). The 68M reranker added one paragraph for 3.9 times the weights. The generator is now the bottleneck: even with perfect evidence the 1.5B model gets 14.6% exact match.",
