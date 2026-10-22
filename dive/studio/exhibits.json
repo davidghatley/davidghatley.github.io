@@ -1,0 +1,52 @@
+[
+ {
+  "id": "e1",
+  "title": "Corpus",
+  "body": [
+   "I scraped public Dive Club episodes: 317 of them, from the show's own feeds.",
+   "Host speech is the only thing the models train on; guests are labeled and left out."
+  ],
+  "stat": "317 episodes",
+  "image": ""
+ },
+ {
+  "id": "e2",
+  "title": "Transcribe + diarize",
+  "body": [
+   "Whisper wrote every word with timestamps, and speaker embeddings sorted out who said what.",
+   "I skipped gated models, so the whole pipeline runs on one RTX 3060."
+  ],
+  "stat": "2.5M words attributed",
+  "image": ""
+ },
+ {
+  "id": "e3",
+  "title": "Persona LLMs",
+  "body": [
+   "One LoRA per host on Qwen3.5-4B-Base, trained on their own speech only.",
+   "Held-out perplexity fell for both: Ridd 16.1 to 13.0, Tommy 18.6 to 17.1."
+  ],
+  "stat": "585k words (Ridd), 260k (Tommy)",
+  "image": ""
+ },
+ {
+  "id": "e4",
+  "title": "System One",
+  "body": [
+   "Kev-4B's decision adapter and pointer head sit on top of each persona backbone.",
+   "The idea: voice from the persona, a fast first judgment from the module."
+  ],
+  "stat": "656 test questions",
+  "image": ""
+ },
+ {
+  "id": "e5",
+  "title": "What I learned",
+  "body": [
+   "Voice transferred; judgment did not. A 4B model picks up how someone talks, not what they would decide.",
+   "The decision module survives the backbone swap: 0.805 Ridd, 0.811 Tommy, vs 0.811 for Kev on 656 questions."
+  ],
+  "stat": "0.805 / 0.811 accuracy",
+  "image": ""
+ }
+]

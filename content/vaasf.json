@@ -1,0 +1,35 @@
+[{
+"slug":"vaasf","title":"VAASF","order":3,
+"glyph":["..X..",".XXX.","XXXXX","X.X.X","X...X"],
+"status":"shipped",
+"status_note":"Festival runs Oct 23-25, 2026; program, awards book, video and site are live or at the printer. Code rebuild of the site is planned, not started.",
+"oneliner":"Program, site, application and video for an Albuquerque art song festival.",
+"role":"I am the only designer and developer on the festival: Webflow site, application, printed program, awards program, promo video.",
+"when":"2022-2026",
+"hero":{"src":"public/media/vaasf/hero.jpg","alt":"Cover of the 2026 VAASF program, titled Canciones Espanolas, deep blue with a painted portrait and the festival mark."},
+"media":[
+{"src":"public/media/vaasf/schedule.jpg","alt":"Schedule of Events page: three day columns with times, venue and guest faculty list.","caption":"Page 2 puts all three festival days on one page, set from the director's schedule files."},
+{"src":"public/media/vaasf/masterclass.jpg","alt":"Master Classes page with a large black and white rehearsal photograph under a serif title.","caption":"Photo-led pages run in black and white so the blue stays the only color."},
+{"src":"public/media/vaasf/thanks.jpg","alt":"Back cover reading Gracias in large serif type over a blue painted figure, with sponsor logos along the bottom.","caption":"The back cover closes the booklet with a thank-you and the sponsor logos."},
+{"src":"public/media/vaasf/site.jpg","alt":"Home page of the live VAASF Webflow site at vaasf-site.webflow.io.","caption":"The live Webflow site, where I rebuilt the events schedule."},
+{"src":"public/media/vaasf/video.jpg","alt":"Frame from the VAASF festival promo video.","caption":"A frame from the 4:20 promo video, now on YouTube."}
+],
+"spec":[
+{"label":"program pages","value":"16","source":"pdfinfo on drafts/VAASF-2026-Program-FINAL-Oct15.pdf, letter size, saddle-stitched"},
+{"label":"applications, 2026","value":"92-94","source":"PLAN.md: 92 counted by the director, 94 before I removed duplicates"},
+{"label":"festival days","value":"3","source":"Oct 23-25, 2026, National Hispanic Cultural Center"},
+{"label":"promo video","value":"4:20","source":"1080p master, now on YouTube"},
+{"label":"festival programs on file","value":"5","source":"Drive: my 2022, 2023, 2024, 2025 final programs plus 2026"},
+{"label":"git commits (design-lab repo)","value":"9","source":"git log in ~/Projects/vaasf, Oct 12-21, 2026"}
+],
+"links":[
+{"label":"Promo video (YouTube)","url":"https://www.youtube.com/watch?v=N6dR2XRocNI"},
+{"label":"Live site","url":"https://vaasf-site.webflow.io"}
+],
+"body":[
+"The 2026 festival opens Friday with a 16-page printed program I designed and coded. The board approved the cover, and it went to the printer. The same week I finished a separate awards program and a promo video that is live on YouTube.",
+"I have worked with VAASF since at least 2022. My Drive holds the final programs and application sheets for 2022, 2023, 2024 and 2025. I now own the Webflow site, including the redesigned events schedule, and built the 2026 application that collected 92 to 94 entries.",
+"The booklet is a Python script that fills HTML pages from the repertoire data and prints each to PDF, so a late schedule change is a data edit and a rebuild, not a rework of a layout file. Each page has guide-overlay proofs for checking margins. It replaced a first draft built in Canva.",
+"Next: after the festival I plan to rebuild the site in code, with one application form that takes payment, so no entries are left without a payment. That is a plan, nothing is built yet.",
+"What I learned: with a small nonprofit, the deadline is the design brief. Showing the board a real PDF by noon beat any amount of talking about options."
+]}]

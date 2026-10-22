@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#e9edd7">
+  <meta name="description" content="A tiny, playable Dive Club studio. Meet two synthetic hosts and explore the project behind them.">
+  <title>Dive Club Studio · A little place for big ideas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./studio.css">
+  <script type="importmap">
+    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}
+  </script>
+</head>
+<body>
+  <main id="world" aria-label="Playable Dive Club village"></main>
+  <header class="hud">
+    <div class="brand"><span class="brand-icon" aria-hidden="true">◉</span><div><h1>Dive Club Studio</h1><p>A LITTLE PLACE FOR BIG IDEAS</p></div></div>
+    <p class="controls"><kbd>WASD</kbd> / arrows to stroll · click or tap to move<br><kbd>E</kbd> / <kbd>Enter</kbd> to interact · <kbd>Esc</kbd> to close</p>
+  </header>
+  <a class="portfolio" href="../index.html">Skip to portfolio <span aria-hidden="true">↗</span></a>
+  <aside class="location"><span class="status-dot"></span><span id="location">THE GARDEN</span><span class="location-sub" id="objective">Make yourself at home. Walk through the blue door.</span></aside>
+  <div class="actions"><button id="sound" class="utility" type="button" aria-pressed="false">Sound: on</button><button id="help" class="utility" type="button">Controls</button></div>
+  <p id="disclaimer" class="disclaimer">Synthetic lines · models trained on public episodes · curated by David · not the hosts’ words.</p>
+  <button id="interact" type="button" hidden><kbd>E</kbd> <span>Talk</span><span aria-hidden="true"> ↗</span></button>
+  <section id="dialog" role="dialog" aria-modal="true" aria-labelledby="speaker" hidden>
+    <div id="speaker" class="name-tag">Ridd</div><button id="close-dialog" class="close" type="button" aria-label="Close dialog">×</button>
+    <p id="first-disclaimer" hidden></p>
+    <div id="dialog-content"><p id="speech"></p><div id="exhibit-content" hidden></div></div>
+    <p id="speech-announcement" class="sr-only" aria-live="polite"></p>
+    <div id="choices"></div><button id="continue" type="button">Continue <span aria-hidden="true">↓</span></button>
+    <div class="dialog-foot"><span id="dialog-caption">A SYNTHETIC CONVERSATION</span><span>ESC TO LEAVE</span></div>
+  </section>
+  <div id="fade" aria-hidden="true"></div>
+  <section id="loading" aria-label="Loading scene"><div class="loading-sub" aria-hidden="true">◉</div><p class="eyebrow">YOU’RE INVITED</p><h2>A little place<br>for big ideas.</h2><p id="load-status" role="status">Growing the garden & warming up the studio…</p><div class="loading-track"><span></span></div><a href="../index.html">Or, head straight to the portfolio ↗</a></section>
+  <noscript><div class="no-script">This little world needs JavaScript. <a href="../index.html">Visit the portfolio instead ↗</a></div></noscript>
+  <script>
+    window.studioLoadTimeout = setTimeout(function () {
+      document.getElementById('load-status').textContent = 'Still loading. Check your connection and reload; this scene needs WebGL and access to jsDelivr.';
+    }, 18000);
+  </script>
+  <script type="module" src="./studio.js"></script>
+</body>
+</html>
