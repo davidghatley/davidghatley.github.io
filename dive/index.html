@@ -3,9 +3,11 @@
 <head>
 <meta name="robots" content="noindex, nofollow">
 <script src="https://inflight.co/widget.js" data-org="aius9qpt" data-path="/dive" async></script>
+<!-- sauce-lint allow color-offtoken: each project has its own accent colour on the shared base (David, 2026-10-18 and 2026-10-22); accents come from previews/<slug>/meta.json -->
+<!-- sauce-lint allow job-title: David chose the hero line "designer, developer, and one very overworked RTX 3060" on 2026-10-22; it is a joke line, not a title -->
 <link rel="icon" href="public/favicon.svg" type="image/svg+xml">
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>David Hatley</title>
 <meta name="description" content="David Hatley: designer, developer, and one very overworked RTX 3060.">
 <meta property="og:title" content="David Hatley">
@@ -37,7 +39,8 @@
   </div>
 </section>
 </main>
-<div id="zoom" class="zoom" hidden><img alt=""><p class="zoom__cap"></p></div>
+<div id="zoom" class="zoom" hidden role="dialog" aria-label="Image zoom"><button type="button" class="zoom__x px16" id="zoomx" aria-label="Close">CLOSE</button><img alt=""><p class="zoom__cap"></p></div>
+<button type="button" id="totop" class="totop px16" aria-label="Back to top" hidden>TOP</button>
 <script src="public/glyphs.js"></script>
 <script src="site.js"></script>
 </body>
