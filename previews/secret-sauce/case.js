@@ -69,7 +69,7 @@ export default function renderCase(root, { project: p, base }) {
 .cs-secret-sauce td.v{font-size:48px;line-height:48px;width:1%;white-space:nowrap;color:var(--cobalt-text,var(--cobalt))}
 .cs-secret-sauce .links{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px}
 .cs-secret-sauce .links a{color:var(--cobalt-text,var(--cobalt));font:600 14px/20px var(--font-mono);letter-spacing:.06em;text-decoration:underline;text-underline-offset:3px}
-@media(max-width:760px){.cs-secret-sauce section{grid-template-columns:1fr}.cs-secret-sauce h1{font-size:48px;line-height:48px}.cs-secret-sauce .mast{grid-template-columns:1fr}.cs-secret-sauce .mast svg{width:60px;height:60px}.cs-secret-sauce .out{font-size:32px;line-height:32px;min-height:40px}.cs-secret-sauce .sheet .wide{grid-column:auto}.cs-secret-sauce .sw div{height:80px}}
+@media(max-width:760px){.cs-secret-sauce section{grid-template-columns:minmax(0,1fr)}.cs-secret-sauce h1{font-size:48px;line-height:48px}.cs-secret-sauce .mast{grid-template-columns:1fr}.cs-secret-sauce .mast svg{width:60px;height:60px}.cs-secret-sauce .out{font-size:32px;line-height:32px;min-height:40px}.cs-secret-sauce .sheet .wide{grid-column:auto}.cs-secret-sauce .sw div{height:80px}}
 `;
   const style = document.createElement('style'); style.textContent = css; document.head.appendChild(style);
   const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
