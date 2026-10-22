@@ -12,7 +12,7 @@
     ],
     "status": "software",
     "status_note": "A working desktop app: CLI, local web UI, 518 tests and a 19-page manual. Not an Android app; no number is a phone measurement.",
-    "oneliner": "An offline research assistant that shows its work, in about five seconds.",
+    "oneliner": "An offline research assistant that shows its work.",
     "role": "I turned a bounty into a falsifiable question, set the rules the agents worked under, and decided what shipped: the app, the default rerank depth and the manual.",
     "when": "2026-10",
     "category": "software",
@@ -34,7 +34,7 @@
       {
         "src": "public/media/lmr/manual-cover.png",
         "alt": "Page 1 of the lmr technical manual: the anatomy of one answer",
-        "caption": "Manual page 1: one question, four stages, about five seconds on a desktop CPU."
+        "caption": "Manual page 1: one question, four stages."
       },
       {
         "src": "public/media/lmr/manual-reranker.png",
@@ -96,7 +96,7 @@
       }
     ],
     "body": [
-      "lmr is an offline research assistant that shows its work. You ask a question about 297 Wikipedia articles; BM25 keyword search finds the paragraphs, a 17M reranker decides which of them fit a 1,000-token budget, and a local 1.5B model writes the answer. It takes about five seconds on a laptop CPU with no network, and it ships with a command line, a local web UI and a 19-page manual. The repo is private, so there is no link.",
+      "lmr is an offline research assistant that shows its work. You ask a question about 297 Wikipedia articles; BM25 keyword search finds the paragraphs, a 17M reranker decides which of them fit a 1,000-token budget, and a local 1.5B model writes the answer. It answers in about five seconds once warm (about 12 on a cold start) on a laptop CPU with no network, and it ships with a command line, a local web UI and a 19-page manual. The repo is private, so there is no link.",
       "The finding is why I built it this way. Search was already good: BM25 found 70 of the 73 paragraphs the dev questions needed, 96%. The evidence was lost afterwards, because only 54 of those reached the model. The 17M reranker found nothing new. It reordered what BM25 had, acting as an allocator, and 13 points more of the needed evidence reached the model (pooled across 195 required paragraphs, non-overlapping 95% intervals). The 68M reranker added one paragraph for 3.9 times the weights. The generator is now the bottleneck: even with perfect evidence the 1.5B model gets 14.6% exact match.",
       "It was built under a strict protocol, run by AI agents with me setting the rules. Thresholds and kill conditions were preregistered before any code, a sealed test set was kept outside the repo, and eight independent freeze reviews were held. Seven sent the work back for repairs. 518 tests sit behind a ten-stage freeze gate. Every number in the manual is read from a file in the repo, not from an agent's summary.",
       "One honest note. The sealed evaluation store, 116 private questions, went missing on 2026-10-04, found during final verification. I could not establish the cause, I did not reconstruct or reseal it, and it was never scored, so no result depends on it. The gate reported it absent rather than passing, which is what it was built to do.",
