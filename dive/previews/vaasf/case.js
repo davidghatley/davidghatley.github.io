@@ -11,7 +11,7 @@ export default async function renderCase(root, { project: p, base, meta }) {
 .cs-vaasf .w{max-width:1000px;margin:0 auto}
 .cs-vaasf .sc{font-variant:all-small-caps;letter-spacing:.12em;color:var(--bl);font-size:19px}
 .cs-vaasf h1,.cs-vaasf h2,.cs-vaasf h3{font-family:'DM Serif Display',serif;font-weight:400;margin:0;color:var(--tx)}
-.cs-vaasf .title{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:40px;align-items:center;padding:56px 0 48px;border-bottom:1px solid var(--ln)}
+.cs-vaasf .title{display:grid;display:block;padding:56px 0 48px;border-bottom:1px solid var(--ln)}
 .cs-vaasf .title img{display:block;width:100%;height:auto;border:1px solid var(--ln)}
 .cs-vaasf .title h1{font-style:italic;font-size:clamp(56px,10vw,112px);line-height:.95;letter-spacing:-.015em;margin:12px 0 16px}
 .cs-vaasf .title .glyph{width:40px;height:40px;color:var(--bl);display:block}
@@ -37,12 +37,7 @@ export default async function renderCase(root, { project: p, base, meta }) {
 .cs-vaasf figure img{display:block;max-width:100%;height:auto;border:1px solid var(--ln)}
 .cs-vaasf figcaption{font-style:italic;color:var(--mu);font-size:17px;line-height:24px;margin-top:8px}
 .cs-vaasf .mv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:32px;align-items:start}
-.cs-vaasf .vid{position:relative;aspect-ratio:16/9;background:#10151a}
-.cs-vaasf .vid img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;border:0}
-.cs-vaasf .vid button{position:absolute;inset:0;width:100%;border:0;background:none;cursor:pointer}
-.cs-vaasf .vid button b{background:#587187;color:#f9f9f5;padding:10px 18px;font:600 17px/20px 'EB Garamond',serif;font-variant:all-small-caps;letter-spacing:.1em}
-.cs-vaasf .vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.cs-vaasf a{font:inherit;letter-spacing:normal;text-transform:none;color:var(--bl);text-underline-offset:3px}
+.cs-vaasf .links a,.cs-vaasf a{font:inherit !important;font-family:'EB Garamond',serif !important;letter-spacing:normal;text-transform:none;color:var(--bl);text-underline-offset:3px}
 .cs-vaasf .plates{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px;align-items:start}
 .cs-vaasf dl{margin:0}
 .cs-vaasf dl div{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;flex-wrap:wrap}
@@ -57,17 +52,14 @@ export default async function renderCase(root, { project: p, base, meta }) {
   document.head.appendChild(st);
   const gl = p.glyph.map(r => [...r].map((c, x) => c === 'X' ? `M${x} ${p.glyph.indexOf(r)}h1v1h-1z` : '').join('')).join('');
   const glyph = `<svg class="glyph" viewBox="0 0 5 5" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="${gl}"/></svg>`;
-  const L = (n) => (p.links[n] || {});
-  const prog = [
+    const prog = [
     ['The Program Booklet', '16 pp', 'Designed and coded in Python from the repertoire data; saddle-stitched, to the printer.'],
     ['The Website', 'Webflow', 'Owned and maintained, with the redesigned events schedule.'],
-    ['The Application', '2026', 'Collected 92 to 94 entries.'],
-    ['The Promo Video', '4:20', 'Live on YouTube.']
+    ['The Application', '2026', 'Collected 92 to 94 entries.']
   ];
   const body = p.body;
   root.innerHTML = `<div class="cs-vaasf"><div class="w">
 <header class="title">
-  <figure><img src="${base + p.hero.src}" alt="${esc(p.hero.alt)}"></figure>
   <div><span class="g" style="display:inline-block">${glyph}</span>
     <div class="sc" style="margin-top:12px">Vocal Artistry Art Song Festival &middot; ${esc(p.when)}</div>
     <h1>${esc(p.title)}</h1>
@@ -76,23 +68,16 @@ export default async function renderCase(root, { project: p, base, meta }) {
     <p style="margin-top:12px">${esc(p.role)}</p>
     <p style="margin-top:8px;font-size:17px">${esc(p.status_note)}</p></div>
 </header>
-<section><h2><small>Order of the work</small>Program</h2>
-<ol class="prog">${prog.map(e => `<li><div class="ent"><b>${e[0]}</b><i></i><span>${e[1]}</span></div><p>${e[2]}</p></li>`).join('')}</ol></section>
-<div class="centre"><div class="cap sc">The program, turned page by page</div><div class="hero-slot"></div></div>
+<div class="centre"><div class="cap sc">The program and the site, set out together</div><div class="hero-slot"></div></div>
 <section><h2><small>Program notes</small>On the making</h2><div class="notes">${body.map((t, i) => `<p${i === body.length - 1 ? ' class="last"' : ''}>${esc(t)}</p>`).join('')}</div></section>
-<section><h2><small>First movement</small>The Site</h2><div class="mv"><div><p style="margin:0 0 12px">${esc(p.media[3].caption)}</p><div class="links"><a href="${esc(L(1).url)}" rel="noopener">${esc(L(1).label)}</a></div></div>
-<figure><img src="${base + p.media[3].src}" alt="${esc(p.media[3].alt)}" loading="lazy"></figure></div></section>
-<section><h2><small>Second movement</small>The Video</h2><div class="mv"><div><p style="margin:0 0 12px">${esc(p.media[4].caption)}</p><div class="links"><a href="${esc(L(0).url)}" rel="noopener">${esc(L(0).label)}</a></div></div>
-<div class="vid"><img src="${base + p.media[4].src}" alt="${esc(p.media[4].alt)}"><button aria-label="Play promo video"><b>Play</b></button></div></div></section>
-<section><h2><small>Plates</small>Pages from the booklet</h2><div class="plates">${p.media.slice(0, 3).map(m => `<figure><img src="${base + m.src}" alt="${esc(m.alt)}" loading="lazy"><figcaption>${esc(m.caption)}</figcaption></figure>`).join('')}</div></section>
+<section><h2><small>Order of the work</small>Program</h2>
+<ol class="prog">${prog.map(e => `<li><div class="ent"><b>${e[0]}</b><i></i><span>${e[1]}</span></div><p>${e[2]}</p></li>`).join('')}</ol><div class="links">${p.links.map(l => `<a href="${esc(l.url)}" rel="noopener">${esc(l.label)}</a>`).join('')}</div></section>
 <section style="border:0"><h2><small>Colophon</small>Particulars</h2><dl>${p.spec.map(s => `<div><dt>${esc(s.label)}</dt><i class="d"></i><dd>${esc(s.value)}</dd><dd>${esc(s.source)}</dd></div>`).join('')}</dl>
 <div class="end">Set in DM Serif Display and EB Garamond.</div></section>
 </div></div>`;
   const cs = root.querySelector('.cs-vaasf');
   const g = cs.querySelector('.glyph'); g.style.viewTransitionName = 'glyph-' + p.slug;
   const slot = cs.querySelector('.hero-slot'); slot.style.viewTransitionName = 'hero-' + p.slug;
-  const vb = cs.querySelector('.vid button');
-  vb.onclick = () => { cs.querySelector('.vid').innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/N6dR2XRocNI?autoplay=1" title="VAASF promo video" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>'; };
   let un = () => {};
   try { const m = await import('./preview.js'); un = m.default(slot, { mode: 'hero', base }) || un; } catch (e) {}
   return () => { un(); st.remove(); fl.remove(); root.innerHTML = ''; };
