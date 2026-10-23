@@ -1,9 +1,9 @@
 (function () {
   var G = window.SAUCE_GLYPHS || {};
   var NS = 'http://www.w3.org/2000/svg';
-  var GROUPS = ['vaasf', 'kitchen', 'anime', 'tools', 'lmr'];
+  var GROUPS = ['vaasf', 'kitchen', 'anime', 'tools', 'lmr', 'experiments'];
   // index sections, in this order; a section shows only when it has projects
-  var CATS = ['software', 'design system', 'client work', 'generative art', 'hardware'];
+  var CATS = ['software', 'design system', 'client work', 'generative art', 'hardware', 'experiments'];
   var TAGS = ['prototype', 'archived'];
   function catIndex(p) { var i = CATS.indexOf(String(p.category || '').toLowerCase()); return i < 0 ? CATS.length : i; }
   var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -63,7 +63,10 @@
     return d;
   }
   // only the maturity tags that change how you read a project; the category is the section it sits in
-  function tags(p) { var st = String(p.status || '').toLowerCase(); return TAGS.indexOf(st) < 0 ? '' : '<span class="tag">' + esc(st) + '</span>'; }
+  function tags(p) {
+    if (p.became) return '<span class="tag tag--to">&rarr; ' + esc(p.became) + '</span>';   // experiments: what it turned into
+    var st = String(p.status || '').toLowerCase(); return TAGS.indexOf(st) < 0 ? '' : '<span class="tag">' + esc(st) + '</span>';
+  }
   // the pixel arrow: 7 x 7 cells of 2px (Stem 7's cell at 16px), drawn on whole pixels
   var ARROW = ['...X...', '....X..', '.....X.', 'XXXXXXX', '.....X.', '....X..', '...X...'];
   function parrow(left) {
@@ -79,7 +82,9 @@
     var h = el('h3', 'row__title'); h.appendChild(el('span', 'sr-only', esc(p.title)));
     var v = el('span', 'tt'); v.setAttribute('aria-hidden', 'true');
     Array.from(String(p.title)).forEach(function (c) { var q = el('span', 'ch'); q.textContent = c; v.appendChild(q); });
-    h.appendChild(v); return h;
+    h.appendChild(v);
+    if (p.title_sub) h.appendChild(el('span', 'row__sub', esc(p.title_sub)));   // experiments: the dataset line
+    return h;
   }
   function swapTitle(r, on) {
     clearInterval(r._swap); r._swap = 0;
