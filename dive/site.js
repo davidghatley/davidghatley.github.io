@@ -323,6 +323,7 @@
         pad.appendChild(el('p', 'row__one-m', esc(p.oneliner)));
         var pvw = el('div', 'row__preview'); pad.appendChild(pvw); snap4(pvw);
         if (p.status_note) pad.appendChild(el('p', 'row__note', esc(p.status_note)));
+        var ac = actions(p); if (ac) pad.appendChild(ac);
         var ob = el('a', 'open-btn', '<span>Open case study</span>'); ob.appendChild(parrow()); ob.href = caseUrl(p.slug); pad.appendChild(ob);
         inner.appendChild(pad); panel.appendChild(inner);
         r.appendChild(bar); r.appendChild(panel); sec.appendChild(r);
@@ -340,6 +341,15 @@
       if (location.hash && !q) { var hh = document.getElementById(location.hash.slice(1)); if (hh) hh.scrollIntoView(); }
     });
   }
+
+  // optional buttons a project asks for (a download, its own website), shown in the open row and on the case page
+  function actions(p) {
+    if (!p.actions || !p.actions.length) return null;
+    var d = el('div', 'acts');
+    p.actions.forEach(function (a) { var b = el('a', 'act' + (a.primary ? ' act--primary' : ''), esc(a.label)); b.href = a.url; d.appendChild(b); });
+    return d;
+  }
+  window.projectActions = actions;
 
   function casePage() {
     var root = document.getElementById('case');
@@ -388,6 +398,7 @@
         var yt = (p.links || []).map(function (l) { var m = /youtube\.com\/watch\?(?:[^#]*&)?v=([\w-]{6,20})/.exec(l.url || ''); return m ? { id: m[1], l: l } : null; }).filter(Boolean);
         yt.forEach(function (y) { var f = el('figure', 'ss-plate fig fig--yt'); f.appendChild(el('div', 'ss-plate__head', '<span class="ss-label">VIDEO · ' + esc(y.l.label).toUpperCase() + '</span>')); var w = el('div', 'yt'); var fr = el('iframe'); fr.src = 'https://www.youtube-nocookie.com/embed/' + y.id; fr.loading = 'lazy'; fr.title = y.l.label || 'Video'; fr.setAttribute('allow', 'accelerometer; encrypted-media; picture-in-picture'); fr.allowFullscreen = true; fr.referrerPolicy = 'strict-origin-when-cross-origin'; w.appendChild(fr); f.appendChild(w); m.appendChild(f); });
         if (p.links && p.links.length) { var ul = el('ul', 'links'); p.links.forEach(function (l) { ul.appendChild(el('li', '', '<a href="' + esc(l.url) + '">' + esc(l.label) + ' &rarr;</a>')); }); m.appendChild(ul); }
+        var ac = actions(p); if (ac) m.appendChild(ac);
         }
         var done = function () { template(); };
         var cu = 'previews/' + p.slug + '/case.js';

@@ -140,6 +140,12 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
   font-family: var(--font-pixel); font-size: 16px; line-height: 20px; text-transform: uppercase; -webkit-font-smoothing: none; }
 .open-btn span { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .open-btn .parrow { color: var(--accent); }
+.acts { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.act { display: inline-flex; align-items: center; height: 40px; padding: 0 var(--space-4); box-sizing: border-box; border: 2px solid var(--accent); color: var(--ink); text-decoration: none;
+  font-family: var(--font-pixel); font-size: 16px; line-height: 16px; text-transform: uppercase; -webkit-font-smoothing: none; }
+.act:hover, .act:focus-visible { background: color-mix(in srgb, var(--accent) 12%, var(--paper)); }
+.act--primary, .act--primary:hover, .act--primary:focus-visible { background: var(--accent); color: var(--paper); }
+.act:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
 /* tablet: the oneliner moves into the open panel; title takes columns 3-6 */
 @media (max-width: 1023px) {
