@@ -54,7 +54,7 @@ export default async function renderCase(root, { project: p, base }) {
     <h1 class="px"><span class="s-gl"></span><span>Stem 7</span></h1>
     <p class="s-lede">${esc(p.oneliner)}</p><div class="acts">${acts()}</div></header>
     <div class="s-hero"></div>
-    <div class="s-parts">${(p.body || []).map((t, i) => `<section class="s-part"><span class="px">${String(i + 1).padStart(2, '0')}</span><div><h2>${esc(PARTS[i] || '')}</h2><p>${esc(t)}</p></div></section>`).join('')}</div>
+    <div class="s-parts">${(p.body || []).map((t, i) => `<section class="s-part"><span class="px">${String(i + 1).padStart(2, '0')}</span><div><h2>${esc(PARTS[i] || '')}</h2><p>${esc(t.replace(/^What I learned:\s*(.)/, (m, c) => c.toUpperCase()))}</p></div></section>`).join('')}</div>
     <div class="s-tally">${(p.spec || []).map(s => `<div><div class="px">${esc(s.value)}</div><span>${esc(s.label)}</span><small>${esc(s.source)}</small></div>`).join('')}</div>
     <section class="s-set"><h2>Every character</h2><p class="px s-chars" data-chars aria-label="The full character set of Stem 7"></p></section>
     <section class="s-get"><h2>Get it</h2><p>${esc(p.role)}</p><div class="acts">${acts()}</div>
