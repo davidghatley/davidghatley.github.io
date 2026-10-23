@@ -68,7 +68,7 @@
   },
   {
     "slug": "rack10",
-    "title": "rack 10",
+    "title": "rack10",
     "order": 10,
     "glyph": [
       "XXXXX",
@@ -127,7 +127,7 @@
     ],
     "links": [],
     "body": [
-      "rack 10 is a 10-inch modular rack for a home lab, designed for a small 180 mm printer. Every part fits the bed, prints without supports and joins the others with printed joints only: no screws, inserts or magnets.",
+      "rack10 is a 10-inch modular rack for a home lab, designed for a small 180 mm printer. Every part fits the bed, prints without supports and joins the others with printed joints only: no screws, inserts or magnets.",
       "Levels are 4U and stack; trays slide in at any U on tongues that run in grooves. Dovetail tabs, crossbar necks and bowtie keys lock the walls together, and a fit coupon at four clearances (0.10 to 0.25 mm) sets the tolerance before the real print.",
       "What I learned: design the joint you can test first. The coupon decides the clearance, and every part rebuilds from one parameter."
     ],

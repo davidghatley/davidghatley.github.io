@@ -13,6 +13,30 @@ const CALLS = [
   [32, 30.7, 5.7, 8.1, 'Where it looks: vermilion once per page, on the one thing to act on.'],
   [10.9, 91, 3.1, 3.3, 'Where it looks: the typed dh mark, set by the font ligature.'],
 ];
+
+function carousel(host, SHEET, media) {
+  const car = document.createElement('div'); car.className = 'car'; car.tabIndex = 0; car.setAttribute('role', 'group'); car.setAttribute('aria-roledescription', 'carousel'); car.setAttribute('aria-label', 'sauce make outputs');
+  const arrow = d => `<svg viewBox="0 0 5 5" aria-hidden="true">${(d < 0 ? ['2,0','1,1','0,2','1,3','2,4','1,2','2,2','3,2','4,2'] : ['2,0','3,1','4,2','3,3','2,4','3,2','2,2','1,2','0,2']).map(c => { const [x, y] = c.split(','); return `<rect x="${x}" y="${y}" width="1" height="1"/>`; }).join('')}</svg>`;
+  car.innerHTML = `<div class="stage"><img alt=""></div><div class="ctl"><button type="button" aria-label="Previous asset">${arrow(-1)}</button><button type="button" aria-label="Next asset">${arrow(1)}</button><span class="cnt" aria-live="polite"></span><span class="nm"></span></div>`;
+  host.appendChild(car);
+  const img = car.querySelector('img'), cnt = car.querySelector('.cnt'), nm = car.querySelector('.nm'), n = SHEET.length; let i = 0;
+  const pad = v => String(v).padStart(2, '0');
+  const show = k => {
+    i = (k + n) % n; const [f, cap, w, h] = SHEET[i];
+    img.src = media + f; img.width = w; img.height = h; img.alt = 'sauce make ' + cap;
+    cnt.textContent = pad(i + 1) + ' / ' + pad(n); nm.textContent = cap;
+    [i - 1, i + 1].forEach(j => { const o = new Image(); o.src = media + SHEET[(j + n) % n][0]; });
+  };
+  const [bp, bn] = car.querySelectorAll('button');
+  bp.onclick = () => show(i - 1); bn.onclick = () => show(i + 1);
+  car.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') { e.preventDefault(); show(i - 1); } else if (e.key === 'ArrowRight') { e.preventDefault(); show(i + 1); } });
+  let sx = null;
+  const st = car.querySelector('.stage');
+  st.addEventListener('pointerdown', e => { sx = e.clientX; });
+  st.addEventListener('pointerup', e => { if (sx == null) return; const d = e.clientX - sx; sx = null; if (Math.abs(d) > 40) show(i + (d < 0 ? 1 : -1)); });
+  st.addEventListener('pointercancel', () => { sx = null; });
+  show(0);
+}
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 export default function renderCase(root, { project: p, base }) {
   const media = base + 'public/media/secret-sauce/', fonts = base + 'public/fonts/';
@@ -52,7 +76,7 @@ export default function renderCase(root, { project: p, base }) {
 .cs-secret-sauce figure{margin:0;display:grid;gap:6px}
 .cs-secret-sauce figure img{border:1px solid var(--rule);width:100%}
 .cs-secret-sauce figcaption{font:italic 400 15px/22px var(--font-serif);color:var(--ink-muted)}
-.cs-secret-sauce .sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;align-items:start}
+.cs-secret-sauce .sheet{min-width:0}
 .cs-secret-sauce .sheet .wide{grid-column:span 2}
 .cs-secret-sauce .shot{position:relative;border:1px solid var(--rule)}
 .cs-secret-sauce .box{position:absolute;border:2px solid var(--vermilion)}
@@ -69,6 +93,18 @@ export default function renderCase(root, { project: p, base }) {
 .cs-secret-sauce td.v{font-size:48px;line-height:48px;width:1%;white-space:nowrap;color:var(--cobalt-text,var(--cobalt))}
 .cs-secret-sauce .links{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px}
 .cs-secret-sauce .links a{color:var(--cobalt-text,var(--cobalt));font:600 14px/20px var(--font-mono);letter-spacing:.06em;text-decoration:underline;text-underline-offset:3px}
+
+.cs-secret-sauce .car{display:grid;gap:8px;min-width:0}
+.cs-secret-sauce .car:focus-visible{outline:2px solid var(--cobalt-text,var(--cobalt));outline-offset:4px}
+.cs-secret-sauce .car .stage{display:flex;align-items:center;justify-content:center;min-height:420px;background:var(--sheet);border:1px solid var(--rule);padding:12px;touch-action:pan-y;user-select:none}
+.cs-secret-sauce .car .stage img{display:block;max-width:100%;max-height:65vh;width:auto;height:auto;object-fit:contain;-webkit-user-drag:none}
+.cs-secret-sauce .car .ctl{display:flex;align-items:center;gap:12px}
+.cs-secret-sauce .car .ctl button{flex:none;width:48px;height:48px;border:1px solid var(--ink);border-radius:0;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
+.cs-secret-sauce .car .ctl button:hover{background:var(--ink);color:var(--paper)}
+.cs-secret-sauce .car .ctl button:focus-visible{outline:2px solid var(--cobalt-text,var(--cobalt));outline-offset:2px}
+.cs-secret-sauce .car .ctl svg{width:25px;height:25px;fill:currentColor;shape-rendering:crispEdges}
+.cs-secret-sauce .car .cnt{font-family:"Stem 7 CS","IBM Plex Mono",monospace;font-size:32px;line-height:32px;font-synthesis:none;-webkit-font-smoothing:none;color:var(--cobalt-text,var(--cobalt));min-width:7ch}
+.cs-secret-sauce .car .nm{font:500 11px/16px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);flex:1;min-width:0}
 @media(max-width:760px){.cs-secret-sauce section{grid-template-columns:minmax(0,1fr)}.cs-secret-sauce h1{font-size:48px;line-height:48px}.cs-secret-sauce .mast{grid-template-columns:1fr}.cs-secret-sauce .mast svg{width:60px;height:60px}.cs-secret-sauce .out{font-size:32px;line-height:32px;min-height:40px}.cs-secret-sauce .sheet .wide{grid-column:auto}.cs-secret-sauce .sw div{height:80px}}
 `;
   const style = document.createElement('style'); style.textContent = css; document.head.appendChild(style);
@@ -89,11 +125,12 @@ export default function renderCase(root, { project: p, base }) {
   ${sec('02', 'Vermilion once', `<div class="demo"><div class="bars" role="group" aria-label="Pick the one bar to act on"><button style="height:45%" aria-label="Area A"></button><button style="height:65%" aria-label="Area B"></button><button style="height:100%" aria-pressed="true" aria-label="Area C"></button><button style="height:35%" aria-label="Area D"></button></div><span class="lab">click a bar: the vermilion moves, it never doubles</span></div>`, 'One vermilion mark per surface, on the thing to act on.')}
   ${sec('03', 'Stem 7', `<div class="demo"><input type="text" value="dh two inks" maxlength="30" aria-label="Specimen text" spellcheck="false"><div class="px out" aria-live="off"></div><div class="sizes"><span class="lab">16 · 32 · 48 · 72 · 120, whole cells only</span><span class="px" style="font-size:16px;line-height:16px">stem 7 sixteen</span><span class="px" style="font-size:32px;line-height:32px">stem 7 thirty-two</span><span class="px" style="font-size:48px;line-height:48px">dh 2026</span></div><div class="lab">project glyphs, one cell per tick <button class="replay">Replay</button></div><div class="gl"></div></div><p>${esc(body[1] || '')}</p>`, 'A pixel face drawn on the grid of the mark; typing dh sets the mark.')}
   ${sec('04', 'Plates', `<div class="pl">${mediaFigs}</div>`, 'Figures are numbered plates, flat, with the caption beneath.')}
-  ${sec('05', 'sauce make', `<div class="sheet">${sheet}</div>`, 'Real generator output, shown whole: cards, titles, thumbs, OG cards, plates, banners.')}
+  ${sec('05', 'sauce make', `<div class="sheet"></div>`, 'Real generator output, shown whole: cards, titles, thumbs, OG cards, plates, banners.')}
   ${sec('06', 'sauce-lint', `<div class="tog" role="group" aria-label="Screenshot theme"><button data-th="light">Plaster</button><button data-th="dark">Night</button></div><div class="shot" style="margin:12px 0"><img alt="sauce-lint screenshot of recipes/report.html" width="1280" height="1203"></div><ol></ol><code>node tools/lint/sauce-lint.mjs recipes/report.html \\
   --surface docs --png out/</code><p class="lab">Actual result: 0 errors, 0 warnings, 1 info (palette-share, 0.00% off-palette). Boxes are explanatory overlays, not findings.</p><p>${esc(body[2] || '')}</p>`, 'An automated art director: it reads a page in both themes.')}
   <section><div><div class="px num" aria-hidden="true">07</div><h2>Colophon</h2></div><div><table>${(p.spec || []).map(s => `<tr><td class="px v">${esc(s.value)}</td><td><strong>${esc(s.label)}</strong><br><span class="lab" style="letter-spacing:.04em;text-transform:none">${esc(s.source)}</span></td></tr>`).join('')}</table><p class="rule" style="margin-top:16px">${esc(p.status_note || '')}</p><ul class="links">${(p.links || []).map(l => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a></li>`).join('')}</ul></div></section></div>`;
   const q = s => root.querySelector(s);
+  carousel(q('.sheet'), SHEET, media);
   // vermilion once
   const bars = root.querySelectorAll('.bars button');
   bars.forEach(b => b.addEventListener('click', () => bars.forEach(o => o.setAttribute('aria-pressed', o === b))));

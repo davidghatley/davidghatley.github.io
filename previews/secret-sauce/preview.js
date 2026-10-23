@@ -15,6 +15,30 @@ const CALLS = [
   [32, 30.7, 5.7, 8.1, 'where it looks: vermilion once per page, on the one thing to act on'],
   [10.9, 91, 3.1, 3.3, 'where it looks: the typed dh mark, set by the font ligature'],
 ];
+
+function carousel(host, SHEET, media) {
+  const car = document.createElement('div'); car.className = 'car'; car.tabIndex = 0; car.setAttribute('role', 'group'); car.setAttribute('aria-roledescription', 'carousel'); car.setAttribute('aria-label', 'sauce make outputs');
+  const arrow = d => `<svg viewBox="0 0 5 5" aria-hidden="true">${(d < 0 ? ['2,0','1,1','0,2','1,3','2,4','1,2','2,2','3,2','4,2'] : ['2,0','3,1','4,2','3,3','2,4','3,2','2,2','1,2','0,2']).map(c => { const [x, y] = c.split(','); return `<rect x="${x}" y="${y}" width="1" height="1"/>`; }).join('')}</svg>`;
+  car.innerHTML = `<div class="stage"><img alt=""></div><div class="ctl"><button type="button" aria-label="Previous asset">${arrow(-1)}</button><button type="button" aria-label="Next asset">${arrow(1)}</button><span class="cnt" aria-live="polite"></span><span class="nm"></span></div>`;
+  host.appendChild(car);
+  const img = car.querySelector('img'), cnt = car.querySelector('.cnt'), nm = car.querySelector('.nm'), n = SHEET.length; let i = 0;
+  const pad = v => String(v).padStart(2, '0');
+  const show = k => {
+    i = (k + n) % n; const [f, cap, w, h] = SHEET[i];
+    img.src = media + f; img.width = w; img.height = h; img.alt = 'sauce make ' + cap;
+    cnt.textContent = pad(i + 1) + ' / ' + pad(n); nm.textContent = cap;
+    [i - 1, i + 1].forEach(j => { const o = new Image(); o.src = media + SHEET[(j + n) % n][0]; });
+  };
+  const [bp, bn] = car.querySelectorAll('button');
+  bp.onclick = () => show(i - 1); bn.onclick = () => show(i + 1);
+  car.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') { e.preventDefault(); show(i - 1); } else if (e.key === 'ArrowRight') { e.preventDefault(); show(i + 1); } });
+  let sx = null;
+  const st = car.querySelector('.stage');
+  st.addEventListener('pointerdown', e => { sx = e.clientX; });
+  st.addEventListener('pointerup', e => { if (sx == null) return; const d = e.clientX - sx; sx = null; if (Math.abs(d) > 40) show(i + (d < 0 ? 1 : -1)); });
+  st.addEventListener('pointercancel', () => { sx = null; });
+  show(0);
+}
 export default function mount(root, { mode, base }) {
   const hero = mode === 'hero';
   const media = base + 'public/media/secret-sauce/';
@@ -42,7 +66,7 @@ export default function mount(root, { mode, base }) {
 .pv-secret-sauce .g svg rect{fill:var(--ac)}
 .pv-secret-sauce .g svg rect.off{opacity:0}
 .pv-secret-sauce .g span{font:500 10px/14px var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted)}
-.pv-secret-sauce .sheet{display:grid;gap:12px;${hero ? 'grid-template-columns:repeat(auto-fill,minmax(250px,1fr));align-items:start' : ''}}
+.pv-secret-sauce .sheet{min-width:0}
 .pv-secret-sauce .strip{display:flex;gap:12px;overflow-x:auto;align-items:flex-end;padding-bottom:8px;max-width:100%}
 .pv-secret-sauce figure{margin:0;display:grid;gap:4px;${hero ? '' : 'flex:none'}}
 .pv-secret-sauce figure.wide{${hero ? 'grid-column:span 2' : ''}}
@@ -56,6 +80,18 @@ export default function mount(root, { mode, base }) {
 .pv-secret-sauce ol li{counter-increment:n;border-top:1px solid var(--ink);padding-top:8px}
 .pv-secret-sauce ol li::before{content:counter(n);font:700 11px/16px var(--font-mono);color:var(--cobalt-text,var(--cobalt));display:block}
 .pv-secret-sauce code{font:500 12px/18px var(--font-mono);display:block;background:var(--sheet);border:1px solid var(--rule);padding:8px;overflow-x:auto;white-space:pre}
+
+.pv-secret-sauce .car{display:grid;gap:8px;min-width:0}
+.pv-secret-sauce .car:focus-visible{outline:2px solid var(--cobalt-text,var(--cobalt));outline-offset:4px}
+.pv-secret-sauce .car .stage{display:flex;align-items:center;justify-content:center;min-height:${hero ? '420px' : '340px'};background:var(--sheet);border:1px solid var(--rule);padding:12px;touch-action:pan-y;user-select:none}
+.pv-secret-sauce .car .stage img{display:block;max-width:100%;max-height:${hero ? '60vh' : '320px'};width:auto;height:auto;object-fit:contain;-webkit-user-drag:none}
+.pv-secret-sauce .car .ctl{display:flex;align-items:center;gap:12px}
+.pv-secret-sauce .car .ctl button{flex:none;width:48px;height:48px;border:1px solid var(--ink);border-radius:0;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
+.pv-secret-sauce .car .ctl button:hover{background:var(--ink);color:var(--paper)}
+.pv-secret-sauce .car .ctl button:focus-visible{outline:2px solid var(--cobalt-text,var(--cobalt));outline-offset:2px}
+.pv-secret-sauce .car .ctl svg{width:25px;height:25px;fill:currentColor;shape-rendering:crispEdges}
+.pv-secret-sauce .car .cnt{font-family:"Stem 7 PV","IBM Plex Mono",monospace;font-size:32px;line-height:32px;font-synthesis:none;-webkit-font-smoothing:none;color:var(--cobalt-text,var(--cobalt));min-width:7ch}
+.pv-secret-sauce .car .nm{font:500 11px/16px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);flex:1;min-width:0}
 @media(max-width:760px){.pv-secret-sauce .top,.pv-secret-sauce .lint{grid-template-columns:1fr}}
 `;
   const style = document.createElement('style'); style.textContent = css; document.head.appendChild(style);
@@ -76,8 +112,8 @@ export default function mount(root, { mode, base }) {
       <div class="glyphs"></div>
     </div>
     <div>
-      <div class="lab" style="margin-bottom:8px">sauce make · real output, uncropped</div>
-      <div class="${hero ? 'sheet' : 'strip'}"></div>
+      <div class="lab" style="margin-bottom:8px">sauce make · real output, shown whole</div>
+      <div class="sheet"></div>
     </div>
   </div>
   ${hero ? `<div class="lint"><div>
@@ -99,15 +135,7 @@ export default function mount(root, { mode, base }) {
   input.addEventListener('input', render); render();
 
   // contact sheet
-  const sh = el.querySelector('.sheet, .strip');
-  const H = hero ? 0 : 300;
-  SHEET.forEach(([f, cap, w, h]) => {
-    const fg = document.createElement('figure');
-    if (hero && w / h > 2.5) fg.className = 'wide';
-    if (!hero) fg.style.setProperty('--h', H + 'px');
-    fg.innerHTML = `<img src="${media}${f}" width="${w}" height="${h}" alt="sauce make ${cap}" loading="lazy"><span class="lab">${cap}</span>`;
-    sh.appendChild(fg);
-  });
+  carousel(el.querySelector('.sheet, .strip'), SHEET, media);
 
   // lint
   const lintImg = el.querySelector('.shot img');

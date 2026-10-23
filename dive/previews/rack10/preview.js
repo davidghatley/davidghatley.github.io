@@ -38,7 +38,7 @@ export default function mount(root, { mode, base }) {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const M = base + 'public/media/rack10/';
   el.innerHTML = `<div class="board">
-  <section class="tool"><h4>rack 10 / STL turntable</h4><div class="sub">real parts, OpenSCAD to STL</div>
+  <section class="tool"><h4>rack10 / STL turntable</h4><div class="sub">real parts, OpenSCAD to STL</div>
     <div class="stage"><div class="dim"><span class="dv"></span></div></div><div class="pick"></div><div class="note"></div></section>
   <section class="tool"><h4>assembled / exploded</h4><div class="sub">254 W x 336 D mm outer, 4U per level</div>
     <div class="imgs"><figure><div class="fr"><img src="${M}assembly.jpg" alt="Assembled rack render"></div><figcaption>assembled</figcaption></figure>
