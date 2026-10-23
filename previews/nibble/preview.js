@@ -68,7 +68,7 @@ export default function mount(root, { mode }) {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let ex = 0, who = 's', timer = 0, raf = 0;
   const fmt = v => typeof v === 'boolean' ? (v ? 'yes' : 'no') : v;
-  el.innerHTML = `<div class="demo"><div class="wm">nibble<small>picks below 0.70 go to the big model</small></div><div class="k">Pick an agent question, then the model</div>
+  el.innerHTML = `<div class="demo"><div class="wm">${mode === 'row' ? '' : 'nibble'}<small>picks below 0.70 go to the big model</small></div><div class="k">Pick an agent question, then the model</div>
     <div class="ex"></div><p class="q"></p>
     <div class="tog"><span class="ex2"></span><span class="lat"></span></div>
     <div class="rows"></div>

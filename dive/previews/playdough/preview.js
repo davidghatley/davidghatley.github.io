@@ -45,7 +45,7 @@ export default function mount(root, { mode, base }) {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const w = document.createElement('div'); w.className = 'pv-playdough' + (mode === 'hero' ? ' hero' : '');
   w.style.setProperty('--pd', pd); w.style.setProperty('--pd-on', on);
-  w.innerHTML = `<div class="pd-l"><div class="pd-mark"><svg viewBox="0 0 5 5" shape-rendering="crispEdges" aria-hidden="true">${GL}</svg><b>playdough</b><em>sentence in</em></div><div class="pd-lab"><i class="pd-dot"></i><span class="pd-st">prompt</span></div>
+  w.innerHTML = `<div class="pd-l">${mode === 'row' ? '' : `<div class="pd-mark"><svg viewBox="0 0 5 5" shape-rendering="crispEdges" aria-hidden="true">${GL}</svg><b>playdough</b><em>sentence in</em></div>`}<div class="pd-lab"><i class="pd-dot"></i><span class="pd-st">prompt</span></div>
   <div class="pd-field" aria-live="polite"><span class="pd-t"></span><span class="pd-caret"></span></div>
   <div class="pd-go">build</div>
   <div class="pd-strip"></div><div class="pd-chips"></div></div>
@@ -56,31 +56,34 @@ export default function mount(root, { mode, base }) {
   const tms = []; let alive = true, cur = 0, vis = true, gen = 0;
   const later = (f, ms) => { const id = setTimeout(() => { if (alive) f(); }, ms); tms.push(id); };
   V.forEach((v, i) => { const b = document.createElement('button'); b.textContent = v[0].slice(2).replace(/-/g, ' '); b.setAttribute('aria-pressed', i === 0);
-    b.onclick = () => { run(i, true); }; chips.appendChild(b); });
+    b.onclick = () => { run(i); }; chips.appendChild(b); });
   function reveal(i) {
     const v = V[i];
     img.src = base + 'public/media/playdough/vig-' + v[0] + '.jpg'; img.alt = 'Isometric render of the game: ' + v[1];
     img.style.opacity = 1; ph.style.display = 'none'; go.classList.add('on'); dot.classList.remove('on'); stt.textContent = 'built';
     strip.innerHTML = [['tiles', v[2]], ['props', PROPS[i]], ['seed', SEEDS[i]], ['pixel', '2px']].map(a => `<div><b>${a[1]}</b><span>${a[0]}</span></div>`).join('');
   }
-  function run(i, fast) {
+  function run(i, first) {
     gen++; const g = gen; tms.forEach(clearTimeout); tms.length = 0; cur = i;
     [...chips.children].forEach((b, j) => b.setAttribute('aria-pressed', j === i));
     const s = V[i][1];
+    const done = () => { t.textContent = s; reveal(i); if (!reduce) later(() => run((i + 1) % V.length), 1700); };
     if (reduce) { t.textContent = s; reveal(i); return; }
-    t.textContent = ''; img.style.opacity = 0; ph.style.display = ''; go.classList.remove('on'); strip.innerHTML = '';
-    dot.classList.add('on'); stt.textContent = 'typing';
+    if (first === true) { done(); return; }
+    // type the sentence fast, keep the previous render up until the new one lands
+    go.classList.remove('on'); dot.classList.add('on'); stt.textContent = 'typing';
+    t.textContent = '';
     let n = 0;
     const tick = () => {
       if (g !== gen) return;
       if (!vis) { later(tick, 400); return; }
-      n++; t.textContent = s.slice(0, n);
-      if (n < s.length) later(tick, 28 + Math.random() * 40);
-      else { stt.textContent = 'building'; later(() => { reveal(i); later(() => run((i + 1) % V.length), 6500); }, 700); }
+      n = Math.min(s.length, n + 1); t.textContent = s.slice(0, n);
+      if (n < s.length) later(tick, 22 + Math.random() * 10);
+      else later(done, 120);
     };
-    later(tick, 300);
+    later(tick, 60);
   }
   const io = new IntersectionObserver(e => { vis = e[0].isIntersecting; }); io.observe(w);
-  run(0);
+  run(0, true);
   return () => { alive = false; tms.forEach(clearTimeout); io.disconnect(); w.remove(); st.remove(); };
 }

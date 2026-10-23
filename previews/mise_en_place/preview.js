@@ -52,7 +52,7 @@ export default function mount(root, { mode }) {
   el.className = S + (mode === 'hero' ? ' hero' : '');
   el.style.marginTop = '22px';
   el.innerHTML = `<div class="tag">example pack</div>
-<div class="q"><svg class="gl" viewBox="0 0 20 20" shape-rendering="crispEdges" fill="currentColor">${GLYPH}</svg><b>task</b><span class="t"></span></div>
+<div class="q">${mode === 'row' ? '' : `<svg class="gl" viewBox="0 0 20 20" shape-rendering="crispEdges" fill="currentColor">${GLYPH}</svg>`}<b>task</b><span class="t"></span></div>
 <div class="tray">${bowls.map(b => `<div class="bowl"><h4>${b.n}<i>${b.note}</i></h4><div class="ct">${String(b.items.length).padStart(2,'0')}</div>${b.items.map(i => `<div class="it">${i}</div>`).join('')}</div>`).join('')}
 <div class="card"><b>ready for the cook</b><p>Target: zero setup steps.</p><small>Hand the folder to you, Claude Code or bonfire</small></div></div>`;
   root.appendChild(el);

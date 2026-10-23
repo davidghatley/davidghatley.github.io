@@ -62,9 +62,9 @@ export default function mount(root, { mode, base }) {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const M = base + 'public/media/rack10/';
   el.innerHTML = `<div class="board">
-  <section class="tool"><h4>rack10 / parts turntable</h4><div class="sub">14 real parts, OpenSCAD to STL</div>
+  <section class="tool"><h4>${mode === 'row' ? '' : 'rack10 / '}parts turntable</h4><div class="sub">14 real parts, OpenSCAD to STL</div>
     <div class="stage"><div class="cap"></div><div class="dim"><span class="dv"></span></div></div><div class="pick"></div><div class="note"></div><div class="hint"></div></section>
-  <section class="tool"><h4>rack10 / assembled + exploded</h4><div class="sub">8U, two levels, 254 W x 336 D mm outer</div>
+  <section class="tool"><h4>${mode === 'row' ? '' : 'rack10 / '}assembled + exploded</h4><div class="sub">8U, two levels, 254 W x 336 D mm outer</div>
     <div class="pair"><div class="stage" data-m="0"><div class="cap"></div></div><div class="stage" data-m="1"><div class="cap"></div></div></div>
     <div class="hint">drag to orbit</div></section></div>`;
   const stage = el.querySelector('.stage'), pick = el.querySelector('.pick'), note = el.querySelector('.note'), cap = el.querySelector('.cap'), dv = el.querySelector('.dv'), hint = el.querySelector('.hint');
