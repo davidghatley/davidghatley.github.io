@@ -155,7 +155,7 @@ export default function mount(root, { mode, base }) {
     .then(([data]) => {
       if (!alive) return;
       songs = data.map(prep);
-      songsEl.innerHTML = songs.map((s, i) => `<button class="tt-song" type="button" aria-pressed="false" data-i="${i}"><i></i><span><b>${s.title}</b><span>${Math.round(s.bpm)} BPM · ${s.key} · ${s.model}</span></span></button>`).join('');
+      songsEl.innerHTML = songs.map((s, i) => `<button class="tt-song" type="button" aria-pressed="false" data-i="${i}"><i></i><span><b>${s.title}</b><span>${Math.round(s.bpm)} BPM · ${s.key} · ${s.model}${s.sub === 'instrumental' ? ' · instrumental' : ''}</span></span></button>`).join('');
       songsEl.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => select(+b.dataset.i, true)));
       playB.disabled = false; select(0, false); ro.observe(root); loop();
     }).catch(() => { playB.textContent = 'Unavailable'; });
