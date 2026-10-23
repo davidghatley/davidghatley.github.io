@@ -1,7 +1,7 @@
 const CSS = `
-.cs-rack10{--a:#2f8f9d;--at:#1d6c77;max-width:1200px;margin:0 auto;padding:16px 16px 48px;font:400 14px/22px var(--font-mono);color:var(--ink)}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .cs-rack10{--a:#3fb0bd;--at:#3fb0bd}}
-:root[data-theme=dark] .cs-rack10{--a:#3fb0bd;--at:#3fb0bd}
+.cs-rack10{--a:#a5562b;--at:#a5562b;max-width:1200px;margin:0 auto;padding:16px 16px 48px;font:400 14px/22px var(--font-mono);color:var(--ink)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .cs-rack10{--a:#e3925f;--at:#e3925f}}
+:root[data-theme=dark] .cs-rack10{--a:#e3925f;--at:#e3925f}
 .cs-rack10 .sheet{border:2px solid var(--ink);background:var(--sheet);padding:16px;position:relative}
 .cs-rack10 .sheet:before{content:"";position:absolute;inset:5px;border:1px solid var(--ink-muted);pointer-events:none}
 .cs-rack10 .sheet>*{position:relative}
@@ -18,6 +18,8 @@ const CSS = `
 .cs-rack10 .callouts b{display:inline-block;width:20px;height:20px;line-height:18px;text-align:center;border:1px solid var(--at);border-radius:50%;color:var(--at);margin-right:6px;font-weight:600}
 .cs-rack10 figure{margin:0 0 20px}
 .cs-rack10 .dimw{position:relative;padding:0 0 22px 0}
+.cs-rack10 .v3d{height:460px;position:relative;border:1px solid var(--rule);background:var(--paper)}
+.cs-rack10 .v3d canvas{display:block;width:100%;height:100%}
 .cs-rack10 .dimw img{display:block;max-width:100%;height:auto;border:1px solid var(--rule)}
 .cs-rack10 .dl{position:absolute;left:0;right:0;bottom:2px;height:14px;border-left:1px solid var(--ink-muted);border-right:1px solid var(--ink-muted);display:flex;align-items:center;font-size:10px;color:var(--ink-muted)}
 .cs-rack10 .dl:before,.cs-rack10 .dl:after{content:"";flex:1;border-top:1px solid var(--ink-muted)}
@@ -40,6 +42,8 @@ const CSS = `
 .cs-rack10 .tb .w dd{font:400 14px/20px var(--font-mono)}
 @media(max-width:720px){.cs-rack10 .view{grid-template-columns:1fr}.cs-rack10 h1{font-size:16px;line-height:24px}.cs-rack10 .tb{grid-template-columns:1fr 1fr}.cs-rack10 .tb .w{grid-column:1/-1}}
 `;
+import { createViewer } from './viewer.js';
+import { MODELS } from './preview.js';
 const NS = 'http://www.w3.org/2000/svg';
 function glyph(rows) { const s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', '0 0 5 5'); s.setAttribute('shape-rendering', 'crispEdges'); s.setAttribute('fill', 'currentColor'); s.setAttribute('aria-hidden', 'true'); rows.forEach((r, y) => [...r].forEach((c, x) => { if (c === 'X') { const e = document.createElementNS(NS, 'rect'); e.setAttribute('x', x); e.setAttribute('y', y); e.setAttribute('width', 1); e.setAttribute('height', 1); s.appendChild(e); } })); return s; }
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -47,7 +51,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 export default async function renderCase(root, { project: p, base }) {
   const style = document.createElement('style'); style.textContent = CSS; document.head.appendChild(style);
   const el = document.createElement('div'); el.className = 'cs-rack10'; root.appendChild(el);
-  const bodies = p.body, tags = [['A', 'wall_front_L', 'wall half'], ['B', 'crossbar_L', 'neck bar'], ['C', 'bowtie_key', 'press fit'], ['D', 'tray_front_L', 'tray half']];
+  const bodies = p.body, tags = [['A', 'parts turntable', '14 parts'], ['B', 'assembled', '8U'], ['C', 'exploded', 'EXPLODE 40']];
   const joints = [
     ['Dovetail tabs', 'front and rear wall halves (mid-depth seam); tray and crossbar halves', 'profile in the print plane; pieces push together face-on'],
     ['Crossbar neck in notches', 'rear of every level seam, front at base and top', 'head outside the wall, shoulder inside, which fixes wall spacing; the level above caps the notch'],
@@ -66,7 +70,7 @@ export default async function renderCase(root, { project: p, base }) {
     <div class="zone"><span>A</span><span>B</span><span>C</span><span>D</span></div>
     <h1><span class="gl"></span><span>${esc(p.title)}</span></h1>
     <p class="lede">${esc(p.oneliner)}</p>
-    <div class="view"><div class="tag">SHEET 1<small>turntable, details A to D</small></div>
+    <div class="view"><div class="tag">SHEET 1<small>details A to C</small></div>
       <div><div class="callouts">${tags.map(t => `<span><b>${t[0]}</b>${t[1]}</span>`).join('')}</div><div class="hero"></div></div></div>
     ${bodies.map((t, i) => `<div class="view"><div class="tag">NOTE ${i + 1}<small>${['general', 'joints, detail E', 'tolerance'][i] || ''}</small></div><div><p>${esc(t)}</p></div></div>`).join('')}
     <div class="view"><div class="tag">SCHEDULE J<small>how it locks together</small></div><div>${tbl(['joint', 'where', 'what holds it'], joints)}</div></div>
@@ -75,7 +79,8 @@ export default async function renderCase(root, { project: p, base }) {
     <div class="view"><div class="tag">SCHEDULE P<small>bill of parts, 12U (3 levels)</small></div><div>${tbl(['part', 'qty', 'note'], parts)}</div></div>
     <div class="view"><div class="tag">PRINT<small>settings</small></div><div><p>PETG for anything structural; PLA is fine for the coupon and test pieces. 0.2 mm layers, 4 walls, 5 top and bottom layers, 25% gyroid, no supports. Walls print outer face down; every other part prints as exported.</p></div></div>
     <div class="view"><div class="tag">VIEWS<small>from the rack10 repo</small></div><div>
-      ${views.map((m, i) => `<figure><div class="dimw"><img src="${base + m[0]}" alt="${esc(m[1])}"><div class="dl"><span>VIEW ${i + 1}</span></div></div><figcaption>${esc(m[2])}</figcaption></figure>`).join('')}</div></div>
+      ${MODELS.map((m, i) => `<figure><div class="dimw"><div class="v3d" data-m="${i}"></div><div class="dl"><span>VIEW ${i + 1} / 3D, drag to orbit</span></div></div><figcaption>${esc(m.note)}</figcaption></figure>`).join('')}
+      ${views.map((m, i) => `<figure><div class="dimw"><img src="${base + m[0]}" alt="${esc(m[1])}"><div class="dl"><span>VIEW ${i + 3}</span></div></div><figcaption>${esc(m[2])}</figcaption></figure>`).join('')}</div></div>
     <div class="view"><div class="tag">SCHEDULE S<small>counted from the repo</small></div><div>
       <table class="bom"><thead><tr><th>item</th><th>source</th><th style="text-align:right">value</th></tr></thead><tbody>
       ${p.spec.map(s => `<tr><td>${esc(s.label)}</td><td><small>${esc(s.source)}</small></td><td class="v">${esc(s.value)}</td></tr>`).join('')}</tbody></table></div></div>
@@ -86,7 +91,8 @@ export default async function renderCase(root, { project: p, base }) {
       <div><dt>sheet</dt><dd>1/1</dd></div><div><dt>bed</dt><dd>180</dd></div><div><dt>units</dt><dd>mm</dd></div></dl></div>`;
   const g = glyph(p.glyph); g.style.viewTransitionName = 'glyph-' + p.slug; el.querySelector('.gl').appendChild(g);
   const hero = el.querySelector('.hero'); hero.style.viewTransitionName = 'hero-' + p.slug;
-  let un = () => {};
+  let un = () => {}; const vs = [], reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; let gone = false;
+  el.querySelectorAll('.v3d').forEach(st => { const m = MODELS[+st.dataset.m]; createViewer(st, { url: f => base + 'public/media/rack10/' + f, items: [m], el, reduce, speed: 0.0005 }).then(v => { if (gone) v.dispose(); else vs.push(v); }).catch(e => console.warn(e)); });
   try { const m = await import('./preview.js'); un = m.default(hero, { mode: 'hero', base }) || un; } catch (e) { console.warn(e); }
-  return () => { un(); el.remove(); style.remove(); };
+  return () => { gone = true; vs.forEach(v => v.dispose()); un(); el.remove(); style.remove(); };
 }

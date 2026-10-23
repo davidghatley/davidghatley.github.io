@@ -10,6 +10,9 @@ export default function mount(root, { mode, base }) {
 .pv-vaasf *{box-sizing:border-box}
 .pv-vaasf img{display:block;width:100%;height:auto;border:1px solid var(--ln);background:#fff}
 .pv-vaasf img.site{border:1px solid var(--bl)}
+.pv-vaasf .sg{display:grid;grid-template-columns:minmax(0,1fr);gap:${hero ? '12px' : '8px'}}
+.pv-vaasf .sr{display:grid;grid-template-columns:minmax(0,4.543fr) minmax(0,4.621fr);align-items:start;gap:${hero ? '12px' : '8px'}}
+.pv-vaasf .sr img{width:100%;height:auto;min-width:0}
 .pv-vaasf figure{margin:0;min-width:0}
 .pv-vaasf figcaption{margin-top:${hero ? '10px' : '5px'};font-size:${hero ? '15px' : '12.5px'};line-height:${hero ? '20px' : '15px'};font-style:italic;color:var(--mu)}
 .pv-vaasf figcaption b{display:block;font-style:normal;font-weight:400;font-variant:all-small-caps;letter-spacing:.12em;color:var(--bl);font-size:${hero ? '17px' : '13px'}}
@@ -39,7 +42,7 @@ export default function mount(root, { mode, base }) {
 ${f('s1.jpg', 'Spread of pages 2 and 3: Schedule of Events and the first day of listings.', 'Pages 2-3', 'Schedule of Events, with Friday&rsquo;s listings')}
 ${f('s4.jpg', 'Photo spread of pages 8 and 9 from the program.', 'Pages 8-9', 'Festivals Past, set photo-led')}
 </div>
-<div class="site-col">${f('site-full.jpg', 'Full-page screenshot of the live VAASF Webflow site.', 'The website', 'Webflow; events schedule rebuilt', 'site')}</div>
+<div class="site-col"><figure><div class="sg"><img class="site" src="${M}site-hero.jpg" alt="First screen of the live VAASF website: the Canciones Españolas hero with navigation."><div class="sr"><img class="site" src="${M}site-events.jpg" alt="The redesigned events schedule page of the VAASF website, three days of listings."><img class="site" src="${M}site-phone.jpg" alt="The VAASF home page on a phone."></div></div><figcaption><b>The website</b>Webflow; home, events schedule and phone</figcaption></figure></div>
 <div class="small">
 ${f('masterclass.jpg', 'Master Classes page with a black and white rehearsal photograph.', 'Page 6', 'Master Classes')}
 ${f('s2.jpg', 'Spread of pages 4 and 5, Young Artists Division listings.', 'Pages 4-5', 'Listings')}
@@ -53,9 +56,13 @@ ${f('thanks.jpg', 'Back cover reading Gracias over a blue painted figure with sp
     if (mq.matches) { board.style.gridTemplateColumns = ''; return; }
     const cs = getComputedStyle(board), g = parseFloat(cs.columnGap) || 0, gm = parseFloat(getComputedStyle(mid).rowGap) || 0;
     const W = board.clientWidth, cap = fig.offsetHeight - fig.querySelector('img').offsetHeight;
-    const k = (gm + cap) / 1.2941, wc = (W - 2 * g + k) / 2.7165;
-    board.style.gridTemplateColumns = `${wc}px ${wc - k}px ${wc * .7165}px`;
+    const gs = hero ? 12 : 8, k = (gm + cap) / 1.2941, wc = (W - 2 * g + k - .0531 * gs) / 2.754;
+    board.style.gridTemplateColumns = `${wc}px ${wc - k}px ${.754 * wc + .0531 * gs}px`;
   }
-  const ro = new ResizeObserver(lay); ro.observe(board); mq.addEventListener('change', lay); lay();
-  return () => { ro.disconnect(); mq.removeEventListener('change', lay); st.remove(); fl.remove(); el.remove(); };
+  let raf = 0;
+  const burst = () => { cancelAnimationFrame(raf); const t0 = performance.now(); (function f() { lay(); if (performance.now() - t0 < 1500) raf = requestAnimationFrame(f); })(); };
+  const ro = new ResizeObserver(lay); ro.observe(board); ro.observe(el); mq.addEventListener('change', burst);
+  addEventListener('resize', burst); document.addEventListener('transitionend', burst, true);
+  el.querySelectorAll('img').forEach(i => i.addEventListener('load', lay)); burst();
+  return () => { cancelAnimationFrame(raf); removeEventListener('resize', burst); document.removeEventListener('transitionend', burst, true); ro.disconnect(); mq.removeEventListener('change', burst); st.remove(); fl.remove(); el.remove(); };
 }

@@ -16,7 +16,7 @@ const RCSS=`
 .pv-nibble .st{border:1px solid var(--rule);padding:10px;min-height:96px;position:relative;margin-left:-1px}
 .pv-nibble .st.on{border-color:var(--ink);background:var(--sheet,transparent);z-index:1}
 .pv-nibble .st .k{margin-bottom:4px}
-.pv-nibble .st .hid{visibility:hidden}
+.pv-nibble .st.wait>:not(.k){visibility:hidden}.pv-nibble .st.wait::after{content:'\\00b7\\00b7';position:absolute;left:10px;top:32px;font:400 16px/24px var(--font-pixel);color:var(--ink-muted)}
 .pv-nibble .px16{font:400 16px/24px var(--font-pixel)}
 .pv-nibble .px32{font:400 32px/32px var(--font-pixel)}
 .pv-nibble .fast{color:var(--a)}.pv-nibble .slow{color:var(--vermilion-text,var(--vermilion))}
@@ -47,7 +47,7 @@ const CSS = `
 .pv-nibble .bar{position:relative;height:26px;background:var(--rule-faint,var(--rule));overflow:hidden}
 .pv-nibble .fill{position:absolute;left:0;top:0;bottom:0;background:var(--cobalt,#2236b0);transition:width .5s ease-out}
 .pv-nibble .lbl{position:absolute;left:6px;top:0;line-height:26px;font:400 16px/26px var(--font-pixel);letter-spacing:0;color:var(--on-cobalt,#f9f9f5);white-space:nowrap;mix-blend-mode:normal}
-.pv-nibble .lbl.o{color:var(--ink)}
+.pv-nibble .lbl{display:flex;gap:8px;right:6px;overflow:hidden}.pv-nibble .lbl .tx{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pv-nibble .lbl .nu{flex:none;white-space:nowrap;margin-left:auto;background:var(--cobalt,#2236b0);padding:0 4px}.pv-nibble .lbl.o{color:var(--ink)}
 .pv-nibble .mk{font:600 12px/20px var(--font-mono);text-align:center}
 .pv-nibble .ok{color:var(--a)} .pv-nibble .no{color:var(--vermilion)}
 .pv-nibble .note{font:400 12px/17px var(--font-sans);color:var(--ink-muted);margin:10px 0 0}
@@ -75,7 +75,13 @@ export default function mount(root, { mode }) {
     <p class="note"></p></div>
     <div class="ch"><div class="k">Headline result &middot; 50 held-out prompts, 350 decisions</div>
     <h3>Accuracy</h3><div class="acc"></div><h3 style="margin-top:12px">Median wall time, seconds</h3><div class="lt"></div>
-    <p class="note">Kev-0.8B on a CPU is 12 points behind the big model and 1.3x faster. The labels were written by Claude, so the big model's 1.00 partly measures shared judgement. Verdict in the repo: too few prompts (50 &lt; 200).</p></div>`;
+    <p class="note">Kev-0.8B on a CPU is 12 points behind the big model and 1.3x faster. The labels were written by Claude, so the big model's 1.00 partly measures shared judgement. Verdict in the repo: too few prompts (50 &lt; 200).</p></div><div class="route"><div class="k">Threshold routing &middot; drag the line, watch the 350 recorded decisions move</div>
+    <div class="rflow"><div class="st s0"><div class="k">1 Question</div><div class="rq"></div></div><div class="st s1"><div class="k">2 Kev-0.8B picks</div><div class="px16 rp"></div></div><div class="st s2"><div class="k">3 Sure enough?</div><div class="px16 rc"></div></div><div class="st s3"><div class="k">4 Answer used</div><div class="rr"></div></div></div>
+    <div class="gauge"><div class="mk2"></div><div class="tl"></div><input type="range" min="0.40" max="0.90" step="0.01" aria-label="Routing threshold"></div>
+    <div class="k" style="display:flex;justify-content:space-between"><span>0.40</span><span>confidence of the pick</span><span>0.90</span></div>
+    <div class="ex rbtn"></div>
+    <div class="rsum"><div><span class="k">Threshold</span><div class="px32 rt2"></div></div><div><span class="k">Sent to big model</span><div class="px32 rn"></div></div><div><span class="k">Avg latency per decision</span><div class="px32 rl"></div><span class="k">ms</span></div><div><span class="k">Accuracy vs labels</span><div class="px32 ra"></div></div></div>
+    <p class="note">Rule from nibble&rsquo;s landing page ("under 0.70, ask the big model"); 0.70 is the site&rsquo;s example line, not a tuned optimum. Data: the 350 decisions of the 2026-10-18 compare. A call&rsquo;s wall time is split evenly over its 7 decisions; a routed decision pays both models. Labels were written by Claude.</p></div>`;
   const $ = s => el.querySelector(s);
   const exb = $('.ex'), tog = $('.ex2'), rows = $('.rows'), lat = $('.lat');
   EX.forEach((e, i) => { const b = document.createElement('button'); b.textContent = e.id; b.title = e.t; b.onclick = () => { ex = i; render(true); }; exb.appendChild(b); });
@@ -96,9 +102,9 @@ export default function mount(root, { mode }) {
       let bars;
       if (who === 's') {
         const p = e.p[i];
-        bars = `<div class="bar"><div class="fill" style="width:0" data-w="${p * 100}"></div><span class="lbl">${fmt(ans[i])} ${p.toFixed(2)}</span><i class="thr"></i></div>`;
+        bars = `<div class="bar"><div class="fill" style="width:0" data-w="${p * 100}"></div><span class="lbl" title="${fmt(ans[i])} ${p.toFixed(2)}"><span class="tx">${fmt(ans[i])}</span><span class="nu">${p.toFixed(2)}</span></span><i class="thr"></i></div>`;
       } else {
-        bars = `<div class="bar"><div class="fill" style="width:0" data-w="100"></div><span class="lbl">${fmt(ans[i])} &middot; no odds</span></div>`;
+        bars = `<div class="bar"><div class="fill" style="width:0" data-w="100"></div><span class="lbl" title="${fmt(ans[i])}"><span class="tx">${fmt(ans[i])}</span><span class="nu">no odds</span></span></div>`;
       }
       return `<div class="row"><span class="nm">${NAME[i]}</span>${bars}<span class="mk ${hit ? 'ok' : 'no'}" title="${hit ? 'matches label' : 'differs from label: ' + fmt(e.gold[i])}">${hit ? '✓' : '×'}</span></div>`;
     }).join('');
@@ -113,6 +119,33 @@ export default function mount(root, { mode }) {
     raf = requestAnimationFrame(tick);
   }
   render(false);
+
+  // threshold routing
+  const rs = sel => el.querySelector(sel); let T = 0.70, step = 0, ri = 0, tm = 0;
+  const gauge = rs('.gauge'), inp = rs('.gauge input');
+  const pct = v => ((v - 0.4) / 0.5 * 100);
+  const FS = FLOW.map(f => ({ s: SM[f[6]] / 7, b: BM[f[6]] / 7 }));
+  FLOW.forEach((f, i) => { const b = document.createElement('button'); b.textContent = f[0] + ' ' + f[1]; b.onclick = () => { ri = i; step = 3; paintFlow(); }; rs('.rbtn').appendChild(b); });
+  function agg() {
+    let n = 0, lat = 0, ok = 0;
+    REC.forEach((r, i) => { const pi = Math.floor(i / 7), s = SM[pi] / 7, b = BM[pi] / 7; if (r[0] < T) { n++; lat += s + b; ok += r[2]; } else { lat += s; ok += r[1]; } });
+    return { n, lat: lat / REC.length, ok: ok / REC.length };
+  }
+  function paintFlow() {
+    const f = FLOW[ri], fl = FS[ri], routed = f[2] < T;
+    [...rs('.rbtn').children].forEach((b, i) => b.setAttribute('aria-pressed', i === ri));
+    const m = rs('.mk2'); m.style.left = pct(f[2]) + '%'; rs('.tl').style.left = pct(T) + '%';
+    rs('.rq').innerHTML = `<div style="font:italic 14px/18px var(--font-serif)">${f[0]}: ${NAME[QS.indexOf(f[1])]}?</div>`;
+    rs('.rp').textContent = fmt(f[3]); rs('.rc').innerHTML = `<span class="px32">${f[2].toFixed(2)}</span><div class="k ${routed ? 'slow' : 'fast'}">${routed ? 'below ' : 'at or above '}${T.toFixed(2)}</div>`;
+    const ans = routed ? f[4] : f[3], lt = Math.round(routed ? fl.s + fl.b : fl.s);
+    rs('.rr').innerHTML = `<div class="px16 ${routed ? 'slow' : 'fast'}">${esc2(fmt(ans))}</div><div class="k">${routed ? 'slow path: big model' : 'fast path: Kev'}</div><div class="px16">${lt} ms</div><div class="k">${ans === f[5] ? 'matches label' : 'differs from label'}</div>`;
+    ['.s0', '.s1', '.s2', '.s3'].forEach((c, i) => { const e = rs(c); e.classList.toggle('on', i === step); e.firstChild.nextSibling && 0; e.classList.toggle('wait', i > step); });
+    const g = agg(); rs('.rt2').textContent = T.toFixed(2); rs('.rn').textContent = Math.round(g.n / REC.length * 100) + '%'; rs('.rl').textContent = Math.round(g.lat); rs('.ra').textContent = g.ok.toFixed(2);
+  }
+  const esc2 = x => String(x).replace(/</g, '&lt;');
+  inp.value = T; inp.oninput = () => { T = +inp.value; paintFlow(); };
+  if (reduce) { step = 3; } else { tm = setInterval(() => { step++; if (step > 3) { step = 0; ri = (ri + 1) % FLOW.length; } paintFlow(); }, 1100); }
+  paintFlow();
   const ro = new ResizeObserver(() => el.classList.toggle('is-narrow', el.clientWidth < 760)); ro.observe(el);
-  return () => { cancelAnimationFrame(raf); clearTimeout(timer); ro.disconnect(); st.remove(); el.remove(); };
+  return () => { cancelAnimationFrame(raf); clearTimeout(timer); clearInterval(tm); ro.disconnect(); st.remove(); el.remove(); };
 }
