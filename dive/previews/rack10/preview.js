@@ -19,8 +19,8 @@ const CSS = `
 .pv-rack10 .dim span{padding:0 6px;background:var(--paper)}
 .pv-rack10.hero .imgs .fr{height:min(54vh,480px)}
 .pv-rack10 .pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.pv-rack10 .pair .stage{height:320px}
-.pv-rack10.hero .pair .stage{height:min(54vh,480px)}
+.pv-rack10 .pair .stage{height:auto;aspect-ratio:4/5}
+.pv-rack10.hero .pair .stage{height:auto}
 .pv-rack10 .cap{position:absolute;left:8px;top:6px;font:500 11px/16px var(--font-mono);color:var(--ink);letter-spacing:.04em;pointer-events:none}
 .pv-rack10 .cap i{font-style:normal;color:var(--at)}
 .pv-rack10 .pick button{padding:2px 6px;font-size:10px;line-height:14px}

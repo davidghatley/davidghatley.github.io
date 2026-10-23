@@ -9,7 +9,7 @@ export default function mount(root, { mode, base }) {
 :root[data-theme=dark] .pv-vaasf{--cr:#1a2027;--tx:#ece5d4;--mu:#a9b0b7;--bl:#8aa3b8;--ln:#3a4450}
 .pv-vaasf *{box-sizing:border-box}
 .pv-vaasf img{display:block;width:100%;height:auto;border:1px solid var(--ln);background:#fff}
-.pv-vaasf img.site{border:1px solid var(--bl)}
+.pv-vaasf img.web{border:1px solid var(--bl)}
 .pv-vaasf .sg{display:grid;grid-template-columns:minmax(0,1fr);gap:${hero ? '12px' : '8px'}}
 .pv-vaasf .sr{display:grid;grid-template-columns:minmax(0,4.543fr) minmax(0,4.621fr);align-items:start;gap:${hero ? '12px' : '8px'}}
 .pv-vaasf .sr img{width:100%;height:auto;min-width:0}
@@ -42,7 +42,7 @@ export default function mount(root, { mode, base }) {
 ${f('s1.jpg', 'Spread of pages 2 and 3: Schedule of Events and the first day of listings.', 'Pages 2-3', 'Schedule of Events, with Friday&rsquo;s listings')}
 ${f('s4.jpg', 'Photo spread of pages 8 and 9 from the program.', 'Pages 8-9', 'Festivals Past, set photo-led')}
 </div>
-<div class="site-col"><figure><div class="sg"><img class="site" src="${M}site-hero.jpg" alt="First screen of the live VAASF website: the Canciones Españolas hero with navigation."><div class="sr"><img class="site" src="${M}site-events.jpg" alt="The redesigned events schedule page of the VAASF website, three days of listings."><img class="site" src="${M}site-phone.jpg" alt="The VAASF home page on a phone."></div></div><figcaption><b>The website</b>Webflow; home, events schedule and phone</figcaption></figure></div>
+<div class="site-col"><figure><div class="sg"><img class="web" src="${M}site-hero.jpg" alt="First screen of the live VAASF website: the Canciones Españolas hero with navigation."><div class="sr"><img class="web" src="${M}site-events.jpg" alt="The redesigned events schedule page of the VAASF website, three days of listings."><img class="web" src="${M}site-phone.jpg" alt="The VAASF home page on a phone."></div></div><figcaption><b>The website</b>Webflow; home, events schedule and phone</figcaption></figure></div>
 <div class="small">
 ${f('masterclass.jpg', 'Master Classes page with a black and white rehearsal photograph.', 'Page 6', 'Master Classes')}
 ${f('s2.jpg', 'Spread of pages 4 and 5, Young Artists Division listings.', 'Pages 4-5', 'Listings')}

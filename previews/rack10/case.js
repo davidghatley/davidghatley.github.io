@@ -18,7 +18,7 @@ const CSS = `
 .cs-rack10 .callouts b{display:inline-block;width:20px;height:20px;line-height:18px;text-align:center;border:1px solid var(--at);border-radius:50%;color:var(--at);margin-right:6px;font-weight:600}
 .cs-rack10 figure{margin:0 0 20px}
 .cs-rack10 .dimw{position:relative;padding:0 0 22px 0}
-.cs-rack10 .v3d{height:460px;position:relative;border:1px solid var(--rule);background:var(--paper)}
+.cs-rack10 .v3d{width:min(100%,520px);aspect-ratio:4/5;position:relative;border:1px solid var(--rule);background:var(--paper)}
 .cs-rack10 .v3d canvas{display:block;width:100%;height:100%}
 .cs-rack10 .dimw img{display:block;max-width:100%;height:auto;border:1px solid var(--rule)}
 .cs-rack10 .dl{position:absolute;left:0;right:0;bottom:2px;height:14px;border-left:1px solid var(--ink-muted);border-right:1px solid var(--ink-muted);display:flex;align-items:center;font-size:10px;color:var(--ink-muted)}

@@ -28,8 +28,16 @@ export async function createViewer(stage, o) {
   const loader = new STLLoader(), geos = [];
   let mesh, edges, ang = 0.6, tilt = 0, cur = -1, visible = true, disposed = false, running = false, spinning = !o.reduce, advTimer = 0, last = 0, touched = false;
   const size = () => { const w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); fit(); draw(); };
-  let rad = 1;
-  const fit = () => { const d = rad / Math.sin(cam.fov * Math.PI / 360) / Math.min(1, cam.aspect) * 1.0; cam.position.set(d * 0.45, d * 0.35, d * 0.85); cam.lookAt(0, 0, 0); };
+  let rad = 1, dims = null;
+  // fit the rotating model (a cylinder about its Z axis) with 8% margin for the pane's real aspect
+  const fit = () => {
+    const v = new T.Vector3(0.45, 0.35, 0.85).normalize(), el = Math.asin(v.y);
+    let R = rad, hz = rad;
+    if (dims) { R = Math.hypot(dims[0], dims[1]) / 2; hz = dims[2] / 2; }
+    const ph = hz * Math.cos(el) + R * Math.sin(el), tv = Math.tan(cam.fov * Math.PI / 360), th = tv * cam.aspect;
+    const d = (Math.max(ph / tv, R / th) + R) * 1.08;
+    cam.position.copy(v.multiplyScalar(d)); cam.lookAt(0, 0, 0);
+  };
   const draw = () => { mat.color.set(accent()); if (edges) edges.material.color.set(css().color); pivot.rotation.x = -Math.PI / 2 + tilt; pivot.rotation.z = ang; renderer.render(scene, cam); };
   const ro = new ResizeObserver(size); ro.observe(stage);
   const load = i => new Promise((res, rej) => { if (geos[i]) return res(geos[i]); loader.load(o.url(o.items[i].f), g => { g.computeVertexNormals(); g.center(); geos[i] = g; res(g); }, undefined, rej); });
@@ -39,7 +47,7 @@ export async function createViewer(stage, o) {
     mesh = new T.Mesh(g, mat); pivot.add(mesh);
     edges = new T.LineSegments(new T.EdgesGeometry(g, 35), new T.LineBasicMaterial({ color: css().color })); pivot.add(edges);
     g.computeBoundingSphere(); g.computeBoundingBox(); rad = g.boundingSphere.radius;
-    const b = g.boundingBox.getSize(new T.Vector3());
+    const b = g.boundingBox.getSize(new T.Vector3()); dims = [b.x, b.y, b.z];
     ang = 0.6; tilt = 0; size(); fit(); draw();
     o.onShow && o.onShow(i, [b.x, b.y, b.z], o.items[i]);
   }
@@ -57,7 +65,7 @@ export async function createViewer(stage, o) {
   // drag to orbit
   const cv = renderer.domElement; let drag = null;
   const pd = e => { drag = { x: e.clientX, y: e.clientY, a: ang, t: tilt, moved: false }; cv.setPointerCapture(e.pointerId); cv.style.cursor = 'grabbing'; };
-  const pm = e => { if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (Math.abs(dx) + Math.abs(dy) > 3 && !drag.moved) { drag.moved = true; spinning = false; interact(); } if (drag.moved) { ang = drag.a + dx * 0.01; tilt = Math.max(-0.9, Math.min(0.9, drag.t + dy * 0.008)); draw(); } };
+  const pm = e => { if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (Math.abs(dx) + Math.abs(dy) > 3 && !drag.moved) { drag.moved = true; spinning = false; interact(); } if (drag.moved) { ang = drag.a + dx * 0.01; tilt = Math.max(-0.4, Math.min(0.4, drag.t + dy * 0.008)); draw(); } };
   const pu = () => { drag = null; cv.style.cursor = 'grab'; };
   cv.addEventListener('pointerdown', pd); cv.addEventListener('pointermove', pm); cv.addEventListener('pointerup', pu); cv.addEventListener('pointercancel', pu);
   cv.addEventListener('click', () => interact());
