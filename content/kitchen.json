@@ -11,7 +11,7 @@
       "X...X"
     ],
     "status": "software",
-    "status_note": "Contract, research and a landing page exist; the generator itself is not built.",
+    "status_note": "A local generator turns one sentence into a small three.js game; a gallery of six playable examples is built and waiting to publish.",
     "oneliner": "One sentence in, a small game you can play from a link.",
     "role": "I wrote the intent, the research behind it and the landing page, and I am steering the visual direction.",
     "when": "2026-10",

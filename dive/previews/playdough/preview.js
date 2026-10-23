@@ -25,9 +25,9 @@ const CSS = `
 @keyframes pdb{50%{opacity:0}}
 .pv-playdough .pd-go{font:400 16px/16px var(--font-pixel);letter-spacing:.04em;text-transform:uppercase;align-self:flex-start;background:var(--pd);color:var(--pd-on);padding:6px 12px;opacity:.35}
 .pv-playdough .pd-go.on{opacity:1}
-.pv-playdough .pd-strip{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ink);border-bottom:1px solid var(--rule)}
-.pv-playdough .pd-strip div{padding:8px 8px 8px 0}
-.pv-playdough .pd-strip b{display:block;font:400 32px/40px var(--font-pixel)}
+.pv-playdough .pd-strip{display:flex;flex-wrap:wrap;column-gap:16px;border-top:1px solid var(--ink);border-bottom:1px solid var(--rule)}
+.pv-playdough .pd-strip div{padding:8px 0}
+.pv-playdough .pd-strip b{display:block;white-space:nowrap;font:400 32px/40px var(--font-pixel)}
 .pv-playdough .pd-strip span{font:400 16px/16px var(--font-pixel);letter-spacing:.02em;text-transform:uppercase;color:var(--ink-muted)}
 .pv-playdough .pd-chips{display:flex;flex-wrap:wrap;gap:6px}
 .pv-playdough .pd-chips button{font:400 16px/16px var(--font-pixel);letter-spacing:.02em;text-transform:uppercase;border:1px solid var(--rule);background:none;color:var(--ink-muted);padding:6px 8px;cursor:pointer}
