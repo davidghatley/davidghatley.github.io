@@ -7,99 +7,159 @@
   "status": "experiments",
   "order": 1,
   "became": "nibble",
-  "glyph": ["X.X.X", "XXXXX", "..X..", ".XXX.", "XXXXX"],
+  "glyph": [
+   "X.X.X",
+   "XXXXX",
+   "..X..",
+   ".XXX.",
+   "XXXXX"
+  ],
   "oneliner": "I generated a dataset and trained a tiny decision model. Perfect on familiar wording, 44.5% on new wording, still 97% sure.",
   "when": "2026-09-15 to 2026-10-01",
   "role": "Dataset generator, training, evaluation and release, on one RTX 3060.",
   "status_note": "Experiment, finished. What it taught is built into nibble.",
   "question": "For repeated, fixed-format decisions about an agent's state, can one small shared encoder with typed heads replace asking a generative model each question?",
   "tried": [
-    "One DistilBERT encoder with five classifier heads: task complete, should retry, failure source (5 options), next action (5 options), evidence sufficient. It generates zero tokens; software maps the logits to legal option names.",
-    "Baselines: TF-IDF with logistic regression, and SmolLM2-360M asked zero-shot.",
-    "A follow-up round of candidates in parallel worktrees: more writing styles, weighted loss, LoRA, deeper heads. Deeper heads won."
+   "One DistilBERT encoder with five classifier heads: task complete, should retry, failure source (5 options), next action (5 options), evidence sufficient. It generates zero tokens; software maps the logits to legal option names.",
+   "Baselines: TF-IDF with logistic regression, and SmolLM2-360M asked zero-shot.",
+   "A follow-up round of candidates in parallel worktrees: more writing styles, weighted loss, LoRA, deeper heads. Deeper heads won."
   ],
   "data": [
-    "Fully synthetic and deterministic: a state machine creates each latent situation and its labels first, then a renderer writes it as text. Seed 1729. No teacher model, no API, no LLM paraphrasing.",
-    "The domain: four components (code, environment, test fixture, dependency) are each restored to known-good on a failing snapshot; exactly one clearing repair names the failure source. Error strings and recent edits are distractors.",
-    "20,000 training states with 5 labels each (100,000 decisions), plus 2,000-state splits for validation, calibration, familiar-wording test and unseen-wording test, and 600 out-of-domain probes.",
-    "Version 2 spread the same states over 12 writing styles (ticket, terminal, Slack thread, stack trace, PR review...). A final style, case_review, was written after model selection and evaluated once."
+   "Fully synthetic and deterministic: a state machine creates each latent situation and its labels first, then a renderer writes it as text. Seed 1729. No teacher model, no API, no LLM paraphrasing.",
+   "The domain: four components (code, environment, test fixture, dependency) are each restored to known-good on a failing snapshot; exactly one clearing repair names the failure source. Error strings and recent edits are distractors.",
+   "20,000 training states with 5 labels each (100,000 decisions), plus 2,000-state splits for validation, calibration, familiar-wording test and unseen-wording test, and 600 out-of-domain probes.",
+   "Version 2 spread the same states over 12 writing styles (ticket, terminal, Slack thread, stack trace, PR review...). A final style, case_review, was written after model selection and evaluated once."
   ],
   "model": [
-    "DistilBERT base, 66.4M parameters (69.3M for the released deep-head model). Full fine-tune, AdamW 3e-5, batch 16, 3 epochs, BF16.",
-    "376.7 seconds of training for 20,000 states, peaking at 1.7 GB of GPU memory."
+   "DistilBERT base, 66.4M parameters (69.3M for the released deep-head model). Full fine-tune, AdamW 3e-5, batch 16, 3 epochs, BF16.",
+   "376.7 seconds of training for 20,000 states, peaking at 1.7 GB of GPU memory."
   ],
   "results": [
-    "Familiar wording: 100% accurate. Unseen wording: 44.51%, with mean confidence still at 97.19%.",
-    "Failure source on unseen wording: 21% accurate at 99.6% confidence. In 200 pairs where only the fix changed, the prediction changed 0 times.",
-    "The final deep-head model scored 86.25% on the post-selection style; next action, a policy choice rather than a fact, stayed weakest at 62.8%.",
-    "Speed held up: 5 decisions in 4.95 ms p50, and encoding the state once for 50 questions is about 42x faster than encoding it 50 times."
+   "Familiar wording: 100% accurate. Unseen wording: 44.51%, with mean confidence still at 97.19%.",
+   "Failure source on unseen wording: 21% accurate at 99.6% confidence. In 200 pairs where only the fix changed, the prediction changed 0 times.",
+   "The final deep-head model scored 86.25% on the post-selection style; next action, a policy choice rather than a fact, stayed weakest at 62.8%.",
+   "Speed held up: 5 decisions in 4.95 ms p50, and encoding the state once for 50 questions is about 42x faster than encoding it 50 times."
   ],
   "learned": [
-    "100% on one generator's templates measures interpolation, not understanding. Keep a wording holdout separate from dev.",
-    "Confidence is not a safety signal: report NLL and calibration next to accuracy.",
-    "More writing styles did not help monotonically. Surface variety is not semantic variety.",
-    "Fixed heads can't take a new question. A decision layer needs the question and the options in its input."
+   "100% on one generator's templates measures interpolation, not understanding. Keep a wording holdout separate from dev.",
+   "Confidence is not a safety signal: report NLL and calibration next to accuracy.",
+   "More writing styles did not help monotonically. Surface variety is not semantic variety.",
+   "Fixed heads can't take a new question. A decision layer needs the question and the options in its input."
   ],
   "became_text": "nibble keeps the one real win (encode the state once, ask many questions) and replaces fixed heads with a question-conditioned pointer head. It trains on real logged decisions with outcomes, uses synthetic data only as a supplement, and refits temperature per domain.",
   "spec": [
-    {"label": "training states", "value": "20,000", "source": "experiments/data_audit.json"},
-    {"label": "unseen wording", "value": "44.51%", "source": "experiments/v0/evaluation.json"},
-    {"label": "confidence there", "value": "97.19%", "source": "experiments/v0/evaluation.json"},
-    {"label": "5 decisions, p50", "value": "4.95 ms", "source": "reports/project-retrospective.md"}
+   {
+    "label": "training states",
+    "value": "20,000",
+    "source": "experiments/data_audit.json"
+   },
+   {
+    "label": "unseen wording",
+    "value": "44.51%",
+    "source": "experiments/v0/evaluation.json"
+   },
+   {
+    "label": "confidence there",
+    "value": "97.19%",
+    "source": "experiments/v0/evaluation.json"
+   },
+   {
+    "label": "5 decisions, p50",
+    "value": "4.95 ms",
+    "source": "reports/project-retrospective.md"
+   }
   ],
-  "links": [{"label": "GitHub: system-one-mini", "url": "https://github.com/davidghatley/system-one-mini"}],
-  "hero": {"src": "", "alt": ""},
+  "links": [
+   {
+    "label": "GitHub: system-one-mini",
+    "url": "https://github.com/davidghatley/system-one-mini"
+   }
+  ],
+  "hero": {
+   "src": "",
+   "alt": ""
+  },
   "media": []
  },
  {
   "slug": "system-a",
   "title": "system-a",
-  "title_sub": "1,313 decisions mined from traces",
+  "title_sub": "1,313 mined trace decisions",
   "category": "experiments",
   "status": "experiments",
   "order": 2,
   "became": "nibble",
-  "glyph": ["XXXXX", ".XXX.", "..X..", "..X..", ".XXX."],
+  "glyph": [
+   "XXXXX",
+   ".XXX.",
+   "..X..",
+   "..X..",
+   ".XXX."
+  ],
   "oneliner": "I mined real coding-agent traces into a dataset and fine-tuned a 421M model to guess the agent's next tool.",
   "when": "2026-09-20 to 2026-09-24",
   "role": "Trace-to-dataset pipeline, local trainer, evaluation and release bundle, on one RTX 3060.",
   "status_note": "Experiment, finished. Its rules are built into nibble.",
   "question": "Can an open typed-decision model (Laya) learn an agent's choices from real traces, trained locally on a 12 GB card?",
   "tried": [
-    "Reflex: a local CLI that runs the public Laya typed-decision checkpoint on an agent state and typed questions, offline.",
-    "A local trainer for Laya's RLCD objective plus cross-entropy, adapted from a 2x T4 recipe to one 12 GB card.",
-    "Two data paths abandoned on evidence: one trace set had no real tool results, another kept a 20-point bias toward three tools even at 1,024 tokens."
+   "Reflex: a local CLI that runs the public Laya typed-decision checkpoint on an agent state and typed questions, offline.",
+   "A local trainer for Laya's RLCD objective plus cross-entropy, adapted from a 2x T4 recipe to one 12 GB card.",
+   "Two data paths abandoned on evidence: one trace set had no real tool results, another kept a 20-point bias toward three tools even at 1,024 tokens."
   ],
   "data": [
-    "Trace2Decision turns public coding-agent traces (a CC BY 4.0 set) into state, question and gold records. One record is one whole assistant turn; the label is the tool category the agent actually used next.",
-    "1,821 turns in, 1,313 kept. Dropped: 224 with an unresolved earlier tool call, 208 no-call turns without a clear finish, 76 that mixed categories.",
-    "Split 1,051 / 140 / 122 by task group, so no trajectory, task or rendered state crosses splits.",
-    "Two of the six classes (other tool, respond or finish) ended with zero examples in every split."
+   "Trace2Decision turns public coding-agent traces (a CC BY 4.0 set) into state, question and gold records. One record is one whole assistant turn; the label is the tool category the agent actually used next.",
+   "1,821 turns in, 1,313 kept. Dropped: 224 with an unresolved earlier tool call, 208 no-call turns without a clear finish, 76 that mixed categories.",
+   "Split 1,051 / 140 / 122 by task group, so no trajectory, task or rendered state crosses splits.",
+   "Two of the six classes (other tool, respond or finish) ended with zero examples in every split."
   ],
   "model": [
-    "Laya: a ModernBERT-large encoder plus a small option scorer, 421M parameters.",
-    "RLCD plus 6-way cross-entropy, micro-batch 1 with 64-step accumulation, FP16, 4 epochs. One seed: 767 s of training at 9.52 GiB peak, under an 11.5 GiB budget."
+   "Laya: a ModernBERT-large encoder plus a small option scorer, 421M parameters.",
+   "RLCD plus 6-way cross-entropy, micro-batch 1 with 64-step accumulation, FP16, 4 epochs. One seed: 767 s of training at 9.52 GiB peak, under an 11.5 GiB budget."
   ],
   "results": [
-    "First, a positive control: the public specialist beat its base 68.0% to 35.5%, so the evaluator worked. My own trainer then lifted a control task from 36.0% to 70.5%.",
-    "On dev, Laya beat a TF-IDF baseline on macro-F1 (0.445 vs 0.293) and lost badly on NLL (3.41 vs 0.95): its wrong answers came at above 0.9999 confidence.",
-    "The main run died at the end: the disk filled up while saving the checkpoint."
+   "First, a positive control: the public specialist beat its base 68.0% to 35.5%, so the evaluator worked. My own trainer then lifted a control task from 36.0% to 70.5%.",
+   "On dev, Laya beat a TF-IDF baseline on macro-F1 (0.445 vs 0.293) and lost badly on NLL (3.41 vs 0.95): its wrong answers came at above 0.9999 confidence.",
+   "The main run died at the end: the disk filled up while saving the checkpoint."
   ],
   "learned": [
-    "Reproduce a known positive control before trusting your own trainer.",
-    "Every option needs real examples in train and dev, or it isn't a capability.",
-    "Ship a dumb baseline and report NLL and Brier next to accuracy.",
-    "It drifted: meant to pick options, it learned to copy one harness's habits. Label decisions by outcome, not by what a big model picked."
+   "Reproduce a known positive control before trusting your own trainer.",
+   "Every option needs real examples in train and dev, or it isn't a capability.",
+   "Ship a dumb baseline and report NLL and Brier next to accuracy.",
+   "It drifted: meant to pick options, it learned to copy one harness's habits. Label decisions by outcome, not by what a big model picked."
   ],
   "became_text": "nibble carries the evidence table and the positive-control-first rule, and labels its records by outcome. bonfire took the operations lesson: per-call timeouts, logged retries and a disk check before long writes.",
   "spec": [
-    {"label": "turns in, kept", "value": "1,821 → 1,313", "source": "artifacts/trace2decision_i3/output/report.json"},
-    {"label": "parameters", "value": "421M", "source": "research/09_laya_gpu_measurement.md"},
-    {"label": "peak memory", "value": "9.52 GiB", "source": "artifacts/experiment_i3/PRE_FINAL_REVIEW.md"},
-    {"label": "macro-F1 vs baseline", "value": "0.445 / 0.293", "source": "artifacts/release_i3/metrics.json"}
+   {
+    "label": "kept of 1,821 turns",
+    "value": "1,313",
+    "source": "artifacts/trace2decision_i3/output/report.json"
+   },
+   {
+    "label": "parameters",
+    "value": "421M",
+    "source": "research/09_laya_gpu_measurement.md"
+   },
+   {
+    "label": "peak memory",
+    "value": "9.52 GiB",
+    "source": "artifacts/experiment_i3/PRE_FINAL_REVIEW.md"
+   },
+   {
+    "label": "macro-F1 (baseline 0.293)",
+    "value": "0.445",
+    "source": "artifacts/release_i3/metrics.json"
+   }
   ],
-  "links": [{"label": "GitHub: system-a", "url": "https://github.com/davidghatley/system-a"}],
-  "hero": {"src": "", "alt": ""},
+  "links": [
+   {
+    "label": "GitHub: system-a",
+    "url": "https://github.com/davidghatley/system-a"
+   }
+  ],
+  "hero": {
+   "src": "",
+   "alt": ""
+  },
   "media": []
  },
  {
@@ -110,38 +170,68 @@
   "status": "experiments",
   "order": 3,
   "became": "bonfire",
-  "glyph": ["XX.XX", "XX.XX", ".....", "XX.X.", "XX..X"],
+  "glyph": [
+   "XX.XX",
+   "XX.XX",
+   ".....",
+   "XX.X.",
+   "XX..X"
+  ],
   "oneliner": "A small benchmark with hidden tests. The agent passed every visible test and still failed 2 of 7 tasks.",
   "when": "2026-09-25",
   "role": "Task design, hidden evaluators, runner and the pilot run.",
   "status_note": "Experiment, finished. bonfire uses it as its eval corpus.",
   "question": "Does orchestrating several agents beat one agent at the same total budget? First you need tasks that can tell.",
   "tried": [
-    "16 small Python maintenance tasks, each with a starter, visible tests, a sealed hidden evaluator, a reference and an audit.",
-    "A runner that grades each task on a fresh copy with a fixed hash seed, timezone and locale.",
-    "A protocol: paired, task-level comparison against one direct agent at equal total budget."
+   "16 small Python maintenance tasks, each with a starter, visible tests, a sealed hidden evaluator, a reference and an audit.",
+   "A runner that grades each task on a fresh copy with a fixed hash seed, timezone and locale.",
+   "A protocol: paired, task-level comparison against one direct agent at equal total budget."
   ],
   "data": [
-    "Hand-curated, not generated: a 125-idea pool cut to 16 by four reviews (coverage, deterministic oracle, discrimination, adversarial validity)."
+   "Hand-curated, not generated: a 125-idea pool cut to 16 by four reviews (coverage, deterministic oracle, discrimination, adversarial validity)."
   ],
   "model": [],
   "results": [
-    "A blind pilot with one fresh agent on 7 tasks: 7 of 7 passed every visible test; 2 of 7 failed hidden tests (a recursion limit on a 1,100-node chain, one missed validation).",
-    "The orchestration comparison itself was never run."
+   "A blind pilot with one fresh agent on 7 tasks: 7 of 7 passed every visible test; 2 of 7 failed hidden tests (a recursion limit on a 1,100-node chain, one missed validation).",
+   "The orchestration comparison itself was never run."
   ],
   "learned": [
-    "Visible tests passing is not the same as working.",
-    "Compare a loop against one agent at equal total budget, with the task as the unit."
+   "Visible tests passing is not the same as working.",
+   "Compare a loop against one agent at equal total budget, with the task as the unit."
   ],
   "became_text": "bonfire pins benchlet by commit as its external eval corpus, with the equal-budget rule and the pilot table as its first target. playdough keeps the idea as a held-back playability check the generating agent never sees.",
   "spec": [
-    {"label": "tasks", "value": "16", "source": "manifest.json"},
-    {"label": "idea pool", "value": "125", "source": "research/idea-pool.md"},
-    {"label": "visible tests passed", "value": "7 / 7", "source": "research/baseline-pilot.md"},
-    {"label": "hidden failures", "value": "2 / 7", "source": "research/baseline-pilot.md"}
+   {
+    "label": "tasks",
+    "value": "16",
+    "source": "manifest.json"
+   },
+   {
+    "label": "idea pool",
+    "value": "125",
+    "source": "research/idea-pool.md"
+   },
+   {
+    "label": "visible tests passed",
+    "value": "7 / 7",
+    "source": "research/baseline-pilot.md"
+   },
+   {
+    "label": "hidden failures",
+    "value": "2 / 7",
+    "source": "research/baseline-pilot.md"
+   }
   ],
-  "links": [{"label": "GitHub: benchlet", "url": "https://github.com/davidghatley/benchlet"}],
-  "hero": {"src": "", "alt": ""},
+  "links": [
+   {
+    "label": "GitHub: benchlet",
+    "url": "https://github.com/davidghatley/benchlet"
+   }
+  ],
+  "hero": {
+   "src": "",
+   "alt": ""
+  },
   "media": []
  },
  {
@@ -151,36 +241,62 @@
   "status": "experiments",
   "order": 4,
   "became": "bonfire",
-  "glyph": ["XXXX.", "X..X.", "X..XX", "X...X", ".XXXX"],
+  "glyph": [
+   "XXXX.",
+   "X..X.",
+   "X..XX",
+   "X...X",
+   ".XXXX"
+  ],
   "oneliner": "A propose, evaluate, criticize, verify loop over git worktrees. 67 tests, never run on a real model.",
   "when": "2026-09-23 to 2026-09-25",
   "role": "Design and build of the harness, store and tests.",
   "status_note": "Experiment, finished. Its loop design lives on in bonfire.",
   "question": "Can a small, model-agnostic loop improve a file against an executable contract, with critics and an independent verifier?",
   "tried": [
-    "A CLI loop: propose, snapshot, evaluate deterministically, criticize with fresh read-only critics, verify in a separate worktree, select, then mutate or reset.",
-    "A durable store with a per-run lock, atomic state and an append-only event log, so a run resumes after a crash.",
-    "A scripted self-test: one worker, one worker plus review, and three parallel workers on a toy 100-point contract."
+   "A CLI loop: propose, snapshot, evaluate deterministically, criticize with fresh read-only critics, verify in a separate worktree, select, then mutate or reset.",
+   "A durable store with a per-run lock, atomic state and an append-only event log, so a run resumes after a crash.",
+   "A scripted self-test: one worker, one worker plus review, and three parallel workers on a toy 100-point contract."
   ],
   "data": [],
   "model": [],
   "results": [
-    "In the scripted test, one worker stopped at 75; review plus revision and three parallel workers both reached 100.",
-    "Those were scripted workers: no model calls, so it says nothing about real agents. Most commits went into recovery edge cases before a single real loop ran."
+   "In the scripted test, one worker stopped at 75; review plus revision and three parallel workers both reached 100.",
+   "Those were scripted workers: no model calls, so it says nothing about real agents. Most commits went into recovery edge cases before a single real loop ran."
   ],
   "learned": [
-    "A critic's finding is a claim; only a fresh verifier makes it a fact.",
-    "Run one real loop before hardening recovery.",
-    "Build on a durable runtime instead of writing your own git state machine."
+   "A critic's finding is a claim; only a fresh verifier makes it a fact.",
+   "Run one real loop before hardening recovery.",
+   "Build on a durable runtime instead of writing your own git state machine."
   ],
   "became_text": "bonfire is the harness built for gauntlet loops: the loop phases, the finding schema and verify rule, the durable store, the restart test and the worktree helper all moved there, on a durable runtime instead of a hand-rolled one.",
   "spec": [
-    {"label": "tests", "value": "67", "source": "tests/"},
-    {"label": "modules", "value": "15", "source": "src/gauntlet/"},
-    {"label": "real model runs", "value": "0", "source": "salvage audit 2026-10-17"}
+   {
+    "label": "tests",
+    "value": "67",
+    "source": "tests/"
+   },
+   {
+    "label": "modules",
+    "value": "15",
+    "source": "src/gauntlet/"
+   },
+   {
+    "label": "real model runs",
+    "value": "0",
+    "source": "salvage audit 2026-10-17"
+   }
   ],
-  "links": [{"label": "GitHub: gauntlet", "url": "https://github.com/davidghatley/gauntlet"}],
-  "hero": {"src": "", "alt": ""},
+  "links": [
+   {
+    "label": "GitHub: gauntlet",
+    "url": "https://github.com/davidghatley/gauntlet"
+   }
+  ],
+  "hero": {
+   "src": "",
+   "alt": ""
+  },
   "media": []
  },
  {
@@ -191,36 +307,62 @@
   "status": "experiments",
   "order": 5,
   "became": "mise en place",
-  "glyph": ["X...X", ".X.X.", "..X..", ".X.X.", "X...X"],
+  "glyph": [
+   "X...X",
+   ".X.X.",
+   "..X..",
+   ".X.X.",
+   "X...X"
+  ],
   "oneliner": "A claim graph of what 10 open-source repos can do, where every claim points to source lines.",
   "when": "2026-09-25",
   "role": "Ontology, curation and the query CLI.",
   "status_note": "Experiment, finished. Its card schema is in mise en place.",
   "question": "Can an agent ask 'what can I build this with?' and get answers backed by evidence instead of memory?",
   "tried": [
-    "An ontology and a SQLite claim graph over 10 repos pinned by commit: swarm, pydantic-ai, llama.cpp, ollama, bubbletea, duckdb, prefect, ripgrep, FFmpeg, three.js.",
-    "A query CLI for capabilities, alternatives, primitives, licenses, components and provenance.",
-    "I dropped the project, capability, primitive, component chain: a reusable component became a query, not an entity."
+   "An ontology and a SQLite claim graph over 10 repos pinned by commit: swarm, pydantic-ai, llama.cpp, ollama, bubbletea, duckdb, prefect, ripgrep, FFmpeg, three.js.",
+   "A query CLI for capabilities, alternatives, primitives, licenses, components and provenance.",
+   "I dropped the project, capability, primitive, component chain: a reusable component became a query, not an entity."
   ],
   "data": [
-    "Hand-curated claim bundles: 48 components, 46 concepts, 215 source artifacts, 231 claims and 720 evidence links. A script checks every quoted excerpt against git."
+   "Hand-curated claim bundles: 48 components, 46 concepts, 215 source artifacts, 231 claims and 720 evidence links. A script checks every quoted excerpt against git."
   ],
   "model": [],
   "results": [
-    "Every claim traced to source. But the whole first version went into identity and evidence, and none of it was about what I actually wanted to build."
+   "Every claim traced to source. But the whole first version went into identity and evidence, and none of it was about what I actually wanted to build."
   ],
   "learned": [
-    "Start with a flat list of cards; add structure only when a query needs it.",
-    "Licenses belong to each asset, not each repo (three.js is MIT; its example assets are not)."
+   "Start with a flat list of cards; add structure only when a query needs it.",
+   "Licenses belong to each asset, not each repo (three.js is MIT; its example assets are not)."
   ],
   "became_text": "mise en place uses its capability contract (inputs, outputs, effects, preconditions, postconditions, hard qualifiers, non-goals) as the primitive-card schema, with a license field per asset. playdough keeps the per-asset license rule.",
   "spec": [
-    {"label": "repos", "value": "10", "source": "research/corpus-manifest.json"},
-    {"label": "claims", "value": "231", "source": "README.md"},
-    {"label": "evidence links", "value": "720", "source": "README.md"}
+   {
+    "label": "repos",
+    "value": "10",
+    "source": "research/corpus-manifest.json"
+   },
+   {
+    "label": "claims",
+    "value": "231",
+    "source": "README.md"
+   },
+   {
+    "label": "evidence links",
+    "value": "720",
+    "source": "README.md"
+   }
   ],
-  "links": [{"label": "GitHub: primitive", "url": "https://github.com/davidghatley/primitive"}],
-  "hero": {"src": "", "alt": ""},
+  "links": [
+   {
+    "label": "GitHub: primitive",
+    "url": "https://github.com/davidghatley/primitive"
+   }
+  ],
+  "hero": {
+   "src": "",
+   "alt": ""
+  },
   "media": []
  },
  {
@@ -230,35 +372,56 @@
   "status": "experiments",
   "order": 6,
   "became": "napkin",
-  "glyph": ["XXXXX", "X...X", "X...X", "X...X", "XXXXX"],
+  "glyph": [
+   "XXXXX",
+   "X...X",
+   "X...X",
+   "X...X",
+   "XXXXX"
+  ],
   "oneliner": "A design canvas that became a 473-capability spec before it drew a single pixel.",
   "when": "2026-10-02",
   "role": "Spec, invariants and the conformance harness.",
   "status_note": "Experiment, finished. napkin is the canvas it was meant to be.",
   "question": "What would a canvas for components need to guarantee, before building it?",
   "tried": [
-    "A frozen spec with 473 capabilities and 14 invariants, and a five-stage verify command with CI.",
-    "Reference packages for the document, geometry, identity, storage and transactions.",
-    "A transaction model: batched edits, dry runs through the same planner, attributed commits, undo as a new transaction."
+   "A frozen spec with 473 capabilities and 14 invariants, and a five-stage verify command with CI.",
+   "Reference packages for the document, geometry, identity, storage and transactions.",
+   "A transaction model: batched edits, dry runs through the same planner, attributed commits, undo as a new transaction."
   ],
   "data": [],
   "model": [],
   "results": [
-    "The spec grew to 620 KB. Every change needed a decision record, and no editor or renderer was ever built."
+   "The spec grew to 620 KB. Every change needed a decision record, and no editor or renderer was ever built."
   ],
   "learned": [
-    "Write only the spec the live demo needs.",
-    "One mutation path for every writer, human or agent, attributed and undoable.",
-    "Plain files and git first; prove you need more before building it."
+   "Write only the spec the live demo needs.",
+   "One mutation path for every writer, human or agent, attributed and undoable.",
+   "Plain files and git first; prove you need more before building it."
   ],
   "became_text": "napkin is the canvas built the other way round: working first. It kept five invariants, the agent-surface and code-component checklists, and the condensed transaction model.",
   "spec": [
-    {"label": "capabilities specified", "value": "473", "source": "STATUS.md"},
-    {"label": "invariants", "value": "14", "source": "README.md"},
-    {"label": "pixels drawn", "value": "0", "source": "no editor or renderer in the repo"}
+   {
+    "label": "capabilities specified",
+    "value": "473",
+    "source": "STATUS.md"
+   },
+   {
+    "label": "invariants",
+    "value": "14",
+    "source": "README.md"
+   },
+   {
+    "label": "pixels drawn",
+    "value": "0",
+    "source": "no editor or renderer in the repo"
+   }
   ],
   "links": [],
-  "hero": {"src": "", "alt": ""},
+  "hero": {
+   "src": "",
+   "alt": ""
+  },
   "media": []
  }
 ]

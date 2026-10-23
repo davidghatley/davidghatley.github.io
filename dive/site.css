@@ -107,6 +107,10 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
    time. line-height 0 keeps every character out of the line box, so the Stem 7 strut holds the baseline and the
    row height while faces and sizes change. */
 .row__title .ch { line-height: 0; }
+/* experiments: the dataset line under the title, Stem 7 16 muted, on its own 20px line */
+/* the became tag: 0.4px tracking (7px a character) so "→ mise en place" clears the arrow */
+.tag.tag--to { letter-spacing: .4px; }
+.row__sub { display: block; margin-top: var(--space-1); font-size: 16px; line-height: 20px; color: var(--ink-muted); }
 .row__title .ch--on { font-family: var(--font-title, var(--font-pixel)); font-weight: 800; font-size: var(--to-d, var(--tpx)); text-transform: var(--to-case, none);
   -webkit-font-smoothing: auto; font-synthesis: none; }
 @media (max-width: 639px) { .row__title .ch--on { font-size: var(--to-p, var(--tpx)); } }

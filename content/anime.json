@@ -1,8 +1,54 @@
 [
  {
+  "slug": "anime-pipeline",
+  "title": "anime pipeline",
+  "category": "generative art",
+  "status": "generative art",
+  "order": 1,
+  "glyph": [
+   "XXX..",
+   "..X..",
+   "..XXX",
+   "....X",
+   "XXXXX"
+  ],
+  "oneliner": "The machine behind meguri and shuto: Blender previz, eight open models and one 12 GB GPU, with every run logged.",
+  "when": "2026-10-11 to 2026-10-22",
+  "role": "I designed and run the pipeline: the Blender world and previz tools, the ComfyUI workflows, the review gates, the GPU lock and the run log.",
+  "status_note": "In use. It makes every frame of meguri and shuto; the repo stays private.",
+  "hero": {
+   "src": "public/media/anime-pipeline/plate-pipeline-light.png",
+   "alt": "Plate 2.1: the production pipeline in eight stages, from story bible to sound and cut, with CPU and GPU stages marked and measured times."
+  },
+  "media": [],
+  "spec": [
+   {
+    "label": "generations logged",
+    "value": "1,788",
+    "source": "logs/runs.jsonl, 2026-10-12 to 2026-10-22"
+   },
+   {
+    "label": "GPU hours",
+    "value": "37.6",
+    "source": "logs/runs.jsonl, sum of seconds"
+   },
+   {
+    "label": "median peak VRAM",
+    "value": "11.3–11.5 of 12 GiB",
+    "source": "logs/runs.jsonl, per model family"
+   },
+   {
+    "label": "CUDA out-of-memory errors",
+    "value": "0",
+    "source": "logs/runs.jsonl"
+   }
+  ],
+  "links": []
+ },
+ {
   "slug": "meguri",
   "title": "meguri",
-  "order": 1,
+  "order": 2,
   "glyph": [
    "X.X.X",
    "XXXXX",
@@ -63,7 +109,7 @@
    {
     "src": "public/media/meguri/depth-passes.jpg",
     "alt": "Line art, depth map and generated anime frame of a boy on a bicycle in a narrow street, stacked.",
-    "caption": "Line art and depth are the two inputs I hand the model; the bicycle shot is the result."
+    "caption": "Line art and depth come out of the same Blender scene, but only depth steers the video model: line art made it draw edges as new objects. The bicycle shot is the result."
    }
   ],
   "spec": [
@@ -96,7 +142,7 @@
   "links": [],
   "body": [
    "I can block a shot as gray boxes in Blender and get an anime frame back that keeps the same camera, stairs and figure placement. The first panel is one shot, SH050 crane down the stair street, as four stages of one clock: the Blender previz, the depth and line passes, the ComfyUI job, and the finished clip.",
-   "The pipeline is Blender previz, then ComfyUI and a video model steered by depth and line passes, all on one 12 GB RTX 3060. Nothing is allowed to need more than 12 GB of VRAM, so I lean on 8-bit weights and tiled decode. Every generation is appended to a run log.",
+   "The pipeline is Blender previz, then ComfyUI and a video model steered by depth passes, all on one 12 GB RTX 3060. Nothing is allowed to need more than 12 GB of VRAM, so I lean on 8-bit weights and tiled decode. Every generation is appended to a run log.",
    "Meguri is an original series about a terraced spring town whose water runs downhill and still comes back to the top. The town is built as a 3D world from a plan, a map with 20 numbered camera positions, so every shot starts from a real place. I storyboard in previz first and spend GPU time on video only once a board is approved. The look is a two-ink riso print, one ink pair per character and place, and the geometry survives a change of print style.",
    "What exists: stills, thirty-thumbnail storyboards, character turnarounds, and test clips of single shots such as the stair climb and the stair street. No episode is finished. What I learned: depth is the operator. Once the previz carries the camera and layout, the style becomes a setting I can change, and most failures are the model ignoring the scene rather than the scene being wrong. Character consistency and shot-to-shot continuity are not solved."
   ],
@@ -105,7 +151,7 @@
  {
   "slug": "shuto",
   "title": "shuto",
-  "order": 2,
+  "order": 3,
   "glyph": [
    "XXXXX",
    "X.X.X",
@@ -114,7 +160,7 @@
    "X...X"
   ],
   "status": "generative art",
-  "status_note": "Lab piece in development. Previz and look tests only: no finished episode, and the look is not chosen yet.",
+  "status_note": "Lab piece in development. Previz and look tests only: no finished episode yet. The look is chosen: neon cyberpunk.",
   "oneliner": "Blades, bikes and light trails on a ruined expressway: previz first, then video.",
   "role": "I am developing SHUTO as the second show on the pipeline: the expressway 3D kit, the shot choreography in Blender, the look lab and the video tests.",
   "when": "2026-10",
