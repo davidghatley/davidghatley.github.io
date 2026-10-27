@@ -122,6 +122,7 @@
   }
   function applyAccent(node, m) {
     if (m.font_display) node.style.setProperty('--font-title', m.font_display);
+    if (m.font_weight) node.style.setProperty('--to-w', m.font_weight);   // library faces ship one weight: no synthetic bold
     node.classList.add('acc');
     if (m.accent) node.style.setProperty('--acc-l', m.accent);
     if (m.accent_dark) node.style.setProperty('--acc-d', m.accent_dark);

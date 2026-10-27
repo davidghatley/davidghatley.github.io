@@ -134,70 +134,64 @@
     "category": "hardware"
   },
   {
-    "slug": "stem7",
-    "title": "stem 7",
+    "slug": "fonts",
+    "title": "font library",
     "order": 10,
     "glyph": [
       "XXXXX",
-      "....X",
-      "...X.",
-      "..X..",
-      "..X.."
+      "X.X.X",
+      "XXXXX",
+      "X.X.X",
+      "XXXXX"
     ],
     "status": "design system",
     "category": "design system",
-    "status_note": "Version 1.001 is out and free under the OFL. Yes, there is already a changelog. It is about the letter F.",
-    "oneliner": "My pixel font. Five sizes, zero grey pixels, and strong opinions about every other size.",
-    "role": "I drew all 120 glyphs a style in a plain text file, then wrote the tools that build, lint, kern and test them, and the site that shows them off.",
+    "status_note": "Eighteen families, all free under the OFL. Stem 7 still has its own site; the other seventeen live here.",
+    "oneliner": "Eighteen free typefaces I drew in code, from pixel faces to a textura.",
+    "role": "I drew every family as code: bitmap sources, line-and-arc skeletons stroked with different pens, and a serif built from rectangles and a flat nib. Then I built the library that shows them.",
     "when": "2026-10",
     "spec": [
       {
-        "label": "glyphs a style",
-        "value": "120",
-        "source": "stemctl lint: mapped glyphs per style"
+        "label": "families",
+        "value": "18",
+        "source": "fonts/index.html: one card per family"
       },
       {
-        "label": "grey pixels",
-        "value": "0",
-        "source": "stemctl crisp: every style at 16, 32, 48, 72 and 120 px in headless Chromium"
+        "label": "glyphs drawn",
+        "value": "2,191",
+        "source": "mapped glyphs per style, summed over every style (foundry/library.py)"
       },
       {
-        "label": "bold glyphs redrawn",
-        "value": "64",
-        "source": "tools/export_site.py: drawn Bold that differs from the auto-bold draft"
-      },
-      {
-        "label": "WOFF2",
-        "value": "3.4 KB",
-        "source": "fonts/Stem7-Regular.woff2, 3,456 bytes"
+        "label": "licence",
+        "value": "OFL 1.1",
+        "source": "fonts/files/*.zip: OFL.txt in every zip"
       }
     ],
     "links": [
       {
-        "label": "Website: stem 7",
-        "url": "https://davidghatley.github.io/stem7/"
+        "label": "Font library",
+        "url": "fonts/index.html"
       },
       {
-        "label": "GitHub: stem7",
-        "url": "https://github.com/davidghatley/stem7"
+        "label": "Website: stem 7",
+        "url": "https://davidghatley.github.io/stem7/"
       }
     ],
     "actions": [
       {
-        "label": "Download .zip · 30 KB",
-        "url": "https://github.com/davidghatley/stem7/releases/latest/download/stem7.zip",
+        "label": "Browse 18 families →",
+        "url": "fonts/index.html",
         "primary": true
       },
       {
-        "label": "See every pixel →",
-        "url": "https://davidghatley.github.io/stem7/"
+        "label": "Download all · .zip",
+        "url": "fonts/files/hatley-fonts.zip"
       }
     ],
     "body": [
-      "Stem 7 started as my logo: a d and an h sharing one stem on a 7 by 7 grid. The stem became the cap height, the bar became the x-height, and the rest of the alphabet had to fit around it.",
-      "The em is 2,400 units, so one cell is always the font size divided by eight. At 16, 32, 48, 72 and 120 px every edge lands on a whole pixel, and the build fails if a single grey pixel shows up. The first build was 63.5% grey at 16 px.",
-      "Every glyph is nine rows of X and dot in a text file, with the reason for the drawing written above it. Kerning comes from the drawings in whole cells. A HarfBuzz check I added for this release caught 11 F pairs that the build had been quietly dropping.",
-      "What I learned: a font is easier to argue with when it is a text file. The diff shows exactly which cell changed and the comment says why."
+      "Stem 7 started as my logo and the Dive Club liked it, so I kept going: two new widths of it, then fifteen families that are not Stem 7 at all.",
+      "Most of them share one of two skeletons. Hoop's lines and arcs, stroked with a round pen, give a geometric sans; the same skeleton with octagonal bowls and a broad nib at 38 degrees gives a textura; squeezed, sheared or cut by knife lines it gives the display faces. Pip 57's 5×7 bitmaps give the dot, corridor and stencil faces.",
+      "What I learned: a typeface is a construction rule plus a list of exceptions. The rule gets you 90% of the alphabet in an afternoon; the exceptions (a three-cell M, a U whose right stem is thin, a v that pathops silently dropped) are where the week goes."
     ]
   }
 ]

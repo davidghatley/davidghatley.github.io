@@ -1,1 +1,12 @@
-{"accent": "#5c5f66", "accent_dark": "#a9adb5", "on_accent": "#f9f9f5", "label": "visible vs hidden", "fonts": ["https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap"], "font_display": "\"IBM Plex Mono\", ui-monospace, monospace"}
+{
+  "accent": "#5c5f66",
+  "accent_dark": "#a9adb5",
+  "on_accent": "#f9f9f5",
+  "label": "visible vs hidden",
+  "fonts": [
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap",
+    "{base}fonts/files/fonts.css"
+  ],
+  "font_display": "\"Maze\", var(--font-pixel)",
+  "font_weight": 400
+}

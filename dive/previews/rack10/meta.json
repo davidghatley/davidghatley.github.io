@@ -2,5 +2,10 @@
   "accent": "#a5562b",
   "accent_dark": "#e3925f",
   "on_accent": "#f9f9f5",
-  "label": "STL turntable + renders"
+  "label": "STL turntable + renders",
+  "font_display": "\"Bulkhead\", var(--font-pixel)",
+  "font_weight": 400,
+  "fonts": [
+    "{base}fonts/files/fonts.css"
+  ]
 }

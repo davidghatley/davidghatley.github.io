@@ -2,7 +2,7 @@
    Colour, space, motion and type families come from tokens; no hex lives in this file.
 
    REFERENCE: one line per component (what · when · tokens)
-   ss-body      page ground and body text · every page · paper, ink, font-sans, body 16/24
+   ss-body      page ground and body text · every page · paper, ink, font-text (Hoop), body 16/24
    ss-label     mono uppercase label · plate heads, spec strips, captions of figures · ink-muted, font-mono 11/16
    ss-plate     frame + __head + __body (figure | key) + __cap · every figure, manual, card · sheet, rule, ink, space-3/4/6
    ss-key       numbered key matched to callouts; li.is-focal for the one vermilion · inside a plate · ink, vermilion, font-serif 16
@@ -46,7 +46,7 @@
    a whole pixel on the 4px grid, so text below a label never lands on a half pixel at 1x. */
 
 /* ---------- base ---------- */
-.ss-body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/24px var(--font-sans); }
+.ss-body { margin: 0; background: var(--paper); color: var(--ink); font: var(--type-body); }
 .ss-label { font: 500 11px/16px var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
 .ss-label b, .ss-label strong { color: var(--cobalt-text); font-weight: 600; }
 :where(.ss-plate, .ss-press, .ss-field, .ss-hud) :focus-visible, .ss-press:focus-visible, .ss-field:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }

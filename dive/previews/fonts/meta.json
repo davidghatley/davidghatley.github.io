@@ -1,0 +1,9 @@
+{
+  "accent": "#2236b0",
+  "accent_dark": "#9fb0ff",
+  "on_accent": "#f9f9f5",
+  "label": "eighteen families, one at a time",
+  "fonts": ["{base}fonts/files/fonts.css"],
+  "font_display": "\"Hoop\", var(--font-pixel)",
+  "font_weight": 400
+}
