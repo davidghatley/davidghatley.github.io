@@ -3,5 +3,9 @@
   "accent_dark": "#9fb0ff",
   "on_accent": "#f9f9f5",
   "label": "the cover, playable",
-  "font_display": "var(--font-pixel)"
+  "font_display": "\"Stem 7 Wide\", var(--font-pixel)",
+  "font_weight": 400,
+  "fonts": [
+    "{base}fonts/files/fonts.css"
+  ]
 }

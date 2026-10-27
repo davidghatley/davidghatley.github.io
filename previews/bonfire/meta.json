@@ -1,10 +1,12 @@
 {
   "accent": "#d9481f",
   "on_accent": "#16181d",
-  "label": "kill -9 \u2192 resumed replay",
-  "font_display": "Archivo",
+  "label": "kill -9 → resumed replay",
+  "font_display": "\"Brick\", var(--font-pixel)",
   "fonts": [
-    "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "{base}fonts/files/fonts.css"
   ],
-  "accent_dark": "#ff6a3d"
+  "accent_dark": "#ff6a3d",
+  "font_weight": 400
 }

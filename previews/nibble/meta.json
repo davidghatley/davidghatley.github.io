@@ -4,7 +4,9 @@
   "on_accent": "#f9f9f5",
   "label": "small vs big pick",
   "fonts": [
-    "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap"
+    "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap",
+    "{base}fonts/files/fonts.css"
   ],
-  "font_display": "\"Archivo\", \"Arial Narrow\", system-ui, sans-serif"
+  "font_display": "\"Pip 57\", var(--font-pixel)",
+  "font_weight": 400
 }

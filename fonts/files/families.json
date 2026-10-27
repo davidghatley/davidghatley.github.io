@@ -1,0 +1,211 @@
+[
+ {
+  "slug": "stem-7",
+  "name": "Stem 7",
+  "sample": "Every edge on a whole pixel",
+  "cats": [
+   "Pixel"
+  ],
+  "grid": true,
+  "href": "https://davidghatley.github.io/stem7/",
+  "glyphs": 121
+ },
+ {
+  "slug": "stem-7-wide",
+  "name": "Stem 7 Wide",
+  "sample": "DIVE CLUB",
+  "cats": [
+   "Pixel",
+   "Display"
+  ],
+  "grid": true,
+  "href": "stem-7-wide/index.html",
+  "glyphs": 121
+ },
+ {
+  "slug": "stem-7-condensed",
+  "name": "Stem 7 Condensed",
+  "sample": "SEED 4127 · build log 07",
+  "cats": [
+   "Pixel"
+  ],
+  "grid": true,
+  "href": "stem-7-condensed/index.html",
+  "glyphs": 121
+ },
+ {
+  "slug": "pip-57",
+  "name": "Pip 57",
+  "sample": "Next stop: 07 · on time",
+  "cats": [
+   "Pixel",
+   "Mono"
+  ],
+  "grid": true,
+  "href": "pip-57/index.html",
+  "glyphs": 107
+ },
+ {
+  "slug": "tube-5",
+  "name": "Tube 5",
+  "sample": "NEON · SIGNS · POSTERS",
+  "cats": [
+   "Display",
+   "Pixel"
+  ],
+  "grid": true,
+  "href": "tube-5/index.html",
+  "glyphs": 78
+ },
+ {
+  "slug": "tick-35",
+  "name": "Tick 35",
+  "sample": "HP 28/30 · SEED 4127",
+  "cats": [
+   "Pixel"
+  ],
+  "grid": true,
+  "href": "tick-35/index.html",
+  "glyphs": 79
+ },
+ {
+  "slug": "hoop",
+  "name": "Hoop",
+  "sample": "Small legible worlds",
+  "cats": [
+   "Sans"
+  ],
+  "grid": false,
+  "href": "hoop/index.html",
+  "glyphs": 108
+ },
+ {
+  "slug": "hoop-mono",
+  "name": "Hoop Mono",
+  "sample": "git commit -m \"fix: kern F\"",
+  "cats": [
+   "Mono",
+   "Sans"
+  ],
+  "grid": false,
+  "href": "hoop-mono/index.html",
+  "glyphs": 108
+ },
+ {
+  "slug": "notch",
+  "name": "Notch",
+  "sample": "STOP SHRINKING",
+  "cats": [
+   "Serif",
+   "Display"
+  ],
+  "grid": false,
+  "href": "notch/index.html",
+  "glyphs": 54
+ },
+ {
+  "slug": "quire",
+  "name": "Quire",
+  "sample": "Gauntlet of the Quire",
+  "cats": [
+   "Blackletter",
+   "Display"
+  ],
+  "grid": false,
+  "href": "quire/index.html",
+  "glyphs": 108
+ },
+ {
+  "slug": "brick",
+  "name": "Brick",
+  "sample": "Cult Classic",
+  "cats": [
+   "Blackletter",
+   "Display"
+  ],
+  "grid": false,
+  "href": "brick/index.html",
+  "glyphs": 108
+ },
+ {
+  "slug": "spire",
+  "name": "Spire",
+  "sample": "ULTRA LEGIBLE 02",
+  "cats": [
+   "Display"
+  ],
+  "grid": false,
+  "href": "spire/index.html",
+  "glyphs": 108
+ },
+ {
+  "slug": "hopscotch",
+  "name": "Hopscotch",
+  "sample": "Wrongo bongo hopscotch",
+  "cats": [
+   "Display"
+  ],
+  "grid": false,
+  "href": "hopscotch/index.html",
+  "glyphs": 108
+ },
+ {
+  "slug": "halfstep",
+  "name": "Halfstep",
+  "sample": "Halfway there",
+  "cats": [
+   "Pixel",
+   "Sans"
+  ],
+  "grid": false,
+  "href": "halfstep/index.html",
+  "glyphs": 108
+ },
+ {
+  "slug": "slash",
+  "name": "Slash",
+  "sample": "New Speed Run",
+  "cats": [
+   "Display"
+  ],
+  "grid": false,
+  "href": "slash/index.html",
+  "glyphs": 108
+ },
+ {
+  "slug": "bullet",
+  "name": "Bullet",
+  "sample": "LINE 7 → A",
+  "cats": [
+   "Display",
+   "Sans"
+  ],
+  "grid": false,
+  "href": "bullet/index.html",
+  "glyphs": 82
+ },
+ {
+  "slug": "maze",
+  "name": "Maze",
+  "sample": "Find the exit",
+  "cats": [
+   "Pixel",
+   "Mono"
+  ],
+  "grid": false,
+  "href": "maze/index.html",
+  "glyphs": 107
+ },
+ {
+  "slug": "bulkhead",
+  "name": "Bulkhead",
+  "sample": "RACK 10 · BAY 4",
+  "cats": [
+   "Pixel",
+   "Display"
+  ],
+  "grid": false,
+  "href": "bulkhead/index.html",
+  "glyphs": 107
+ }
+]
