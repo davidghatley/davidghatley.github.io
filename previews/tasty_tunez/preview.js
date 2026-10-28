@@ -18,6 +18,8 @@ const CSS = `
 .pv-tasty_tunez .tt-play{height:40px;padding:0 16px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);font:500 11px/16px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
 .pv-tasty_tunez .tt-time{font-family:var(--font-pixel);font-size:32px;line-height:32px;font-variant-numeric:tabular-nums;font-synthesis:none;-webkit-font-smoothing:none}
 .pv-tasty_tunez .tt-cap{margin:0;font:italic 400 16px/24px var(--font-serif);color:var(--ink-muted);max-width:28rem}
+.pv-tasty_tunez .tt-promo{margin:0;display:grid;gap:8px}
+.pv-tasty_tunez .tt-promo video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:var(--sheet);border:1px solid var(--rule)}
 @media(max-width:719px){.pv-tasty_tunez{grid-template-columns:minmax(0,1fr)}}
 `;
 const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
@@ -47,9 +49,15 @@ export default function mount(root, { mode, base }) {
   el.innerHTML = `<canvas role="img" tabindex="0" aria-label="Cover plate for the selected song: pitch over time"></canvas>
     <div class="tt-side"><span class="tt-k">Generated songs · cover drawn from each</span><div class="tt-songs" data-songs></div>
     <div class="tt-row"><button class="tt-play" type="button" data-play disabled>Loading</button><span class="tt-time" data-time>0:00</span><span class="tt-k" data-hover></span></div>
-    <p class="tt-cap">Press play and the plate draws itself from the song: a column per slice, its three strongest notes, the loudness underneath. Click the grid to jump.</p></div>`;
+    <p class="tt-cap">Press play and the plate draws itself from the song: a column per slice, its three strongest notes, the loudness underneath. Click the grid to jump.</p>
+    <figure class="tt-promo"><video muted loop playsinline preload="metadata" controls aria-label="A 37-second silent walkthrough of the app: a written brief, the live app and a cover plate drawing itself from the song"></video><figcaption class="tt-cap">The app in 37 seconds.</figcaption></figure></div>`;
   const cv = el.querySelector('canvas'), ctx = cv.getContext('2d');
   const songsEl = el.querySelector('[data-songs]'), playB = el.querySelector('[data-play]'), timeEl = el.querySelector('[data-time]'), hoverEl = el.querySelector('[data-hover]');
+  const vid = el.querySelector('video'), still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  vid.poster = base + 'public/media/tasty_tunez/promo.jpg'; vid.muted = true; vid.src = base + 'public/media/tasty_tunez/promo.mp4';
+  // autoplay only with motion allowed, and only while the video is on screen
+  const io = new IntersectionObserver(([e]) => { if (still) return; if (e.isIntersecting) vid.play().catch(() => {}); else vid.pause(); });
+  io.observe(vid);
   const audio = new Audio(); audio.preload = 'none';
   let songs = [], cur = null, raf = 0, alive = true, geo = null, hoverCol = -1, lastFrame = -1;
 
@@ -162,6 +170,7 @@ export default function mount(root, { mode, base }) {
 
   return () => {
     alive = false; cancelAnimationFrame(raf); audio.pause(); audio.removeAttribute('src');
+    io.disconnect(); vid.pause(); vid.removeAttribute('src');
     ro.disconnect(); mo.disconnect(); themeMq.removeEventListener('change', retheme); style.remove(); el.remove();
   };
 }

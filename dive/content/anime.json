@@ -25,22 +25,22 @@
    {
     "label": "generations logged",
     "value": "1,788",
-    "source": "logs/runs.jsonl, 2026-10-12 to 2026-10-22"
+    "source": "the pipeline's run log, Oct 12–22, 2026"
    },
    {
     "label": "GPU hours",
     "value": "37.6",
-    "source": "logs/runs.jsonl, sum of seconds"
+    "source": "the run log, summed run time"
    },
    {
     "label": "median peak VRAM",
     "value": "11.3–11.5 of 12 GiB",
-    "source": "logs/runs.jsonl, per model family"
+    "source": "the run log, per model family"
    },
    {
     "label": "CUDA out-of-memory errors",
     "value": "0",
-    "source": "logs/runs.jsonl"
+    "source": "the run log"
    }
   ],
   "links": []
@@ -116,27 +116,27 @@
    {
     "label": "generations logged",
     "value": "1,024",
-    "source": "logs/runs.jsonl (anime-pipeline repo), rows not naming shuto or suri; all status success, read 2026-10-22"
+    "source": "the pipeline's run log, runs for meguri only; all succeeded, read Oct 22, 2026"
    },
    {
     "label": "map camera positions",
     "value": "20",
-    "source": "project/world/out/meguri_atlas.svg legend: 'cameras: 2 sea gate · 3 stair street ...' to 20"
+    "source": "the town map's camera legend"
    },
    {
     "label": "storyboard thumbnails",
     "value": "30",
-    "source": "project/meguri/review/media/board_ep01_board.jpg, 'previz v2 - 30 thumbnails'"
+    "source": "the episode 1 storyboard, previz v2"
    },
    {
     "label": "GB VRAM ceiling",
     "value": "12",
-    "source": "AGENTS.md memory budget: nothing may need more than 12 GB of VRAM (one RTX 3060)"
+    "source": "the project's memory budget: nothing may need more than 12 GB of VRAM (one RTX 3060)"
    },
    {
     "label": "fps",
     "value": "24",
-    "source": "docs/manual/pipeline_manual.html"
+    "source": "the pipeline manual"
    }
   ],
   "links": [],
@@ -229,27 +229,27 @@
    {
     "label": "shots blocked in previz",
     "value": "13",
-    "source": "shows/shuto/previz/specs/ (SH01 to SH13), read 2026-10-22"
+    "source": "previz shot specs SH01 to SH13, read Oct 22, 2026"
    },
    {
     "label": "look-lab frames",
     "value": "180",
-    "source": "shows/shuto/NOTES.md, 'Look lab: 15 looks x 12 frames'"
+    "source": "the show notes: look lab, 15 looks x 12 frames"
    },
    {
     "label": "frames with blades",
     "value": "172",
-    "source": "shows/shuto/NOTES.md, look lab: weapons in 172 of 180"
+    "source": "the show notes: weapons in 172 of 180 look-lab frames"
    },
    {
     "label": "generations logged",
     "value": "749",
-    "source": "logs/runs.jsonl rows naming shuto in name, dest or outputs; 605 succeeded, 144 failed to submit, read 2026-10-22"
+    "source": "the pipeline's run log, runs for shuto; 605 succeeded, 144 failed to submit, read Oct 22, 2026"
    },
    {
     "label": "GB VRAM ceiling",
     "value": "12",
-    "source": "AGENTS.md memory budget: one RTX 3060"
+    "source": "the project's memory budget: one RTX 3060"
    }
   ],
   "links": [],
@@ -274,7 +274,7 @@
   ],
   "status": "working",
   "category": "generative art",
-  "status_note": "v0.1 is public and installs with one command. The generate, cancel and install buttons are tested through the API, not yet clicked end to end on a fresh machine.",
+  "status_note": "Works locally on my GPU; the source is private for now while I decide how to release it.",
   "oneliner": "Songs from a text brief on your own GPU, each with a cover drawn from its notes.",
   "role": "I took a song apart to see what made it work, compared the open models and their licences, ran the experiments, and designed the app, the cover plates and the site. A Claude subagent built most of the app from my brief.",
   "when": "2026-10",
@@ -284,6 +284,12 @@
   },
   "media": [
    {
+    "src": "public/media/tasty_tunez/promo.mp4",
+    "poster": "public/media/tasty_tunez/promo.jpg",
+    "alt": "A 37-second silent walkthrough of tasty_tunez: a written brief, the live app, a cover plate drawing itself from the song, and the title card",
+    "caption": "The app in 37 seconds."
+   },
+   {
     "src": "public/media/tasty_tunez/cover.jpg",
     "alt": "A generated cover plate: cobalt pitch grid over time, loudness bars, a vermilion peak cell and the title in Stem 7",
     "caption": "The cover that ships inside each MP3, drawn from the song's own pitch and loudness."
@@ -292,54 +298,23 @@
     "src": "public/media/tasty_tunez/app.jpg",
     "alt": "The tasty_tunez generate view with eight starter presets",
     "caption": "Eight starting points, every ACE-Step setting, and configs you can export and load."
-   },
-   {
-    "src": "public/media/tasty_tunez/landing.jpg",
-    "alt": "The tasty_tunez landing page with a live cover generator",
-    "caption": "The landing page draws a cover live in the browser with the app's own code."
    }
   ],
   "spec": [
    {
     "label": "s per song",
     "value": "16 (2B) · 22 (XL)",
-    "source": "tools/gen.py on an RTX 3060, 120 s songs, 2026-10-23 experiment runs"
+    "source": "timed on an RTX 3060, 120 s songs, Oct 2026"
    },
    {
     "label": "songs in the experiments",
     "value": "31",
-    "source": "out/phonk_v1 (10) + out/exp_v2 (14) + out/exp_v2_xl (7)"
+    "source": "10 phonk test songs, 14 from the second round and 7 on the XL model"
    },
    {
     "label": "tests",
     "value": "47",
-    "source": "pytest -q in the tasty_tunez repo, 2026-10-23"
-   },
-   {
-    "label": "commits",
-    "value": "6",
-    "source": "git rev-list --count HEAD in tasty_tunez, read 2026-10-23"
-   }
-  ],
-  "links": [
-   {
-    "label": "Landing page",
-    "url": "https://davidghatley.github.io/tasty_tunez/"
-   },
-   {
-    "label": "GitHub",
-    "url": "https://github.com/davidghatley/tasty_tunez"
-   }
-  ],
-  "actions": [
-   {
-    "label": "Install · curl | sh",
-    "url": "https://davidghatley.github.io/tasty_tunez/#install",
-    "primary": true
-   },
-   {
-    "label": "GitHub →",
-    "url": "https://github.com/davidghatley/tasty_tunez"
+    "source": "the app's automated test suite, Oct 2026"
    }
   ],
   "body": [

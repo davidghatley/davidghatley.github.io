@@ -20,7 +20,7 @@ ${S} .st h4{margin:0;font:${CFG.h4};display:flex;align-items:center;gap:6px}
 ${S} .st h4 b{font:400 32px/32px var(--font-pixel);color:var(--acc)}
 ${S} .st .im,${S} .st canvas,${S} .st img{display:block;width:100%;height:auto;aspect-ratio:${CFG.ar};object-fit:contain;background:var(--rule-faint);border:1px solid var(--rule)}
 ${S} .stack{display:grid;gap:6px}
-${S} .node{border:1px solid var(--ink);background:var(--sheet);padding:6px;font:400 10px/14px var(--font-mono);flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:6px;min-height:60px}
+${S} .node{border:1px solid var(--ink);background:var(--sheet);padding:6px;font:400 12px/16px var(--font-mono);overflow-wrap:anywhere;min-width:0;flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:6px;min-height:60px}
 ${S} .node i{font-style:normal;color:var(--ink-muted)}
 ${S} .bar{height:6px;border:1px solid var(--ink);position:relative}${S} .bar span{position:absolute;left:0;top:0;bottom:0;background:var(--acc);width:0}
 ${S} .cap{font:${CFG.cap};color:var(--ink-muted)}
@@ -37,8 +37,8 @@ ${S} .rng{width:100%;max-width:${hero ? 760 : 560}px;accent-color:var(--acc);mar
 ${S} .side{display:grid;gap:14px;min-width:0}
 ${S} .sec{display:grid;gap:6px;min-width:0}
 ${S} .th{display:grid;gap:8px;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));align-items:start}
-${S} .th figure{margin:0;min-width:0}${S} .th img,${S} .sec video,${S} .sec .mapi{display:block;width:100%;height:auto;object-fit:contain;border:1px solid var(--rule);background:var(--rule-faint)}
-${S} .th figcaption{font:400 10px/14px var(--font-mono);color:var(--ink-muted);margin-top:2px}
+${S} .th figure{margin:0;min-width:0}${S} .th img,${S} .sec video,${S} .sec .mapi{display:block;box-sizing:border-box;width:100%;height:auto;object-fit:contain;border:1px solid var(--rule);background:var(--rule-faint)}
+${S} .th figcaption{font:400 12px/16px var(--font-mono);color:var(--ink-muted);margin-top:2px}
 ${S} .secs{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(${hero ? 300 : 220}px,1fr));align-items:start}
 ${S} .mapi{max-width:${hero ? 460 : 230}px}
 @media (max-width:820px){${S} .top{grid-template-columns:1fr}${S} .stages{grid-template-columns:1fr 1fr;row-gap:12px}${S} .st:nth-child(3){border-left:0;padding-left:0}}

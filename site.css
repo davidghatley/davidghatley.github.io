@@ -45,11 +45,15 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 .site-head { padding: 0; height: 40px; }   /* the lockup is 10 cells tall; its mark and line sit on the grid */
 .site-foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--space-4); padding-block: var(--space-4) var(--space-8); border-top: var(--line-hair) solid var(--ink); }
 .site-foot a { color: var(--ink-muted); text-decoration: none; }
+.site-foot a[href^="mailto:"] { text-transform: none; }   /* the address reads (and copies) as written */
 .site-foot a:hover, .site-foot a:focus-visible { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
 .site-foot__r { display: flex; flex-wrap: wrap; gap: var(--space-6); }
 
 .site-home { text-decoration: none; color: var(--ink); display: inline-block; vertical-align: top; }
 .site-home .ss-lockup { vertical-align: top; }
+/* the lockup line is read, so 12px (the component ships 11). Plex Mono 12/16 keeps the baseline at 12 in its box:
+   box 24-40, baseline 36, same as before. */
+.site-home .ss-lockup__line { font-size: 12px; letter-spacing: .03em; }
 .site-h1 { margin: var(--space-12) 0 0; overflow-wrap: anywhere; }
 /* Stem 7 32/40: baseline 32 in the line box, on the grid with no nudge */
 .site-h1 .ss-mast__c { font-family: var(--font-pixel); font-weight: 400; font-size: 32px; line-height: 40px;
@@ -102,7 +106,11 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
   min-height: var(--rowh); padding-block: var(--space-4); box-sizing: border-box; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .row__bar > * { position: relative; top: var(--oy, 0); }
 .row__bar > * { grid-row: 1; }
-.row__bar:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+/* the title's button is the keyboard control; its focus ring draws around the whole bar, as before */
+.row__btn { all: unset; display: inline; cursor: pointer; pointer-events: auto; }
+.row__btn:focus-visible { outline: none; }
+.row__bar:has(.row__btn:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
+.row__arrow:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
 .row__n { grid-column: 1; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
 .row__bar > .glyph { grid-column: 2; }
 .row__title { grid-column: 3 / span 4; margin: 0; pointer-events: none; --oy: 1px;
@@ -113,15 +121,15 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
    row height while faces and sizes change. */
 .row__title .ch { line-height: 0; }
 /* experiments: the dataset line under the title, Stem 7 16 muted, on its own 20px line */
-/* the became tag: 0.4px tracking (7px a character) so "→ mise en place" clears the arrow */
-.tag.tag--to { letter-spacing: .4px; }
+/* the became tag: -0.2px tracking (7px a character at 12px) so "→ mise en place" clears the arrow */
+.tag.tag--to { letter-spacing: -.2px; }
 .row__sub { display: block; margin-top: var(--space-1); font-size: 16px; line-height: 20px; color: var(--ink-muted); }
 .row__title .ch--on { font-family: var(--font-title, var(--font-pixel)); font-weight: var(--to-w, 800); font-size: var(--to-d, var(--tpx)); text-transform: var(--to-case, none);
   -webkit-font-smoothing: auto; font-synthesis: none; }
 @media (max-width: 639px) { .row__title .ch--on { font-size: var(--to-p, var(--tpx)); } }
 /* the font library row opens one letter per family of the library */
 #fonts .row__title .ch--on:nth-child(1) { font-family: "Cantilena"; } #fonts .row__title .ch--on:nth-child(2) { font-family: "Hopscotch"; }
-#fonts .row__title .ch--on:nth-child(3) { font-family: "Spire"; } #fonts .row__title .ch--on:nth-child(4) { font-family: "Pip 57"; }
+#fonts .row__title .ch--on:nth-child(3) { font-family: "Spire"; } #fonts .row__title .ch--on:nth-child(4) { font-family: "Hopscotch"; }
 #fonts .row__title .ch--on:nth-child(6) { font-family: "Bullet"; } #fonts .row__title .ch--on:nth-child(7) { font-family: "Brick"; }
 #fonts .row__title .ch--on:nth-child(8) { font-family: "Tube 5"; } #fonts .row__title .ch--on:nth-child(9) { font-family: "Hoop"; }
 #fonts .row__title .ch--on:nth-child(10) { font-family: "Hoop Mono"; } #fonts .row__title .ch--on:nth-child(11) { font-family: "Brick"; }
@@ -129,10 +137,10 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 .row__one { grid-column: 7 / span 4; margin: 0; color: var(--ink-muted); font: var(--type-body); }
 .row__tags { grid-column: -3 / span 2; justify-self: start; display: flex; gap: var(--space-1); }
-/* Plex Mono 11px advances 6.6px; 1.4px tracking makes every character exactly 8px (2 cells), so the frame lands on
-   whole pixels. The right pad is 1.4px short to absorb the trailing tracking. Baseline: 1 + 1 + 12 = 14 in the box. */
-.tag { display: block; box-sizing: border-box; height: 20px; padding: 1px 4px 1px 5px; border: var(--line-hair) solid var(--rule); color: var(--ink-muted);
-  font-family: var(--font-mono); font-weight: 500; font-size: 11px; line-height: 16px; letter-spacing: 1.4px; text-transform: uppercase; white-space: nowrap; }
+/* Plex Mono 12px advances 7.2px; 0.8px tracking makes every character exactly 8px (2 cells), so the frame lands on
+   whole pixels. The right pad is 0.8px short to absorb the trailing tracking. Baseline: 1 + 1 + 12 = 14 in the box. */
+.tag { display: block; box-sizing: border-box; height: 20px; padding: 1px 4.2px 1px 5px; border: var(--line-hair) solid var(--rule); color: var(--ink-muted);
+  font-family: var(--font-mono); font-weight: 500; font-size: 12px; line-height: 16px; letter-spacing: .8px; text-transform: uppercase; white-space: nowrap; }
 .row__arrow { grid-column: -2; justify-self: end; color: var(--ink-muted); pointer-events: none;
   transition: transform var(--dur-move) var(--ease-move); }
 .row.is-open .row__arrow { transform: rotate(90deg); color: var(--accent); pointer-events: auto; }
@@ -145,9 +153,7 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 .row__pad { margin-left: calc(2 * var(--step)); display: grid; gap: var(--space-6); padding: 0 0 var(--space-8); }
 .row__preview { min-width: 0; }
 .row__preview > img { display: block; max-width: 100%; height: auto; max-height: 520px; object-fit: contain; }
-.row__note, .row__one-m { margin: 0; font: var(--type-body); position: relative; top: -1px; }   /* Hoop 16/24 */
-.row__note { color: var(--ink-muted); }
-.row__one-m { display: none; }
+.row__note { margin: 0; font: var(--type-body); position: relative; top: -1px; color: var(--ink-muted); }   /* Hoop 16/24 */
 .open-btn { display: inline-flex; align-items: center; gap: var(--space-2); justify-self: start; height: 20px; color: var(--ink); text-decoration: none;
   font-family: var(--font-pixel); font-size: 16px; line-height: 20px; text-transform: uppercase; -webkit-font-smoothing: none; }
 .open-btn span { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 4px; }
@@ -159,10 +165,16 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 .act--primary, .act--primary:hover, .act--primary:focus-visible { background: var(--accent); color: var(--paper); }
 .act:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
-/* tablet: the oneliner moves into the open panel; title takes columns 3-6 */
+/* below 1024 the oneliner is a muted line under the title, inside the bar. The bar grows a second grid row; the
+   title, number and tags sit on the title's baseline (box top 16 + --tbl), the glyph and arrow centre on both rows.
+   Tablet: Hoop 16/24 at 16 + 40 = 56, baseline 56 + 17 - 1 = 72. */
 @media (max-width: 1023px) {
-  .row__one { display: none; }
-  .row__one-m { display: block; }
+  .row__title { grid-row: 1; }
+  .row__one { grid-row: 2; grid-column: 3 / span 5; --oy: -1px; }
+  .row__n, .row__tags { align-self: start; }
+  .row__n { margin-top: calc(var(--tbl) - 16px); }        /* Stem 7 16/20: baseline 16 */
+  .row__tags { margin-top: calc(var(--tbl) - 14px); }     /* tag baseline 14 in its frame */
+  .row__bar > .glyph, .row__arrow { grid-row: 1 / span 2; }
 }
 /* phone: glyph, then the title on the lockup name's line (60px), tags, arrow */
 @media (max-width: 639px) {
@@ -171,19 +183,29 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
   .row__n { display: none; }
   .row__bar > .glyph { grid-column: 1; }
   .row__title { grid-column: 2; }
-  .row__tags { grid-column: 3; margin-left: var(--space-3); }
+  .row__tags { grid-column: 3; margin-left: var(--space-3); margin-top: 0; --oy: 2px; }   /* nudged, not margined, so the 20px title row stays 20 */
   .row__arrow { grid-column: 4; }
+  /* phone: Hoop 13/20 under the 20px title line, box at 36, baseline 36 + 14 + 2 = 52 */
+  .row__one { grid-column: 2 / span 2; font: var(--type-small); --oy: 2px; }
   .row__pad { margin-left: 0; }
   /* 48px touch target; the label hangs at 16 (baseline 32 on the grid, cap 18-32, within 1px of the frame's centre) */
   .open-btn { display: flex; justify-self: stretch; justify-content: center; align-items: flex-start; height: 48px; padding-top: 14px; border: 2px solid var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--paper)); box-sizing: border-box; }
   .open-btn .parrow { margin-top: 2px; }
 }
 
+/* ---------- static fallback (build.py): the index and case text for crawlers and no-JS readers ----------
+   With JS on, site.js replaces it; it is hidden meanwhile so the page doesn't flash a second layout. */
+.js .static { visibility: hidden; }
+.static-list { margin: 0 0 var(--space-6); padding: 0; list-style: none; }
+.static-list li { margin: 0 0 var(--space-2); }
+.static-list a { color: var(--ink); }
+
 /* ---------- about ---------- */
 .about { margin-top: var(--space-16); padding-bottom: var(--space-16); display: grid; grid-template-columns: repeat(var(--n), var(--col)); column-gap: var(--g); }
 .about .h2 { grid-column: 1 / span 2; font: var(--type-h2); margin: 0; position: relative; top: 2px; }   /* 25/28: baseline 22 -> 24 */
 .about .ss-prose { grid-column: 3 / span 7; max-width: none; }
 .about .ss-prose p { position: relative; top: -1px; }
+.about a { color: var(--ink); text-decoration-color: var(--cobalt-text); text-underline-offset: 4px; }
 @media (max-width: 1023px) { .about .ss-prose { grid-column: 3 / -1; } }
 @media (max-width: 639px) { .about { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-4); } .about .h2, .about .ss-prose { grid-column: 1; } }
 
@@ -233,6 +255,11 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 .case-col a, .links a { color: var(--ink); text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .ss-spec { border-color: var(--accent); font-family: var(--font-mono); }
 .ss-spec > span { min-width: 0; overflow-wrap: anywhere; }
+/* spec sources: numbered under the strip, so they read without a hover. Plex Mono 12/20, muted. */
+.spec-n { font-size: 10px; line-height: 0; margin-left: 2px; color: var(--accent); }
+.spec-src { margin: var(--space-2) 0 0; padding-left: var(--space-6); font: 400 12px/20px var(--font-mono); color: var(--ink-muted); }
+.spec-src li::marker { color: var(--accent); }
+.spec-src i { font-style: normal; color: var(--ink); }
 .fig .ss-spec, .case-col .ss-spec { text-transform: none; letter-spacing: .04em; }
 .figs { display: grid; grid-template-columns: minmax(0,1fr); gap: var(--space-6); margin: var(--space-6) 0; }
 .links { margin: var(--space-6) 0; padding: 0; list-style: none; display: grid; gap: var(--space-2); font: 13px/20px var(--font-mono); }

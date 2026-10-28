@@ -29,7 +29,7 @@ const CSS = `
 .pv-primitive .pr-row:not(.on) .pr-claim p{color:var(--ink-muted)}
 .pv-primitive .pr-claim{border:1px solid var(--rule);background:var(--sheet);padding:8px 12px;min-width:0}
 .pv-primitive .pr-row.on .pr-claim{border-color:var(--ink);border-left:3px solid var(--pr);padding-left:10px}
-.pv-primitive .pr-claim em{display:block;font-style:normal;font-size:11px;color:var(--ink-muted)}
+.pv-primitive .pr-claim em{display:block;font-style:normal;font-size:12px;color:var(--ink-muted)}
 .pv-primitive .pr-claim p{margin:4px 0 0;font:400 16px/20px var(--font-sans)}
 .pv-primitive .pr-wire{height:1px;background:var(--rule)}
 .pv-primitive .pr-row.on .pr-wire{background:var(--ink)}

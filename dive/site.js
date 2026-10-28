@@ -9,7 +9,21 @@
   var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  function caseUrl(slug) { return 'case.html?p=' + encodeURIComponent(slug); }
+  // projects with a bespoke previews/<slug>/case.js; build.py rewrites this line from `ls previews/*/case.js`,
+  // so the case page imports only what exists (no HEAD probe, no 404 in the console)
+  var CASE_JS = ['anime-pipeline', 'benchlet', 'bonfire', 'fonts', 'gauntlet', 'lmr', 'meguri', 'mise_en_place', 'napkin', 'nibble', 'playdough', 'precision-canvas', 'primitive', 'rack10', 'secret-sauce', 'shuto', 'stem7', 'system-a', 'system-one-mini', 'vaasf']; // build.py: case.js list
+  // each project has a static share page at case/<slug>/ (build.py), with its own title and link preview
+  function caseUrl(slug) { return 'case/' + encodeURIComponent(slug) + '/'; }
+  // cross-document view transitions: the font library (fonts/) doesn't opt in, so a transition into it (the fonts
+  // case page redirects there with location.replace) gets skipped by the new page and Chrome reports the rejection
+  // as an uncaught "Transition was skipped". Skip it ourselves on the way out, and swallow the promises nobody awaits.
+  function quietVT(e) {
+    var t = e.viewTransition; if (!t) return;
+    [t.ready, t.finished, t.updateCallbackDone].forEach(function (q) { if (q && q.catch) q.catch(function () {}); });
+    var a = e.activation, to = a && a.entry && a.entry.url ? new URL(a.entry.url).pathname : '';
+    if (e.type === 'pageswap' && ((a && a.navigationType === 'replace') || /\/fonts\//.test(to))) t.skipTransition();
+  }
+  window.addEventListener('pageswap', quietVT); window.addEventListener('pagereveal', quietVT);
   function glyphSvg(rows, anim) {
     var s = document.createElementNS(NS, 'svg');
     s.setAttribute('viewBox', '0 0 5 5'); s.setAttribute('class', 'glyph'); s.setAttribute('shape-rendering', 'crispEdges'); s.setAttribute('fill', 'currentColor'); s.setAttribute('aria-hidden', 'true');
@@ -53,14 +67,25 @@
     b.addEventListener('click', function () { openZoom(m.src, m.alt, cap); }); return b;
   }
   function media(m, cap) {
-    if (/\.mp4$/i.test(m.src)) { var v = el('video'); v.src = m.src; v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true; v.setAttribute('aria-label', m.alt || ''); return v; }
+    // reduced motion: no autoplay, the controls instead
+    if (/\.mp4$/i.test(m.src)) { var v = el('video'); v.src = m.src; v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute('aria-label', m.alt || ''); if (m.poster) v.poster = m.poster;
+      if (REDUCED) { v.controls = true; v.preload = 'metadata'; } else v.autoplay = true; return v; }
     return zoomBtn(m, cap);
   }
+  // the spec strip, then its sources as a numbered list under it: visible text, so touch and keyboard readers get
+  // them too (the title tooltip stays for mouse users)
   function spec(list) {
     if (!list || !list.length) return null;
-    var d = el('div', 'ss-spec');
-    list.forEach(function (s) { var x = el('span', '', '<i>' + esc(s.label) + '</i> ' + esc(s.value)); if (s.source) x.title = 'Source: ' + s.source.replace(/~\/Projects\/|\/home\/[^ ]+?\/Projects\//g, ''); d.appendChild(x); });
-    return d;
+    var w = el('div', 'spec'), d = el('div', 'ss-spec'), ol = el('ol', 'spec-src'), n = 0;
+    list.forEach(function (s) {
+      var x = el('span', '', '<i>' + esc(s.label) + '</i> ' + esc(s.value)); d.appendChild(x);
+      if (!s.source) return;
+      var src = s.source.replace(/~\/Projects\/|\/home\/[^ ]+?\/Projects\//g, ''); n++;
+      x.title = 'Source: ' + src; x.appendChild(el('sup', 'spec-n', String(n)));
+      ol.appendChild(el('li', '', '<i>' + esc(s.label) + '</i> ' + esc(src)));
+    });
+    w.appendChild(d); if (n) w.appendChild(ol);
+    return w;
   }
   // only the maturity tags that change how you read a project; the category is the section it sits in
   function tags(p) {
@@ -79,10 +104,13 @@
   // swap into the project's own face. Per-project open styles that meta.json doesn't carry live here.
   var TITLE_OPEN = { vaasf: { tcase: 'uppercase', d: '48px', p: '32px' } };   // DM Serif Display in capitals, a step up
   function titleEl(p) {
-    var h = el('h3', 'row__title'); h.appendChild(el('span', 'sr-only', esc(p.title)));
+    // the heading holds the row's toggle: a real button, so the heading stays a heading and the control is native
+    var h = el('h3', 'row__title'), b = el('button', 'row__btn'); b.type = 'button';
+    b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-controls', 'pn-' + p.slug);
+    b.appendChild(el('span', 'sr-only', esc(p.title)));
     var v = el('span', 'tt'); v.setAttribute('aria-hidden', 'true');
     Array.from(String(p.title)).forEach(function (c) { var q = el('span', 'ch'); q.textContent = c; v.appendChild(q); });
-    h.appendChild(v);
+    b.appendChild(v); h.appendChild(b);
     if (p.title_sub) h.appendChild(el('span', 'row__sub', esc(p.title_sub)));   // experiments: the dataset line
     return h;
   }
@@ -277,7 +305,7 @@
     function expand(r) {
       if (open && open !== r) collapse(open);
       if (r.classList.contains('is-open')) return;
-      open = r; r.classList.add('is-open'); FIELD.open = r; r.querySelector('.row__bar').setAttribute('aria-expanded', 'true');
+      open = r; r.classList.add('is-open'); FIELD.open = r; r.querySelector('.row__btn').setAttribute('aria-expanded', 'true');
       var g = r.querySelector('.glyph'); if (g) replay(g); if (!r._fonts) { r._fonts = 1; applyFonts(r._p.meta, './'); }
       swapTitle(r, true);
       var pv = r.querySelector('.row__preview'), p = r._p;
@@ -286,7 +314,7 @@
       mountPreview(p, pv, 'row', './').then(function (c) { if (r._token === t && r.classList.contains('is-open')) r._cleanup = c; else c(); });
     }
     function collapse(r) {
-      r.classList.remove('is-open'); r.querySelector('.row__bar').setAttribute('aria-expanded', 'false'); swapTitle(r, false);
+      r.classList.remove('is-open'); r.querySelector('.row__btn').setAttribute('aria-expanded', 'false'); swapTitle(r, false);
       var c = r._cleanup; r._cleanup = null; r._token = null;
       if (c) c();
       var pv = r.querySelector('.row__preview');
@@ -300,6 +328,7 @@
       var pv = r.querySelector('.row__preview'); if (r.classList.contains('is-open')) pv.style.viewTransitionName = 'hero-' + p.slug;
     }
     load().then(function (ps) { return Promise.all(ps.map(loadMeta)); }).then(function (ps) {
+      if (!ps.length) return;   // keep build.py's static list if the content didn't load
       track.innerHTML = '';
       var sec = null, cat = null;
       ps.forEach(function (p, idx) {
@@ -312,16 +341,16 @@
           track.appendChild(sec);
         }
         var r = el('article', 'row'); r.id = p.slug; r._p = p; applyAccent(r, p.meta);
-        var bar = el('div', 'row__bar'); bar.tabIndex = 0; bar.setAttribute('role', 'button'); bar.setAttribute('aria-expanded', 'false'); bar.setAttribute('aria-controls', 'pn-' + p.slug);
+        // the bar is the mouse target (click anywhere on it); the title's button is the control for keyboards and AT
+        var bar = el('div', 'row__bar');
         bar.appendChild(el('span', 'row__n', String(idx + 1).padStart(2, '0')));
         bar.appendChild(glyphSvg(p.glyph));
         bar.appendChild(titleEl(p));
         bar.appendChild(el('p', 'row__one', esc(p.oneliner)));
         var tg = tags(p); if (tg) bar.appendChild(el('span', 'row__tags', tg));
-        var ar = el('a', 'row__arrow'); ar.appendChild(parrow()); ar.href = caseUrl(p.slug); ar.tabIndex = -1; ar.setAttribute('aria-hidden', 'true'); bar.appendChild(ar);
+        var ar = el('a', 'row__arrow'); ar.appendChild(parrow()); ar.href = caseUrl(p.slug); ar.setAttribute('aria-label', 'Case study: ' + p.title); bar.appendChild(ar);
         var panel = el('div', 'row__panel'); panel.id = 'pn-' + p.slug;
         var inner = el('div', 'row__inner'), pad = el('div', 'row__pad');
-        pad.appendChild(el('p', 'row__one-m', esc(p.oneliner)));
         var pvw = el('div', 'row__preview'); pad.appendChild(pvw); snap4(pvw);
         if (p.status_note) pad.appendChild(el('p', 'row__note', esc(p.status_note)));
         var ac = actions(p); if (ac) pad.appendChild(ac);
@@ -329,11 +358,8 @@
         inner.appendChild(pad); panel.appendChild(inner);
         r.appendChild(bar); r.appendChild(panel); sec.appendChild(r);
         // interactions
+        // the button's own click (mouse, Enter, Space) bubbles here, so one handler toggles for every input
         bar.addEventListener('click', function (e) { if (e.target.closest('a')) { go(r); return; } if (r.classList.contains('is-open')) collapse(r); else expand(r); });
-        bar.addEventListener('keydown', function (e) {
-          if (e.target !== bar) return;
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); r.classList.contains('is-open') ? collapse(r) : expand(r); }
-        });
         ob.addEventListener('click', function () { go(r); });
       });
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) collapse(open); });
@@ -354,7 +380,11 @@
 
   function casePage() {
     var root = document.getElementById('case');
-    var slug = new URLSearchParams(location.search).get('p');
+    // case/<slug>/ share pages set window.SLUG; case.html?p=<slug> keeps old links working
+    var slug = window.SLUG || new URLSearchParams(location.search).get('p');
+    // asset prefix for previews and case.js, absolute so it resolves the same under <base> (case/<slug>/) and /dive/
+    var base = new URL('./', document.baseURI).href;
+    if (!window.SLUG && slug) { var cl = document.createElement('link'); cl.rel = 'canonical'; cl.href = base + caseUrl(slug); document.head.appendChild(cl); }
     load().then(function (ps) {
       var i = ps.findIndex(function (p) { return p.slug === slug; });
       root.innerHTML = '';
@@ -371,7 +401,7 @@
         document.addEventListener('touchend', function (e) { if (!st) return; st = 0; var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy; if (Math.abs(dx) < 80 || Math.abs(dy) > 50 || Math.abs(dx) < 2 * Math.abs(dy)) return; var q = dx < 0 ? nx : pr; if (q) location.href = caseUrl(q.slug); }, { passive: true });
         var m = el('div', 'case-body'); root.appendChild(m); snap4(m);
         document.title = p.title + ' · David Hatley';
-        applyAccent(root, p.meta); applyFonts(p.meta, './');
+        applyAccent(root, p.meta); applyFonts(p.meta, base);
                 function template() {
         var top = el('div', 'case-top'); var g = glyphSvg(p.glyph); g.style.viewTransitionName = 'glyph-' + p.slug; top.appendChild(g);
         top.appendChild(el('h1', 'case-h', esc(p.title)));
@@ -379,7 +409,7 @@
         top.appendChild(el('span', 'px16 case-n', 'No. ' + String(i + 1).padStart(2, '0') + ' / ' + ps.length));
         m.appendChild(top);
         var hero = el('div', 'case-hero'); hero.style.viewTransitionName = 'hero-' + p.slug; m.appendChild(hero);
-        mountPreview(p, hero, 'hero', './');
+        mountPreview(p, hero, 'hero', base);
         var col = el('div', 'case-col');
         col.appendChild(el('p', 'oneliner', esc(p.oneliner)));
         if (p.role) col.appendChild(el('p', '', esc(p.role)));
@@ -403,8 +433,8 @@
         }
         var done = function () { template(); };
         var cu = 'previews/' + p.slug + '/case.js';
-        fetch(cu, { method: 'HEAD' }).then(function (r) { if (!r.ok) throw 0; return import('./' + cu); }).then(function (mod) {
-          try { var c = mod.default(m, { project: p, base: './', meta: p.meta }); if (typeof c === 'function') window.addEventListener('pagehide', c); }
+        if (CASE_JS.indexOf(p.slug) < 0) { template(); } else import('./' + cu).then(function (mod) {
+          try { var c = mod.default(m, { project: p, base: base, meta: p.meta }); if (typeof c === 'function') window.addEventListener('pagehide', c); }
           catch (e) { m.innerHTML = ''; template(); }
         }).catch(function () { m.innerHTML = ''; template(); });
         var pn = el('nav', 'pn'); pn.setAttribute('aria-label', 'More work');

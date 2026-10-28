@@ -22,7 +22,7 @@
   "tried": [
    "One DistilBERT encoder with five classifier heads: task complete, should retry, failure source (5 options), next action (5 options), evidence sufficient. It generates zero tokens; software maps the logits to legal option names.",
    "Baselines: TF-IDF with logistic regression, and SmolLM2-360M asked zero-shot.",
-   "A follow-up round of candidates in parallel worktrees: more writing styles, weighted loss, LoRA, deeper heads. Deeper heads won."
+   "A follow-up round of candidates run in parallel: more writing styles, weighted loss, LoRA, deeper heads. Deeper heads won."
   ],
   "data": [
    "Fully synthetic and deterministic: a state machine creates each latent situation and its labels first, then a renderer writes it as text. Seed 1729. No teacher model, no API, no LLM paraphrasing.",
@@ -51,22 +51,22 @@
    {
     "label": "training states",
     "value": "20,000",
-    "source": "experiments/data_audit.json"
+    "source": "the data audit"
    },
    {
     "label": "unseen wording",
     "value": "44.51%",
-    "source": "experiments/v0/evaluation.json"
+    "source": "the v0 evaluation"
    },
    {
     "label": "confidence there",
     "value": "97.19%",
-    "source": "experiments/v0/evaluation.json"
+    "source": "the v0 evaluation"
    },
    {
     "label": "5 decisions, p50",
     "value": "4.95 ms",
-    "source": "reports/project-retrospective.md"
+    "source": "the project retrospective"
    }
   ],
   "links": [
@@ -132,22 +132,22 @@
    {
     "label": "kept of 1,821 turns",
     "value": "1,313",
-    "source": "artifacts/trace2decision_i3/output/report.json"
+    "source": "the trace-to-decision report"
    },
    {
     "label": "parameters",
     "value": "421M",
-    "source": "research/09_laya_gpu_measurement.md"
+    "source": "the GPU measurement note"
    },
    {
     "label": "peak memory",
     "value": "9.52 GiB",
-    "source": "artifacts/experiment_i3/PRE_FINAL_REVIEW.md"
+    "source": "the pre-final review"
    },
    {
     "label": "macro-F1 (baseline 0.293)",
     "value": "0.445",
-    "source": "artifacts/release_i3/metrics.json"
+    "source": "the release metrics"
    }
   ],
   "links": [
@@ -204,22 +204,22 @@
    {
     "label": "tasks",
     "value": "16",
-    "source": "manifest.json"
+    "source": "the task manifest"
    },
    {
     "label": "idea pool",
     "value": "125",
-    "source": "research/idea-pool.md"
+    "source": "the idea pool"
    },
    {
     "label": "visible tests passed",
     "value": "7 / 7",
-    "source": "research/baseline-pilot.md"
+    "source": "the baseline pilot notes"
    },
    {
     "label": "hidden failures",
     "value": "2 / 7",
-    "source": "research/baseline-pilot.md"
+    "source": "the baseline pilot notes"
    }
   ],
   "links": [
@@ -274,12 +274,12 @@
    {
     "label": "tests",
     "value": "67",
-    "source": "tests/"
+    "source": "the test suite"
    },
    {
     "label": "modules",
     "value": "15",
-    "source": "src/gauntlet/"
+    "source": "the source package"
    },
    {
     "label": "real model runs",
@@ -340,17 +340,17 @@
    {
     "label": "repos",
     "value": "10",
-    "source": "research/corpus-manifest.json"
+    "source": "the corpus manifest"
    },
    {
     "label": "claims",
     "value": "231",
-    "source": "README.md"
+    "source": "README"
    },
    {
     "label": "evidence links",
     "value": "720",
-    "source": "README.md"
+    "source": "README"
    }
   ],
   "links": [
@@ -404,12 +404,12 @@
    {
     "label": "capabilities specified",
     "value": "473",
-    "source": "STATUS.md"
+    "source": "the status file"
    },
    {
     "label": "invariants",
     "value": "14",
-    "source": "README.md"
+    "source": "README"
    },
    {
     "label": "pixels drawn",

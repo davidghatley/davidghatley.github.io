@@ -76,7 +76,7 @@ export default function renderCase(root, { project: p, base, meta }) {
 <li><span>Asset kit<small>made fresh for this task</small></span></li>
 <li><span>Context brief<small>what the agent needs to know</small></span></li>
 <li><span>Manifest<small>every item and its source</small></span></li></ul>
-${spec.length ? `<table>${spec.map(s => `<tr><td>${esc(s.label)}</td><td>${esc(s.value)}${s.target ? ' (target)' : ''}</td></tr>`).join('')}</table>` : ''}</section>
+${spec.length ? `<table>${spec.map(s => `<tr><td>${esc(s.label)}${s.source ? `<br><small>${esc(s.source)}</small>` : ''}</td><td>${esc(s.value)}${s.target ? ' (target)' : ''}</td></tr>`).join('')}</table>` : ''}</section>
 <section><h2>Method</h2><ol class="m">${body.map(t => `<li><span>${esc(t)}</span></li>`).join('')}</ol></section></div>
 <div class="plate"><div class="cap"><span>Plated · example pack</span><span>sentence in, bowls out</span></div><div class="pv" style="view-transition-name:hero-${esc(p.slug)}"></div></div>
 <div class="notes"><h2>Chef's notes</h2>

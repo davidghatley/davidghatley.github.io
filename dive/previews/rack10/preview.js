@@ -13,7 +13,7 @@ const CSS = `
 .pv-rack10 button{font:500 11px/16px var(--font-mono);padding:3px 8px;background:transparent;color:var(--ink);border:1px solid var(--rule);cursor:pointer;border-radius:0}
 .pv-rack10 button[aria-pressed=true]{background:var(--a);color:#16181d;border-color:var(--a)}
 .pv-rack10 button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-.pv-rack10 .note{font:400 11px/16px var(--font-mono);color:var(--ink-muted);margin-top:auto;padding-top:8px}
+.pv-rack10 .note{font:400 12px/16px var(--font-mono);color:var(--ink-muted);margin-top:auto;padding-top:8px}
 .pv-rack10 .dim{position:absolute;left:8px;right:8px;bottom:6px;height:16px;border-left:1px solid var(--ink-muted);border-right:1px solid var(--ink-muted);display:flex;align-items:center;font:400 10px/12px var(--font-mono);color:var(--ink-muted)}
 .pv-rack10 .dim:before,.pv-rack10 .dim:after{content:"";flex:1;border-top:1px solid var(--ink-muted)}
 .pv-rack10 .dim span{padding:0 6px;background:var(--paper)}
@@ -24,7 +24,7 @@ const CSS = `
 .pv-rack10 .cap{position:absolute;left:8px;top:6px;font:500 11px/16px var(--font-mono);color:var(--ink);letter-spacing:.04em;pointer-events:none}
 .pv-rack10 .cap i{font-style:normal;color:var(--at)}
 .pv-rack10 .pick button{padding:2px 6px;font-size:10px;line-height:14px}
-.pv-rack10 .hint{font:400 10px/14px var(--font-mono);color:var(--ink-muted);margin-top:6px}
+.pv-rack10 .hint{font:400 12px/16px var(--font-mono);color:var(--ink-muted);margin-top:6px}
 @media(max-width:820px){.pv-rack10 .board{grid-template-columns:1fr}.pv-rack10 .stage{height:260px}`;
 export const PARTS = [
   { f: 'wall_front_L.stl', label: 'wall_front_L', note: 'Front wall half: dovetail tabs at the mid-depth seam, tongue-in-groove for trays.' },

@@ -11,7 +11,7 @@
    "X...X"
   ],
   "status": "software",
-  "status_note": "A local generator turns one sentence into a small three.js game; a gallery of six playable examples is built and waiting to publish.",
+  "status_note": "Six example games built with the generator; not public yet.",
   "oneliner": "One sentence in, a small game you can play from a link.",
   "role": "I wrote the intent, the research behind it and the landing page, and I am steering the visual direction.",
   "when": "2026-10",
@@ -27,8 +27,8 @@
    },
    {
     "src": "public/media/playdough/render-hero.jpg",
-    "alt": "Rendered isometric game diorama from the visuals worktree",
-    "caption": "A render from the visuals worktree: the look a generated game should have."
+    "alt": "Rendered isometric game diorama from the visuals branch",
+    "caption": "A render from the visuals branch: the look a generated game should have."
    },
    {
     "src": "public/media/playdough/frog-pond.jpg",
@@ -40,22 +40,22 @@
    {
     "label": "commits",
     "value": "7",
-    "source": "git rev-list --count HEAD in the playdough repo, read 2026-10-22"
+    "source": "commits in the playdough repo, Oct 22, 2026"
    },
    {
     "label": "research notes",
     "value": "4",
-    "source": "research/*.md in the playdough repo"
+    "source": "research notes in the playdough repo"
    },
    {
     "label": "vignette renders",
     "value": "6",
-    "source": "playdough-visuals worktree, visuals/out/vignette-*.png"
+    "source": "rendered on the visuals branch of the repo"
    }
   ],
   "links": [],
   "body": [
-   "The goal: a stranger types one sentence, plays the result from a link, and gets a 20-second clip to share. That is the target, not a result. Today playdough is a contract, four research notes and a landing page.",
+   "The goal: a stranger types one sentence, plays the result from a link, and gets a 20-second clip to share. That is the target, not a result. Today it is a local command: one sentence in, a playable three.js game out, checked in a headless browser.",
    "It is a generator, not an engine. It sits on templates from mise_en_place and a design-brief step that turns a vague idea into a fun core loop before anything is built. A human playtest comes before anything is shared.",
    "So far the useful work is visual: six rendered vignettes testing whether generated art can look deliberate. I learned to settle the look before the pipeline."
   ],
@@ -97,12 +97,12 @@
    {
     "label": "commits",
     "value": "10",
-    "source": "git rev-list --count HEAD in the mise_en_place repo, read 2026-10-22"
+    "source": "commits in the mise_en_place repo, Oct 22, 2026"
    },
    {
     "label": "parts in a pack",
     "value": "4",
-    "source": "site/copy.md: research, generated assets, references, an indexed folder"
+    "source": "the site copy: research, generated assets, references, an indexed folder"
    }
   ],
   "links": [
@@ -158,17 +158,17 @@
    {
     "label": "commits",
     "value": "8",
-    "source": "git rev-list --count HEAD in the bonfire repo, read 2026-10-22"
+    "source": "commits in the bonfire repo, Oct 22, 2026"
    },
    {
     "label": "decision records",
     "value": "1",
-    "source": "docs/decisions/0001-fork-base.md"
+    "source": "the first decision record: which runtime to fork"
    },
    {
     "label": "old-repo tests inherited as reference",
     "value": "67",
-    "source": "salvage-summary.md: gauntlet, 67 tests pass (reference only, no code moved)"
+    "source": "the salvage summary: gauntlet, 67 tests pass (reference only, no code moved)"
    }
   ],
   "links": [
@@ -200,7 +200,7 @@
    "XXXXX"
   ],
   "status": "prototype",
-  "status_note": "Experiments on a branch. The decider is not packaged or tested against a big model.",
+  "status_note": "Experiments on a branch. Compared with Claude Sonnet on 50 held-out prompts: 12 points behind, 1.3x faster; too few prompts to call.",
   "oneliner": "Answers an agent's multiple-choice questions fast and says how sure it is.",
   "role": "I wrote the intent, run the experiments, and studied what my earlier classifier attempts got wrong.",
   "when": "2026-10",
@@ -224,17 +224,17 @@
    {
     "label": "commits",
     "value": "18 on all branches, 2 on main",
-    "source": "git rev-list --count --all, and git rev-list --count main, in the nibble repo, read 2026-10-22"
+    "source": "counted on all branches and on main, Oct 22, 2026"
    },
    {
     "label": "question types",
     "value": "3",
-    "source": "INTENT.md: choose one, choose none, score"
+    "source": "the project's intent note: choose one, choose none, score"
    },
    {
     "label": "experiments",
     "value": "1",
-    "source": "nibble/experiments/001-shadcn-picker (branch exp/shadcn-picker): Kev-4B picker, fine-tune on rubric labels"
+    "source": "the first experiment, on its own branch: a Kev-4B picker, then a fine-tune on rubric labels"
    }
   ],
   "links": [
@@ -266,9 +266,9 @@
    "X...."
   ],
   "status": "software",
-  "status_note": "Spikes and a demo in worktrees. Roadmap phase 4, so not started in earnest.",
+  "status_note": "Spikes and a demo in separate checkouts. Roadmap phase 4, so not started in earnest.",
   "oneliner": "A design canvas where you and an AI agent edit one component.",
-  "role": "I wrote the spec, ran spikes in separate worktrees for canvas, files, tokens and agents, and captured the demos.",
+  "role": "I wrote the spec, ran spikes in separate checkouts for canvas, files, tokens and agents, and captured the demos.",
   "when": "2026-10",
   "hero": {
    "src": "public/media/napkin/hero.jpg",
@@ -295,12 +295,12 @@
    {
     "label": "commits",
     "value": "6",
-    "source": "git rev-list --count HEAD in the napkin repo, read 2026-10-22"
+    "source": "commits in the napkin repo, Oct 22, 2026"
    },
    {
-    "label": "spike worktrees",
+    "label": "spike checkouts",
     "value": "12",
-    "source": "git worktree list for the napkin repo: 14 napkin-* worktrees minus docs and seo, counted 2026-10-22"
+    "source": "14 napkin checkouts minus docs and seo, counted Oct 22, 2026"
    }
   ],
   "links": [
@@ -315,7 +315,7 @@
   ],
   "body": [
    "The target: an agent and I edit one component on a canvas at once, and the result is a real component file on disk. In the spikes, the two-cursor demo runs; it is not a product and I have not used it for real work.",
-   "The spikes are small on purpose and live in separate worktrees. The spec borrows a short list of invariants from my earlier precision-canvas repo and leaves the rest of it behind.",
+   "The spikes are small on purpose and live in separate checkouts. The spec borrows a short list of invariants from my earlier precision-canvas repo and leaves the rest of it behind.",
    "I learned to start from the file format, because files on disk stay the source of truth."
   ],
   "category": "software"

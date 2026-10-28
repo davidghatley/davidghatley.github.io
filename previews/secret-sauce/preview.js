@@ -81,17 +81,17 @@ export default function mount(root, { mode, base }) {
 .pv-secret-sauce ol li::before{content:counter(n);font:700 11px/16px var(--font-mono);color:var(--cobalt-text,var(--cobalt));display:block}
 .pv-secret-sauce code{font:500 12px/18px var(--font-mono);display:block;background:var(--sheet);border:1px solid var(--rule);padding:8px;overflow-x:auto;white-space:pre}
 
-.pv-secret-sauce .car{display:grid;gap:8px;min-width:0}
+.pv-secret-sauce .car{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-width:0}
 .pv-secret-sauce .car:focus-visible{outline:2px solid var(--cobalt-text,var(--cobalt));outline-offset:4px}
 .pv-secret-sauce .car .stage{display:flex;align-items:center;justify-content:center;min-height:${hero ? '420px' : '340px'};background:var(--sheet);border:1px solid var(--rule);padding:12px;touch-action:pan-y;user-select:none}
 .pv-secret-sauce .car .stage img{display:block;max-width:100%;max-height:${hero ? '60vh' : '320px'};width:auto;height:auto;object-fit:contain;-webkit-user-drag:none}
-.pv-secret-sauce .car .ctl{display:flex;align-items:center;gap:12px}
+.pv-secret-sauce .car .ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;min-width:0}
 .pv-secret-sauce .car .ctl button{flex:none;width:48px;height:48px;border:1px solid var(--ink);border-radius:0;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
 .pv-secret-sauce .car .ctl button:hover{background:var(--ink);color:var(--paper)}
 .pv-secret-sauce .car .ctl button:focus-visible{outline:2px solid var(--cobalt-text,var(--cobalt));outline-offset:2px}
 .pv-secret-sauce .car .ctl svg{width:25px;height:25px;fill:currentColor;shape-rendering:crispEdges}
 .pv-secret-sauce .car .cnt{font-family:"Stem 7 PV","IBM Plex Mono",monospace;font-size:32px;line-height:32px;font-synthesis:none;-webkit-font-smoothing:none;color:var(--cobalt-text,var(--cobalt));min-width:7ch}
-.pv-secret-sauce .car .nm{font:500 11px/16px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);flex:1;min-width:0}
+.pv-secret-sauce .car .nm{font:500 12px/16px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted);flex:1 1 12ch;min-width:0;overflow-wrap:anywhere}
 @media(max-width:760px){.pv-secret-sauce .top,.pv-secret-sauce .lint{grid-template-columns:1fr}}
 `;
   const style = document.createElement('style'); style.textContent = css; document.head.appendChild(style);

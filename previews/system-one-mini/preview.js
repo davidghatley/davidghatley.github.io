@@ -43,7 +43,7 @@ const CSS = `
 .${S} .row em{font-style:normal;color:var(--ink-muted);white-space:nowrap}
 .${S} .row em.c{color:var(--sheet);background:var(--acc);padding:0 4px}
 .${S} .row em.a{color:var(--acc);font-weight:600}
-.${S} .note{font-size:11px;line-height:16px;color:var(--ink-muted);margin-top:6px}
+.${S} .note{font-size:12px;line-height:16px;color:var(--ink-muted);margin-top:6px}
 .${S} .txt{border:1px solid var(--rule);background:var(--sheet);padding:8px 10px;font-size:11px;line-height:16px;margin-bottom:8px}
 .${S} .txt .t{margin-bottom:4px}
 .${S} .txt.u{border-color:var(--ink)}
@@ -84,7 +84,7 @@ const CSS = `
 .${S} .hb.ov{border-top:1px solid var(--ink);padding-top:8px;margin-top:4px}
 .${S} .hb.ov .nm,.${S} .hb.ov .vl{font-weight:600}
 .${S} .hb.ov .hot{color:var(--vt)}
-.${S} .lg{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:11px;line-height:16px;color:var(--ink-muted);margin-top:8px}
+.${S} .lg{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;line-height:16px;color:var(--ink-muted);margin-top:8px}
 .${S} .lg i{display:inline-block;width:10px;height:10px;background:var(--acc);margin-right:6px;vertical-align:-1px}
 .${S} .lg i.m{width:2px;height:14px;background:var(--ink);vertical-align:-3px}
 .${S} .lesson{font:400 13px/20px var(--font-mono);margin-top:8px}

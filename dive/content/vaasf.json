@@ -11,9 +11,9 @@
       "X...X"
     ],
     "status": "client work",
-    "status_note": "Festival runs Oct 23-25, 2026; program, awards book and site are live or at the printer. Code rebuild of the site is planned, not started.",
+    "status_note": "The 2026 festival ran Oct 23–25 at the National Hispanic Cultural Center with the program, awards program and site I made.",
     "oneliner": "I'm the festival's designer: the printed program, the website and the application.",
-    "role": "I'm the designer for the Vocal Artistry Art Song Festival: the printed program, the awards program, the Webflow site and the application.",
+    "role": "I built the booklet as a system: a Python script fills HTML pages from the repertoire data and prints each one to PDF, replacing a Canva draft.",
     "when": "2022-2026",
     "hero": {
       "src": "public/media/vaasf/hero.jpg",
@@ -45,27 +45,22 @@
       {
         "label": "program pages",
         "value": "16",
-        "source": "pdfinfo on drafts/VAASF-2026-Program-FINAL-Oct15.pdf, letter size, saddle-stitched"
+        "source": "counted from the final PDF; letter size, saddle-stitched"
       },
       {
         "label": "applications, 2026",
         "value": "92-94",
-        "source": "PLAN.md: 92 counted by the director, 94 before I removed duplicates"
+        "source": "counted by the festival director; 94 before duplicates were removed"
       },
       {
         "label": "festival days",
         "value": "3",
-        "source": "Oct 23-25, 2026, National Hispanic Cultural Center"
+        "source": "Oct 23–25, 2026, National Hispanic Cultural Center"
       },
       {
         "label": "festival programs on file",
         "value": "5",
-        "source": "Drive: my 2022, 2023, 2024, 2025 final programs plus 2026"
-      },
-      {
-        "label": "git commits (design-lab repo)",
-        "value": "9",
-        "source": "git log in the vaasf repo, Oct 12-21, 2026"
+        "source": "festival programs on file, 2022–2026"
       }
     ],
     "links": [
@@ -75,10 +70,9 @@
       }
     ],
     "body": [
-      "The 2026 festival opens Friday with a 16-page printed program I designed and coded. The board approved the cover, and it went to the printer. The same week I finished a separate awards program.",
+      "The 2026 festival opened on Friday, Oct 23, with a 16-page printed program I designed and coded. The board approved the cover, and it went to the printer. The same week I finished a separate awards program.",
       "I have worked with VAASF since at least 2022. My Drive holds the final programs and application sheets for 2022 through 2025. I now own the Webflow site, including the redesigned events schedule, and I built the 2026 application, which collected 92 to 94 entries.",
       "The booklet is a Python script that fills HTML pages from the repertoire data and prints each one to PDF. A late schedule change is a data edit and a rebuild, not a layout rework. It replaced a first draft built in Canva.",
-      "Next, after the festival, I plan to rebuild the site in code with one application form that takes payment. Nothing of that is built yet.",
       "What I learned: with a small nonprofit, the deadline is the design brief. A real PDF in front of the board by noon beat any talk about options."
     ],
     "category": "client work"

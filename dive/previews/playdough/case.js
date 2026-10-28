@@ -21,7 +21,7 @@ const CSS = `
 .cs-playdough .one{font-size:32px;line-height:40px;margin:0;max-width:22ch}
 .cs-playdough .start{font-size:32px;line-height:40px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
 .cs-playdough .start i{width:16px;height:16px;background:var(--ph);animation:blk 1s steps(1) infinite}
-.cs-playdough .start span{background:var(--pd);color:var(--pdon);padding:4px 12px}
+.cs-playdough .start span{color:var(--ink-muted)}
 @keyframes blk{50%{opacity:0}}
 .cs-playdough .scr{border-top:3px solid var(--ink);padding:16px;background:var(--paper)}
 .cs-playdough .sec{margin-top:64px}
@@ -83,14 +83,14 @@ export default function renderCase(root, { project: p, base, meta }) {
   <section class="title" aria-label="Title screen"><div class="bar px"><span>1 player</span><span>${esc(p.status || '')} / ${esc(p.when || '')}</span></div>
    <div class="tin"><div class="logo"><svg class="g" viewBox="0 0 5 5" shape-rendering="crispEdges" aria-hidden="true">${gl}</svg><h1>${esc(p.title)}</h1></div>
    <p class="one px">${esc(p.oneliner || '')}</p>
-   <div class="start px"><i></i><span>press start</span></div></div>
+   <div class="start px" aria-hidden="true"><i></i><span>press start</span></div></div>
    <div class="scr"><div class="hero"></div></div></section>
   <section class="sec"><div class="sh"><h2 class="px">how to play</h2><span class="px">${esc(p.role || '')}</span></div><div class="pages">${pages}</div></section>
   <section class="sec"><div class="sh"><h2 class="px">level select</h2><span class="px">6 sentences, 6 renders</span></div><div class="lv">${lvl}</div></section>
   <section class="sec"><div class="sh"><h2 class="px">cartridge art</h2><span class="px">${(p.media || []).length} screens</span></div><div class="shots">${shots}</div></section>
   <section class="sec"><div class="sh"><h2 class="px">stats</h2><span class="px">read 2026-10-22</span></div><div class="stats">${stats}</div>
    <p class="note px"><i></i><span>${esc(p.status_note || '')}</span></p></section>
-  <section class="sec"><div class="sh"><h2 class="px">continue?</h2><span class="px">${(p.links || []).length} saves</span></div><ul class="menu">${links}</ul></section>`;
+  ${links ? `<section class="sec"><div class="sh"><h2 class="px">continue?</h2><span class="px">${p.links.length} saves</span></div><ul class="menu">${links}</ul></section>` : ''}`;
   root.appendChild(w);
   w.querySelector('.g').style.viewTransitionName = 'glyph-' + p.slug;
   const hero = w.querySelector('.hero'); hero.style.viewTransitionName = 'hero-' + p.slug;

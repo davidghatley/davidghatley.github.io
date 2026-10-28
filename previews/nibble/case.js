@@ -60,7 +60,7 @@ export default function renderCase(root, { project, base, meta }) {
       ${(p.body || []).slice(0, 1).map(t => `<p>${esc(t)}</p>`).join('')}
       <dl><dt>Hypothesis</dt><dd>A small model on a CPU can pick among typed options at least as well as a big model, and faster.</dd>
       <dt>Status</dt><dd>${esc(p.status_note)}</dd></dl>
-      <div class="spec">${(p.spec || []).map(s => `<div><span class="k">${esc(s.label)}</span><b>${esc(s.value)}</b></div>`).join('')}</div>
+      <div class="spec">${(p.spec || []).map(s => `<div><span class="k">${esc(s.label)}</span><b>${esc(s.value)}</b>${s.source ? `<span class="k">${esc(s.source)}</span>` : ''}</div>`).join('')}</div>
     </div></section>
     <section class="entry"><div class="date">2026-10-18<small>Entry 2</small></div><div>
       <h2>Encodings, then a held-out compare</h2>

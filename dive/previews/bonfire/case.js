@@ -70,8 +70,8 @@ export default function renderCase(root, { project: p, base, meta }) {
 
   // 2 timeline (from the real events.jsonl)
   sec('02', 'Timeline');
-  const tl = E('ol', 'tl'); tl.setAttribute('aria-label', 'Run timeline from events.jsonl'); wrap.appendChild(tl);
-  wrap.appendChild(E('p', 'note', 'Times are seconds from run.started, read from the run\'s own events.jsonl (71 events). The kill -9 line is from the demo script; the log has no event for it, only the gap.'));
+  const tl = E('ol', 'tl'); tl.setAttribute('aria-label', 'Run timeline from the event log'); wrap.appendChild(tl);
+  wrap.appendChild(E('p', 'note', 'Times are seconds from run.started, read from the run\'s own event log (71 events). The kill -9 line is from the demo script; the log has no event for it, only the gap.'));
   const row = (t, n, text, cls) => tl.appendChild(E('li', cls || '', `<span class="t">${t}</span><span class="n">${n}</span><span>${esc(text)}</span>`));
   fetch(base + 'public/media/bonfire/events.jsonl').then(r => r.text()).then(tx => {
     const ev = tx.trim().split('\n').map(JSON.parse), t0 = ev[0].t, T = e => '+' + ((e.t - t0) / 1000).toFixed(2) + 's';
@@ -89,7 +89,7 @@ export default function renderCase(root, { project: p, base, meta }) {
       else if (e.type === 'select') row(T(e), n, `select pick=${e.pick}`);
       else if (e.type === 'run.finished') row(T(e), n, `run.finished ${e.status}, winner ${e.winner}`, 'hot');
     });
-  }).catch(() => row('', '', 'events.jsonl could not be loaded'));
+  }).catch(() => row('', '', 'The event log could not be loaded'));
 
   // 3 exhibit
   sec('03', 'Exhibit A: the replay');

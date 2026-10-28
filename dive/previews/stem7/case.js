@@ -20,7 +20,7 @@ const CSS = `
 .cs-stem7 .s-tally>div{border-top:1px solid var(--ink);padding-top:12px;min-width:0}
 .cs-stem7 .s-tally .px{font-size:48px;height:48px;white-space:nowrap}
 .cs-stem7 .s-tally span{display:block;margin-top:8px;font:var(--type-small)}
-.cs-stem7 .s-tally small{display:block;font:400 11px/16px var(--font-mono);color:var(--ink-muted)}
+.cs-stem7 .s-tally small{display:block;font:400 12px/16px var(--font-mono);color:var(--ink-muted)}
 .cs-stem7 .s-set{margin-top:64px}
 .cs-stem7 .s-set h2,.cs-stem7 .s-get h2{margin:0 0 16px;padding-bottom:8px;border-bottom:1px solid var(--ink);font:400 32px/32px var(--font-pixel);-webkit-font-smoothing:none}
 .cs-stem7 .s-chars{font-size:32px;line-height:48px;overflow-wrap:anywhere;word-break:break-all}

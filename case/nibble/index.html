@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<base href="../../">
+<link rel="icon" href="public/favicon.svg" type="image/svg+xml">
+<meta charset="utf-8">
+<script>document.documentElement.classList.add("js")</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>nibble · David Hatley</title>
+<meta name="description" content="Answers an agent&#x27;s multiple-choice questions fast and says how sure it is.">
+<meta property="og:title" content="nibble · David Hatley">
+<meta property="og:description" content="Answers an agent&#x27;s multiple-choice questions fast and says how sure it is.">
+<meta property="og:url" content="https://davidghatley.github.io/case/nibble/">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://davidghatley.github.io/public/media/nibble/hero.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@1,6..72,400&family=Jacquarda+Bastarda+9&display=swap">
+<link rel="stylesheet" href="public/tokens.css">
+<link rel="stylesheet" href="public/components.css">
+<link rel="stylesheet" href="site.css">
+<link rel="canonical" href="https://davidghatley.github.io/case/nibble/">
+</head>
+<body>
+<div class="ss-page site">
+<header class="site-head">
+  <a class="site-home" href="index.html" aria-label="David Hatley, home">
+    <div class="ss-lockup"><svg class="ss-lockup__mark" viewBox="0 0 7 7" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true" id="mk"></svg><span class="ss-lockup__lead"></span><span class="ss-lockup__name">David Hatley</span><span class="ss-lockup__line">design · AI/ML · generative tools</span></div>
+  </a>
+</header>
+<main id="case"><!-- build:case -->
+<div class="static">
+<h1>nibble</h1>
+<p>Answers an agent&#x27;s multiple-choice questions fast and says how sure it is.</p>
+<p>The target is a small model that picks among typed options in an agent pipeline, returns calibrated odds, and beats a big model on speed. It builds on Kev, an open model. A first comparison on 50 held-out prompts: Kev-0.8B on CPU scored 0.88 against 1.0 for Sonnet and ran about 1.3x faster. That sample is too small to call, and the gap is real.</p>
+<p>The first experiment has Kev-4B compose shadcn landing pages, then a fine-tune on rubric labels on my shared 3060. It is exploratory and lives on a branch.</p>
+<p>My earlier classifiers taught me the most: one scored 44.5% on unseen wording at 97% confidence. Calibration on new phrasing is the real test.</p>
+<ul><li><a href="https://davidghatley.github.io/nibble/">Landing page</a></li><li><a href="https://github.com/davidghatley/nibble">GitHub</a></li></ul>
+</div>
+<!-- /build:case --></main>
+<footer class="site-foot px16">
+  <a href="index.html#work"><span aria-hidden="true">←</span> Index</a>
+  <span class="site-foot__r"><a href="mailto:davidhatley@me.com">davidhatley@me.com</a><!-- LinkedIn: waiting for David's profile URL; set href and remove hidden --><a hidden data-slot="linkedin" target="_blank" rel="noopener">LinkedIn ↗</a><a href="https://github.com/davidghatley" target="_blank" rel="noopener">GitHub ↗</a><a href="https://buymeacoffee.com/davidhatley" target="_blank" rel="noopener">Buy me a coffee ↗</a></span>
+</footer>
+<div id="zoom" class="zoom" hidden role="dialog" aria-label="Image zoom"><button type="button" class="zoom__x px16" id="zoomx" aria-label="Close">CLOSE</button><img alt=""><p class="zoom__cap"></p></div>
+<button type="button" id="totop" class="totop px16" aria-label="Back to top" hidden>TOP</button>
+<script src="public/glyphs.js"></script>
+<script>window.PAGE="case";window.SLUG="nibble"</script>
+<script src="site.js"></script>
+</body>
+</html>

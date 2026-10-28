@@ -35,7 +35,7 @@ const CSS = `
 .cs-anime table{border-collapse:collapse;width:100%;min-width:640px;font:400 13px/20px var(--font-sans);font-variant-numeric:tabular-nums}
 .cs-anime th{font:500 11px/16px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted);text-align:left;padding:8px 12px 8px 0;border-bottom:2px solid var(--ink);border-top:1px solid var(--ink);vertical-align:bottom}
 .cs-anime td{padding:8px 12px 8px 0;border-bottom:1px solid var(--rule);vertical-align:top}
-.cs-anime td.m{font:400 11px/16px var(--font-mono)}
+.cs-anime td.m{font:400 12px/16px var(--font-mono)}
 .cs-anime td b{font-weight:600}
 .cs-anime td.k{white-space:nowrap}
 .cs-anime .cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 32px;margin-top:16px}

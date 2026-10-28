@@ -41,7 +41,7 @@ export default function renderCase(root, { project: p, base, meta }) {
 .cs-napkin dt{margin-top:12px;font:600 10px/14px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted)}
 .cs-napkin dd{margin:2px 0 0;font:400 16px/20px var(--font-pixel);}
 .cs-napkin dd.t{font:400 14px/20px var(--font-sans)}
-.cs-napkin dd small{display:block;margin-top:2px;font:400 11px/15px var(--font-mono);color:var(--ink-muted)}
+.cs-napkin dd small{display:block;margin-top:2px;font:400 12px/16px var(--font-mono);color:var(--ink-muted)}
 .cs-napkin .zz{font:400 32px/32px var(--font-pixel)}
 @media(max-width:1100px){.cs-napkin{grid-template-columns:minmax(0,1fr)}
  .cs-napkin .pan{position:static}

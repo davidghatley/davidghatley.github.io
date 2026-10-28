@@ -24,7 +24,7 @@ const CSS = `
 .cs-exp .cx-tally>div{border-top:2px solid var(--ink);padding-top:8px;min-width:0}
 .cs-exp .cx-tally .cx-v{font:400 32px/40px var(--font-pixel);-webkit-font-smoothing:none;white-space:nowrap}
 .cs-exp .cx-tally .cx-l{font:var(--type-small);color:var(--ink)}
-.cs-exp .cx-tally small{display:block;font:400 11px/16px var(--font-mono);color:var(--ink-muted);overflow-wrap:anywhere}
+.cs-exp .cx-tally small{display:block;font:400 12px/16px var(--font-mono);color:var(--ink-muted);overflow-wrap:anywhere}
 .cs-exp .cx-learn{margin-top:64px}
 .cs-exp .cx-learn h2{margin:0;font:400 32px/40px var(--font-pixel);-webkit-font-smoothing:none;padding-bottom:8px;border-bottom:1px solid var(--ink)}
 .cs-exp .cx-learn ol{margin:0;padding:0;list-style:none;counter-reset:l}

@@ -11,7 +11,7 @@
       "XXXXX"
     ],
     "status": "design system",
-    "status_note": "In daily use across my projects; five commits in, the lint rules still change weekly.",
+    "status_note": "In daily use across my projects: this site, the font library and every project page are built on it. The lint rules still change weekly.",
     "oneliner": "My house design system, with tools that enforce it.",
     "role": "I designed the system, drew the Stem 7 pixel font, and built the asset generator and the automated art director.",
     "when": "2026-10",
@@ -40,22 +40,22 @@
       {
         "label": "commits",
         "value": "5",
-        "source": "git rev-list --count HEAD in the secret-sauce repo"
+        "source": "commits in the secret-sauce repo"
       },
       {
         "label": "lint rules",
         "value": "25",
-        "source": "entries in tools/lint/rules.json"
+        "source": "rules in the lint config"
       },
       {
         "label": "asset kinds",
         "value": "12",
-        "source": "files in tools/make/kinds"
+        "source": "asset kinds in the generator"
       },
       {
         "label": "sample renders",
         "value": "14",
-        "source": "PNG files in samples/png"
+        "source": "PNG sample renders"
       }
     ],
     "links": [],
@@ -102,12 +102,12 @@
       {
         "label": "STL files",
         "value": "61",
-        "source": "ls rack10/stl/*.stl"
+        "source": "STL files in the repo"
       },
       {
         "label": "OpenSCAD files",
         "value": "11",
-        "source": "find rack10 -name '*.scad'"
+        "source": "OpenSCAD source files in the repo"
       },
       {
         "label": "outer size",
@@ -154,17 +154,17 @@
       {
         "label": "families",
         "value": "16",
-        "source": "fonts/index.html: one card per family"
+        "source": "one card per family in the library"
       },
       {
         "label": "glyphs drawn",
         "value": "1,972",
-        "source": "mapped glyphs per style, summed over every style (foundry/library.py)"
+        "source": "mapped glyphs per style, summed over every style"
       },
       {
         "label": "licence",
         "value": "OFL 1.1",
-        "source": "fonts/files/*.zip: OFL.txt in every zip"
+        "source": "OFL text included in every download"
       }
     ],
     "links": [

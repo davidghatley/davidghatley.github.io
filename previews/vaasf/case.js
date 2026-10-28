@@ -30,7 +30,7 @@ export default async function renderCase(root, { project: p, base, meta }) {
 .cs-vaasf .centre{padding:40px 0;border-bottom:1px solid var(--ln)}
 .cs-vaasf .centre .cap{text-align:center;margin-bottom:14px}
 .cs-vaasf .notes{columns:2 340px;column-gap:48px}
-.cs-vaasf .notes p{margin:0 0 16px;text-align:justify;hyphens:auto}
+.cs-vaasf .notes p{margin:0 0 16px;text-align:left;hyphens:manual}
 .cs-vaasf .notes p:first-child::first-letter{font:400 72px/56px 'DM Serif Display',serif;float:left;padding:6px 8px 0 0;color:var(--bl)}
 .cs-vaasf .notes p.last{font-style:italic;color:var(--mu)}
 .cs-vaasf figure{margin:0}
@@ -53,7 +53,7 @@ export default async function renderCase(root, { project: p, base, meta }) {
   const gl = p.glyph.map(r => [...r].map((c, x) => c === 'X' ? `M${x} ${p.glyph.indexOf(r)}h1v1h-1z` : '').join('')).join('');
   const glyph = `<svg class="glyph" viewBox="0 0 5 5" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="${gl}"/></svg>`;
     const prog = [
-    ['The Program Booklet', '16 pp', 'Designed and coded in Python from the repertoire data; saddle-stitched, to the printer.'],
+    ['The Program Booklet', '16 pp', 'Designed and coded in Python from the repertoire data; saddle-stitched and printed for the festival.'],
     ['The Website', 'Webflow', 'Owned and maintained, with the redesigned events schedule.'],
     ['The Application', '2026', 'Collected 92 to 94 entries.']
   ];

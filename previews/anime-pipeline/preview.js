@@ -73,7 +73,7 @@ ${S} .sg{padding:8px 8px 8px 0;border-right:1px solid var(--rule);min-width:0}
 ${S} .sg+.sg{padding-left:8px}${S} .sg:last-child{border-right:0}
 ${S} .sg b{display:block;font:400 16px/16px var(--font-pixel);-webkit-font-smoothing:none;color:var(--ink-muted)}
 ${S} .sg h5{margin:4px 0 2px;font:600 13px/16px var(--font-sans)}
-${S} .sg p{margin:0;font:400 11px/16px var(--font-mono);color:var(--ink-muted);overflow-wrap:anywhere}
+${S} .sg p{margin:0;font:400 12px/16px var(--font-mono);color:var(--ink-muted);overflow-wrap:anywhere}
 ${S} .sg.on b,${S} .sg.on h5{color:var(--acc)}${S} .sg.on{box-shadow:none;border-top:0}
 ${S} .sg .mk{height:3px;margin:-8px 0 5px;background:transparent}${S} .sg.on .mk{background:var(--acc)}
 ${S} .body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:24px;align-items:start}

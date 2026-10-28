@@ -94,17 +94,17 @@ export default function renderCase(root, { project: p, base }) {
 .cs-secret-sauce .links{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px}
 .cs-secret-sauce .links a{color:var(--cobalt-text,var(--cobalt));font:600 14px/20px var(--font-mono);letter-spacing:.06em;text-decoration:underline;text-underline-offset:3px}
 
-.cs-secret-sauce .car{display:grid;gap:8px;min-width:0}
+.cs-secret-sauce .car{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-width:0}
 .cs-secret-sauce .car:focus-visible{outline:2px solid var(--cobalt-text,var(--cobalt));outline-offset:4px}
 .cs-secret-sauce .car .stage{display:flex;align-items:center;justify-content:center;min-height:420px;background:var(--sheet);border:1px solid var(--rule);padding:12px;touch-action:pan-y;user-select:none}
 .cs-secret-sauce .car .stage img{display:block;max-width:100%;max-height:65vh;width:auto;height:auto;object-fit:contain;-webkit-user-drag:none}
-.cs-secret-sauce .car .ctl{display:flex;align-items:center;gap:12px}
+.cs-secret-sauce .car .ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;min-width:0}
 .cs-secret-sauce .car .ctl button{flex:none;width:48px;height:48px;border:1px solid var(--ink);border-radius:0;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
 .cs-secret-sauce .car .ctl button:hover{background:var(--ink);color:var(--paper)}
 .cs-secret-sauce .car .ctl button:focus-visible{outline:2px solid var(--cobalt-text,var(--cobalt));outline-offset:2px}
 .cs-secret-sauce .car .ctl svg{width:25px;height:25px;fill:currentColor;shape-rendering:crispEdges}
 .cs-secret-sauce .car .cnt{font-family:"Stem 7 CS","IBM Plex Mono",monospace;font-size:32px;line-height:32px;font-synthesis:none;-webkit-font-smoothing:none;color:var(--cobalt-text,var(--cobalt));min-width:7ch}
-.cs-secret-sauce .car .nm{font:500 11px/16px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);flex:1;min-width:0}
+.cs-secret-sauce .car .nm{font:500 12px/16px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted);flex:1 1 12ch;min-width:0;overflow-wrap:anywhere}
 @media(max-width:760px){.cs-secret-sauce section{grid-template-columns:minmax(0,1fr)}.cs-secret-sauce h1{font-size:48px;line-height:48px}.cs-secret-sauce .mast{grid-template-columns:1fr}.cs-secret-sauce .mast svg{width:60px;height:60px}.cs-secret-sauce .out{font-size:32px;line-height:32px;min-height:40px}.cs-secret-sauce .sheet .wide{grid-column:auto}.cs-secret-sauce .sw div{height:80px}}
 `;
   const style = document.createElement('style'); style.textContent = css; document.head.appendChild(style);

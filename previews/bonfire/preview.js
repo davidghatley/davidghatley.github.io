@@ -40,11 +40,11 @@ const CSS = `
 .pv-bonfire .ln{white-space:pre;overflow:hidden;text-overflow:clip;color:#ecebe4}
 .pv-bonfire .ln i{font-style:normal;color:#a2a7ad;display:inline-block;width:4ch}
 .pv-bonfire .ln.ok{color:#b8d84c}.pv-bonfire .ln.warn{color:#f5cf2a}.pv-bonfire .ln.bad{color:#ff6a3d;font-weight:600}
-.pv-bonfire .tnote{padding:6px 12px;border-top:1px solid #3a3e44;font:400 11px/16px var(--font-mono);color:#a2a7ad}
+.pv-bonfire .tnote{padding:6px 12px;border-top:1px solid #3a3e44;font:400 12px/16px var(--font-mono);color:#a2a7ad}
 .pv-bonfire .fig{border:1px solid var(--ink);background:var(--sheet);display:flex;flex-direction:column;min-width:0}
 .pv-bonfire svg{display:block;width:100%;height:auto}
 .pv-bonfire text{font-family:var(--font-mono)}
-.pv-bonfire .cap{padding:6px 12px;border-top:1px solid var(--rule);font:400 11px/16px var(--font-mono);color:var(--ink-muted)}
+.pv-bonfire .cap{padding:6px 12px;border-top:1px solid var(--rule);font:400 12px/16px var(--font-mono);color:var(--ink-muted)}
 .pv-bonfire .nd rect{fill:var(--sheet);stroke:var(--ink);stroke-width:1.5}
 .pv-bonfire .nd text{fill:var(--ink);font-size:13px;font-weight:500}
 .pv-bonfire .nd.on rect{fill:var(--a);stroke:var(--ink)}
