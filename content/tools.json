@@ -146,7 +146,7 @@
     ],
     "status": "design system",
     "category": "design system",
-    "status_note": "Sixteen families, all free under the OFL. Stem 7 still has its own site; the other fifteen live here.",
+    "status_note": "Sixteen families, all free under the OFL, each with its own specimen page.",
     "oneliner": "Sixteen free typefaces I drew in code, from pixel faces to a Didone.",
     "role": "I drew every family as code: bitmap sources, line-and-arc skeletons stroked with different pens, and a Didone drawn as Bézier outlines. Then I built the library that shows them.",
     "when": "2026-10",
@@ -173,8 +173,8 @@
         "url": "fonts/index.html"
       },
       {
-        "label": "Website: stem 7",
-        "url": "https://davidghatley.github.io/stem7/"
+        "label": "Stem 7 specimen",
+        "url": "fonts/stem-7/index.html"
       }
     ],
     "actions": [

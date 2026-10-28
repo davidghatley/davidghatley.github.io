@@ -1,4 +1,10 @@
 /* font library: layout only; type, colour and controls come from tokens.css and components.css */
+/* the feedback note above the footer: an ask, not a form */
+.lib-fix { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr); gap: var(--space-2) var(--space-6); padding: var(--space-4) 0; border-top: var(--line-hair) solid var(--rule); }
+.lib-fix h2 { margin: 0; color: var(--ink); }
+.lib-fix p { margin: 0; max-width: 46rem; font: var(--type-body); }
+.lib-fix a { color: var(--cobalt-text); white-space: nowrap; }
+@media (max-width: 640px) { .lib-fix { grid-template-columns: minmax(0, 1fr); } }
 /* sauce-lint allow token-unknown: --ff is the page's own family, set on <main> per family page */
 .lib { padding-block: 0 var(--space-12); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-8); }
 .ss-spec { flex-wrap: wrap; }
@@ -384,4 +390,96 @@
   .insp__dl { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .insp__dl > div:nth-child(odd) { border-right: var(--line-hair) solid var(--rule); }
   .insp__dl > div:nth-last-child(2) { border-bottom: 0; }
+}
+/* Stem 7's deep chapters (libpages/stem7deep.py) */
+.s7-px, .s7-pick .seg { font-family: "Stem 7", var(--font-mono); font-weight: 400; letter-spacing: 0; font-synthesis: none; font-kerning: normal;
+  font-variant-ligatures: common-ligatures; -webkit-font-smoothing: none; }
+.s7-lead { max-width: 46rem; margin: 0; }
+.s7-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.s7d { min-width: 0; }
+.s7d .ss-chapter + .s7-lead { margin-top: calc(-1 * var(--space-2)); }
+.s7-plate { margin: 0; min-width: 0; }
+.s7-plate__body { display: grid; gap: var(--space-6); min-width: 0; }
+.s7-plate__body svg { display: block; max-width: 100%; height: auto; }
+.s7-pick .seg { font-size: 16px; line-height: 16px; text-transform: none; min-width: 32px; }
+.s7-fig { display: grid; gap: var(--space-6); align-items: end; min-width: 0; }
+.s7-fig--mark { grid-template-columns: auto minmax(0, 1fr); }
+.s7-marksrc { display: grid; gap: var(--space-2); }
+.s7-guides { position: relative; overflow-x: auto; padding-block: var(--space-2); }
+.s7-guides .ss-label { position: absolute; white-space: nowrap; }
+.s7-fig--src { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+.s7-code { margin: 0; min-width: 0; }
+.s7-code pre { line-height: 20px; overflow-x: auto; }
+.s7-code .c { color: var(--ink-muted); }
+.s7-srcout { display: grid; gap: var(--space-3); justify-items: start; min-width: 0; }
+.s7-real { font-size: 120px; line-height: 120px; height: 150px; }
+.s7-ladder { display: grid; grid-template-columns: repeat(5, auto); justify-content: space-between; align-items: end; gap: var(--space-4); overflow-x: auto; }
+.s7-rung, .s7-gap, .s7-bold { display: grid; gap: var(--space-2); justify-items: start; }
+.s7-rung b, .s7-gap b { font: var(--type-data); color: var(--ink); }
+.s7-rung span, .s7-gap span { font: var(--type-label); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); }
+.s7-loupe { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-6); align-items: end; }
+.s7-loupe canvas { display: block; max-width: 100%; height: auto; image-rendering: pixelated; background: var(--paper); border: var(--line-hair) solid var(--rule); }
+.s7-loupe__read { display: grid; gap: var(--space-2); justify-items: end; text-align: right; }
+.s7-loupe__n { font-size: 72px; line-height: 72px; color: var(--ink); }
+.s7-loupe__n.is-bad { color: var(--vermilion-text); }
+.s7-gaps { display: flex; flex-wrap: wrap; gap: var(--space-8); align-items: end; }
+.s7-grid-sample { margin: 0; font-family: "Stem 7 Grid", "Stem 7", var(--font-mono); font-size: 72px; line-height: 72px; -webkit-font-smoothing: none; font-synthesis: none; }
+.s7-revs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-6) var(--space-4); }
+.s7-rev { display: grid; gap: var(--space-2); align-content: start; }
+.s7-rev p { margin: 0; font: var(--type-small); color: var(--ink-muted); }
+.s7-pair { display: flex; align-items: end; gap: var(--space-3); }
+.s7-pair i { font: 400 16px/16px "Stem 7", var(--font-mono); -webkit-font-smoothing: none; color: var(--ink-muted); font-style: normal; }
+.s7-bolds { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--space-6) var(--space-4); }
+.s7-bold span { font: var(--type-data); color: var(--ink-muted); }
+.s7-kern { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); }
+.s7-kern figure { margin: 0; display: grid; gap: var(--space-2); min-width: 0; overflow-x: auto; }
+.s7-kern figcaption { font: var(--type-label); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); }
+.s7-kern figcaption b { color: var(--cobalt-text); }
+.s7-uses { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--space-4); }
+.s7-use { margin: 0; display: grid; gap: var(--space-2); align-content: start; grid-column: span 2; min-width: 0; }
+.s7-use > :first-child { border: var(--line-hair) solid var(--rule); background: var(--sheet); color: var(--ink); padding: var(--space-6) var(--space-4); min-height: 152px; box-sizing: border-box; overflow: hidden; }
+.s7-use--clock, .s7-use--plate { grid-column: span 4; }
+.s7-use--term, .s7-use--menu { grid-column: span 3; }
+.s7-hud { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; font-size: 32px; line-height: 32px; background: var(--paper) !important; color: var(--ink) !important; border-color: var(--rule) !important; }
+.s7-hud__k { color: var(--ink-muted); }
+.s7-hud__bar { display: inline-flex; gap: 4px; }
+.s7-hud__bar i { width: 8px; height: 24px; background: var(--ink); }
+.s7-clock { display: grid; place-items: center start; font-size: 72px; line-height: 72px; font-variant-numeric: tabular-nums; }
+.s7-card { display: grid; grid-template-columns: auto 1fr; column-gap: 16px; align-items: center; background: var(--cobalt) !important; border-color: var(--cobalt) !important; color: var(--on-cobalt) !important; }
+.s7-card__g { grid-row: span 2; font-size: 72px; line-height: 72px; }
+.s7-card__t { font-size: 48px; line-height: 48px; }
+.s7-card__s { font: var(--type-label); letter-spacing: .14em; }
+.s7-plateh { display: flex; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; font-size: 16px; line-height: 16px; padding-bottom: 12px; border-bottom: var(--line-hair) solid var(--ink); }
+.s7-seedrow { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); margin-top: var(--space-4); font-size: 16px; line-height: 16px; }
+.s7-term { margin: 0; font-size: 16px; line-height: 16px; text-transform: uppercase; display: grid; gap: 16px; }
+.s7-term span { display: block; white-space: pre; }
+.s7-menu { margin: 0; list-style: none; display: grid; gap: 16px; font-size: 32px; line-height: 32px; }
+.s7-menu li { display: flex; align-items: end; gap: 8px; }
+.s7-menu i { flex: 1; border-bottom: 4px dotted var(--rule); margin-bottom: 4px; }
+.s7-install { display: grid; gap: var(--space-4); margin-top: var(--space-6); }
+.s7-panel { display: grid; gap: var(--space-4); max-width: 46rem; }
+.s7-panel[hidden] { display: none; }
+.s7-panel p { margin: 0; }
+.s7-copy { border: 0; background: none; padding: 0; margin-left: auto; font: var(--type-label); letter-spacing: .14em; text-transform: uppercase; color: var(--cobalt-text); cursor: pointer; }
+.s7-install .ss-code__label { display: flex; align-items: center; gap: var(--space-3); }
+.s7-copy:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.s7-rules { margin: 0; padding: 0; list-style: none; counter-reset: r; display: grid; }
+.s7-rules li { counter-increment: r; display: grid; grid-template-columns: 48px minmax(0, 1fr); align-items: baseline; padding: var(--space-3) 0; border-bottom: var(--line-hair) solid var(--rule); }
+.s7-rules li::before { content: counter(r, decimal-leading-zero); font: 400 16px/24px "Stem 7", var(--font-mono); -webkit-font-smoothing: none; color: var(--cobalt-text); }
+.s7-small { max-width: 46rem; margin: 0; }
+@media (max-width: 900px) {
+  .s7-revs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .s7-bolds { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .s7-uses { grid-template-columns: minmax(0, 1fr); }
+  .s7-use, .s7-use--clock, .s7-use--plate, .s7-use--term, .s7-use--menu { grid-column: auto; }
+}
+@media (max-width: 640px) {
+  .s7-fig--mark, .s7-fig--src, .s7-kern, .s7-loupe { grid-template-columns: minmax(0, 1fr); }
+  .s7-loupe__read { justify-items: start; text-align: left; }
+  .s7-real { font-size: 72px; line-height: 72px; height: 90px; }
+  .s7-clock { font-size: 48px; line-height: 48px; }
+  .s7-grid-sample { font-size: 48px; line-height: 48px; }
+  .s7-bolds { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .s7-revs { grid-template-columns: minmax(0, 1fr); }
+  .s7-ladder { grid-template-columns: repeat(5, max-content); }
 }
