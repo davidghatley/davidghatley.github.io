@@ -7,6 +7,6 @@
     "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap",
     "{base}fonts/files/fonts.css"
   ],
-  "font_display": "\"Halfstep\", var(--font-pixel)",
+  "font_display": "\"Stem 7\", var(--font-pixel)",
   "font_weight": 400
 }

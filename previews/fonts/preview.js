@@ -1,4 +1,4 @@
-// font library preview: one family at a time set large in its own face, stepping through all eighteen, with
+// font library preview: one family at a time set large in its own face, stepping through all sixteen, with
 // the index of names beside it. A name is a link to that family's page. Reads fonts/files/families.json.
 const CSS = `
 .pv-fonts{display:grid;grid-template-columns:minmax(0,1fr) 14rem;gap:32px;align-items:stretch;color:var(--ink)}

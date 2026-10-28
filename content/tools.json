@@ -146,19 +146,19 @@
     ],
     "status": "design system",
     "category": "design system",
-    "status_note": "Eighteen families, all free under the OFL. Stem 7 still has its own site; the other seventeen live here.",
-    "oneliner": "Eighteen free typefaces I drew in code, from pixel faces to a textura.",
-    "role": "I drew every family as code: bitmap sources, line-and-arc skeletons stroked with different pens, and a serif built from rectangles and a flat nib. Then I built the library that shows them.",
+    "status_note": "Sixteen families, all free under the OFL. Stem 7 still has its own site; the other fifteen live here.",
+    "oneliner": "Sixteen free typefaces I drew in code, from pixel faces to a Didone.",
+    "role": "I drew every family as code: bitmap sources, line-and-arc skeletons stroked with different pens, and a Didone drawn as Bézier outlines. Then I built the library that shows them.",
     "when": "2026-10",
     "spec": [
       {
         "label": "families",
-        "value": "18",
+        "value": "16",
         "source": "fonts/index.html: one card per family"
       },
       {
         "label": "glyphs drawn",
-        "value": "2,191",
+        "value": "1,972",
         "source": "mapped glyphs per style, summed over every style (foundry/library.py)"
       },
       {
@@ -179,7 +179,7 @@
     ],
     "actions": [
       {
-        "label": "Browse 18 families →",
+        "label": "Browse 16 families →",
         "url": "fonts/index.html",
         "primary": true
       },

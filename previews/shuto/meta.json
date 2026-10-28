@@ -7,6 +7,6 @@
     "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
     "{base}fonts/files/fonts.css"
   ],
-  "font_display": "\"Slash\", var(--font-pixel)",
+  "font_display": "\"Hoop\", var(--font-pixel)",
   "font_weight": 400
 }

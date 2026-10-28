@@ -104,16 +104,16 @@
   "glyphs": 54
  },
  {
-  "slug": "quire",
-  "name": "Quire",
-  "sample": "Gauntlet of the Quire",
+  "slug": "cantilena",
+  "name": "Cantilena",
+  "sample": "Canciones Españolas",
   "cats": [
-   "Blackletter",
+   "Serif",
    "Display"
   ],
   "grid": false,
-  "href": "quire/index.html",
-  "glyphs": 108
+  "href": "cantilena/index.html",
+  "glyphs": 105
  },
  {
   "slug": "brick",
@@ -147,29 +147,6 @@
   ],
   "grid": false,
   "href": "hopscotch/index.html",
-  "glyphs": 108
- },
- {
-  "slug": "halfstep",
-  "name": "Halfstep",
-  "sample": "Halfway there",
-  "cats": [
-   "Pixel",
-   "Sans"
-  ],
-  "grid": false,
-  "href": "halfstep/index.html",
-  "glyphs": 108
- },
- {
-  "slug": "slash",
-  "name": "Slash",
-  "sample": "New Speed Run",
-  "cats": [
-   "Display"
-  ],
-  "grid": false,
-  "href": "slash/index.html",
   "glyphs": 108
  },
  {
