@@ -59,6 +59,10 @@
 .dx > * { min-width: 0; margin: 0; }
 .dx-mast { display: grid; gap: var(--space-4); padding-top: var(--space-4); }
 .dx-mast > * { margin: 0; }
+/* the mixed masthead: each letter in its own face, sat on one baseline; pixel faces at 72 px land on whole cells */
+.dx-title .dx-mix { display: flex; flex-wrap: wrap; align-items: baseline; font-weight: 400; letter-spacing: 0; -webkit-font-smoothing: auto; }
+.dx-title .dx-mix > span { font-synthesis: none; }
+.dx-title .dx-mix__sp { width: .32em; }
 
 /* plate 0.1 */
 .dx-hero__state { display: inline-flex; align-items: baseline; gap: var(--space-2); }

@@ -9,7 +9,7 @@ export default function renderCase(root, { project: p, base, meta }) {
 .cs-bonfire .rep{border-top:8px solid var(--a);padding-top:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font:500 11px/16px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted)}
 .cs-bonfire .head{display:flex;gap:20px;align-items:center;margin:20px 0 8px;flex-wrap:wrap}
 .cs-bonfire .head svg{width:64px;height:64px;flex:none}
-.cs-bonfire h1{margin:0;font:850 clamp(48px,11vw,120px)/.9 var(--font-display);font-stretch:125%;letter-spacing:-.03em;text-transform:none}
+.cs-bonfire h1{margin:0;font:850 clamp(48px,11vw,120px)/.9 var(--font-display);letter-spacing:-.03em;text-transform:none}
 .cs-bonfire .sub{font:400 20px/28px var(--font-sans);max-width:60ch;margin:0 0 28px}
 .cs-bonfire h2{display:flex;gap:12px;align-items:baseline;margin:48px 0 12px;padding-top:8px;border-top:1px solid var(--ink);font:750 22px/28px var(--font-sans)}
 .cs-bonfire h2 b{font:400 16px/16px var(--font-pixel);color:var(--at)}

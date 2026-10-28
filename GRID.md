@@ -16,7 +16,7 @@ One grid, defined at the top of `site.css` on `.site`. Check it with `index.html
   `--x0` (the left margin) is rounded down to 4px from 640 up, so every column line is a whole pixel on the 4px lattice. One column plus one gutter is `--step`.
 
 ## Baselines: measured offsets (font, size/line box -> baseline from the box top)
-Archivo 16/24 -> 17 · Archivo 850 expanded 20/24 -> 19 · Archivo 13/20 -> 14 · Archivo 700 25/28 -> 22 · Stem 7 16/20 -> 16 · Stem 7 16/24 -> 18 · Stem 7 32/40 -> 32 (cap 7/8 em, descender 2 cells) · Plex Mono 11/16 -> 12 · Plex Mono 13/28 -> 18.
+Hoop 16/24 · Hoop Bold 13/20 · Hoop Bold 25/28 (Archivo retired 2026-10-27) · Stem 7 16/20 -> 16 · Stem 7 16/24 -> 18 · Stem 7 32/40 -> 32 (cap 7/8 em, descender 2 cells) · Plex Mono 11/16 -> 12 · Plex Mono 13/28 -> 18.
 Place text so `box top + offset` is a multiple of 4: either hang it from a known baseline (`margin-top: calc(B - offset)`) or nudge it with `position: relative; top: ±n` (body text 16/24 uses `top: -1px`, h2 25/28 `top: 2px`, phone H1 16/24 `top: 2px`). Stem 7 at 16px goes on a 20px line (baseline 16), at 32px on 40 (baseline 32).
 
 ## Index rows

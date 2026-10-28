@@ -21,7 +21,7 @@ export default function renderCase(root, { project: p, base, meta }) {
 .cs-napkin .fb.flush{padding:0}
 .cs-napkin .tt{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
 .cs-napkin .tt svg{width:72px;height:72px;flex:none}
-.cs-napkin h1{overflow-wrap:anywhere;margin:0;font:900 clamp(48px,8vw,120px)/.88 var(--font-display,var(--font-sans));letter-spacing:-.03em;font-stretch:100%}
+.cs-napkin h1{overflow-wrap:anywhere;margin:0;font:900 clamp(48px,8vw,120px)/.88 var(--font-display,var(--font-sans));letter-spacing:-.03em;}
 .cs-napkin .one{font:500 24px/32px var(--font-sans);margin:16px 0 0;max-width:34ch}
 .cs-napkin .pill{display:inline-block;margin-top:16px;padding:4px 10px;background:var(--a);color:var(--on);font:600 12px/16px var(--font-mono);letter-spacing:.1em;text-transform:uppercase}
 .cs-napkin .note{display:grid;grid-template-columns:48px 1fr;gap:12px;padding:14px 0;border-top:1px dashed var(--rule)}

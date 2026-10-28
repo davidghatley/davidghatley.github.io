@@ -1,5 +1,5 @@
 /* Secret Sauce — generated from tokens.json by build.py. Do not edit by hand. */
-/* Fonts: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@1,6..72,400&family=Jacquarda+Bastarda+9&display=swap"> */
+/* Fonts: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@1,6..72,400&family=Jacquarda+Bastarda+9&display=swap"> */
 :root, [data-theme="light"] {
   --paper: #eeede7;
   --sheet: #f9f9f5;
@@ -108,9 +108,10 @@
   --line-hair: 1px;
   --line-draw: 1.5px;
   --line-heavy: 3px;
-  --font-display: "Archivo", "Arial Narrow", system-ui, sans-serif;
-  --font-sans: "Archivo", system-ui, sans-serif;
-  --font-text: "Hoop", "Archivo", system-ui, sans-serif;
+  --font-display: "Hoop", system-ui, sans-serif;
+  --font-sans: "Hoop", system-ui, sans-serif;
+  --font-text: "Hoop", system-ui, sans-serif;
+  --font-condensed: "Spire", "Hoop", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   --font-serif: "Newsreader", "Iowan Old Style", Georgia, serif;
   --font-pixel: "Stem 7", "IBM Plex Mono", ui-monospace, monospace;
@@ -127,13 +128,14 @@
 @font-face { font-family: "Stem 7 Grid"; src: url("fonts/Stem7-Grid.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
 @font-face { font-family: "Hoop"; src: url("fonts/Hoop-Regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
 @font-face { font-family: "Hoop"; src: url("fonts/Hoop-Bold.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+@font-face { font-family: "Spire"; src: url("fonts/Spire-Regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
 :root {
-  --type-display-xl: 900 120px/104px var(--font-display);
-  --type-display-l: 850 72px/64px var(--font-display);
-  --type-display-m: 800 48px/48px var(--font-display);
-  --type-h1: 750 32px/36px var(--font-sans);
+  --type-display-xl: 700 120px/104px var(--font-display);
+  --type-display-l: 700 72px/64px var(--font-display);
+  --type-display-m: 700 48px/48px var(--font-display);
+  --type-h1: 700 32px/36px var(--font-sans);
   --type-h2: 700 25px/28px var(--font-sans);
-  --type-h3: 650 20px/24px var(--font-sans);
+  --type-h3: 700 20px/24px var(--font-sans);
   --type-lead: 400 20px/28px var(--font-text);
   --type-body: 400 16px/24px var(--font-text);
   --type-small: 400 13px/20px var(--font-text);

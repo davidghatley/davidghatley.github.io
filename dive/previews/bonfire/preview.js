@@ -61,7 +61,7 @@ const CSS = `
 .pv-bonfire .bant{fill:#16181d;font-family:var(--font-pixel);font-size:16px}
 .pv-bonfire .ev{fill:var(--ink);font-family:var(--font-pixel);font-size:16px}
 .pv-bonfire .px{fill:var(--a)}
-.pv-bonfire .word{font-family:var(--font-display);font-weight:850;font-stretch:125%;font-size:15px;letter-spacing:-.01em;text-transform:none;color:#ee5228}
+.pv-bonfire .word{font-family:var(--font-display);font-weight:850;font-size:15px;letter-spacing:-.01em;text-transform:none;color:#ee5228}
 @media (max-width:720px){.pv-bonfire{grid-template-columns:1fr}.pv-bonfire .tlog{height:260px}}
 `;
 export default function mount(root, { mode }) {

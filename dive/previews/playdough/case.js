@@ -17,7 +17,7 @@ const CSS = `
 .cs-playdough .tin{padding:32px 24px 24px;display:flex;flex-direction:column;gap:24px}
 .cs-playdough .logo{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
 .cs-playdough .logo svg{width:96px;height:96px;fill:var(--ink);flex:none}
-.cs-playdough h1{margin:0;font:900 clamp(32px,10.5vw,120px)/.95 var(--font-display);font-stretch:125%;letter-spacing:-.025em}
+.cs-playdough h1{margin:0;font:900 clamp(32px,10.5vw,120px)/.95 var(--font-display);letter-spacing:-.025em}
 .cs-playdough .one{font-size:32px;line-height:40px;margin:0;max-width:22ch}
 .cs-playdough .start{font-size:32px;line-height:40px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
 .cs-playdough .start i{width:16px;height:16px;background:var(--ph);animation:blk 1s steps(1) infinite}

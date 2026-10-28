@@ -33,7 +33,7 @@
    ss-input     a docs text field: square, hairline ink frame, 40px · tools and filters outside games · sheet, ink, type-body
    ss-button    a docs button, 40px, square; --primary is cobalt (one per view) · tools and forms outside games · ink, cobalt, on-cobalt
    ss-prose     long-form reading text styled by element (h1-h3, p, lists, code, quote, table, hr) · generated markdown, docs · ink, type-body
-   ss-mast      the house title move: one expanded line (__x) over one condensed line (__c) · page and cover titles · font-display, stretch tokens
+   ss-mast      the house title move: one wide line (__x, Hoop Bold) over one condensed line (__c, Spire) · page and cover titles · font-display, font-condensed
    ss-tabs      accessible tab list (role=tablist, arrow keys) with a cobalt underline · switching views in docs and tools · ink, cobalt
    ss-check     checkbox drawn as a seed cell: an empty frame, a filled square when on · filters and settings · ink, cobalt
    ss-table     data table: mono head, hairline rows, .num for tabular numbers; wrap in ss-table-wrap · any table · ink, rule, type-small
@@ -93,7 +93,7 @@
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ss-spine--ink:not([data-theme="light"] .ss-spine--ink) { background: var(--rule); color: var(--ink); } }
 .ss-spine > * { flex: none; }
 .ss-spine__glyph { display: block; width: 40px; height: 40px; }
-.ss-spine__title { writing-mode: vertical-rl; transform: rotate(180deg) translateX(var(--spine-optical, -1px)); font-family: var(--font-display); font-weight: 850; font-stretch: var(--stretch-condensed); font-size: 48px; line-height: 48px; letter-spacing: -.01em; text-transform: uppercase; white-space: nowrap; }
+.ss-spine__title { writing-mode: vertical-rl; transform: rotate(180deg) translateX(var(--spine-optical, -1px)); font-family: var(--font-condensed); font-weight: 400; font-size: 48px; line-height: 48px; letter-spacing: 0; text-transform: uppercase; white-space: nowrap; }
 .ss-spine__run { flex: 0 1 auto; min-height: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; writing-mode: vertical-rl; transform: rotate(180deg); font: 500 11px/16px var(--font-mono); letter-spacing: .2em; text-transform: uppercase; }
 /* slim: plates and docs. 44px band, 20px glyph (4px cells) at a 12px inset, run only. */
 .ss-spine--slim { width: 44px; }
@@ -253,10 +253,9 @@
 .ss-prose td { padding: var(--space-2) var(--space-3) var(--space-2) 0; border-bottom: var(--line-hair) solid var(--rule); vertical-align: top; }
 
 /* ---------- mast: the house title move ---------- */
-.ss-mast { margin: 0; font-family: var(--font-display); font-weight: 850; font-size: 72px; line-height: 64px; letter-spacing: -.02em; text-transform: uppercase; color: var(--ink); }
+.ss-mast { margin: 0; font-family: var(--font-display); font-weight: 700; font-synthesis: none; font-size: 72px; line-height: 64px; letter-spacing: -.02em; text-transform: uppercase; color: var(--ink); }
 .ss-mast__x, .ss-mast__c { display: block; }
-.ss-mast__x { font-stretch: var(--stretch-expanded); }
-.ss-mast__c { font-stretch: var(--stretch-condensed); color: var(--cobalt-text); }
+.ss-mast__c { font-family: var(--font-condensed); font-weight: 400; letter-spacing: 0; color: var(--cobalt-text); }
 .ss-mast--m { font-size: 48px; line-height: 48px; letter-spacing: -.015em; }
 @media (max-width: 560px) { .ss-mast { font-size: 48px; line-height: 48px; } }
 

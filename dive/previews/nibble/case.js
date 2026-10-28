@@ -5,7 +5,7 @@ const CSS = `
 .cs-nibble .k{font:500 11px/16px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted)}
 .cs-nibble .top{display:flex;gap:20px;align-items:flex-end;border-bottom:2px solid var(--ink);padding-bottom:16px}
 .cs-nibble .top svg{width:56px;height:56px;flex:none;fill:var(--cobalt,#2236b0);shape-rendering:crispEdges}
-.cs-nibble h1{font:850 clamp(56px,13vw,120px)/.88 var(--font-display,'Archivo'),sans-serif;font-stretch:125%;letter-spacing:-.03em;margin:0}
+.cs-nibble h1{font:700 clamp(56px,13vw,120px)/.88 var(--font-display,'Hoop'),sans-serif;letter-spacing:-.03em;margin:0}
 .cs-nibble .sub{font:italic 400 18px/26px var(--font-serif);color:var(--ink-muted);margin:12px 0 0;max-width:44rem}
 .cs-nibble .meta{display:flex;flex-wrap:wrap;gap:8px 24px;margin:16px 0 0}
 .cs-nibble .page{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:32px;margin-top:32px}
@@ -13,7 +13,7 @@ const CSS = `
 .cs-nibble .entry{border-top:1px solid var(--ink);padding:16px 0 32px;display:grid;grid-template-columns:110px minmax(0,1fr);gap:20px}
 .cs-nibble .date{font:400 16px/24px var(--font-pixel);color:var(--a)}
 .cs-nibble .date small{display:block;font:500 11px/16px var(--font-mono);letter-spacing:.1em;color:var(--ink-muted);text-transform:uppercase;margin-top:4px}
-.cs-nibble h2{font:800 28px/30px var(--font-display,'Archivo'),sans-serif;font-stretch:112%;letter-spacing:-.015em;margin:0 0 10px}
+.cs-nibble h2{font:700 28px/30px var(--font-display,'Hoop'),sans-serif;letter-spacing:-.015em;margin:0 0 10px}
 .cs-nibble p{margin:0 0 12px;max-width:42rem}
 .cs-nibble dl{margin:12px 0;display:grid;grid-template-columns:110px minmax(0,1fr);gap:0;border-top:1px solid var(--rule)}
 .cs-nibble dt{font:600 11px/16px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--a);padding:8px 0;border-bottom:1px solid var(--rule)}

@@ -52,7 +52,7 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 .site-home .ss-lockup { vertical-align: top; }
 .site-h1 { margin: var(--space-12) 0 0; overflow-wrap: anywhere; }
 /* Stem 7 32/40: baseline 32 in the line box, on the grid with no nudge */
-.site-h1 .ss-mast__c { font-family: var(--font-pixel); font-weight: 400; font-stretch: normal; font-size: 32px; line-height: 40px;
+.site-h1 .ss-mast__c { font-family: var(--font-pixel); font-weight: 400; font-size: 32px; line-height: 40px;
   letter-spacing: 0; text-transform: uppercase; text-wrap: balance; -webkit-font-smoothing: none; font-synthesis: none; }
 @media (max-width: 639px) {
   /* Stem 7 16/24 has its baseline at 18; 2px down puts it on 20 */
@@ -145,7 +145,7 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 .row__pad { margin-left: calc(2 * var(--step)); display: grid; gap: var(--space-6); padding: 0 0 var(--space-8); }
 .row__preview { min-width: 0; }
 .row__preview > img { display: block; max-width: 100%; height: auto; max-height: 520px; object-fit: contain; }
-.row__note, .row__one-m { margin: 0; font: var(--type-body); position: relative; top: -1px; }   /* Archivo 16/24: baseline 17 -> 16 */
+.row__note, .row__one-m { margin: 0; font: var(--type-body); position: relative; top: -1px; }   /* Hoop 16/24 */
 .row__note { color: var(--ink-muted); }
 .row__one-m { display: none; }
 .open-btn { display: inline-flex; align-items: center; gap: var(--space-2); justify-self: start; height: 20px; color: var(--ink); text-decoration: none;
@@ -206,7 +206,7 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 .case-bar .back { display: inline-flex; align-items: flex-start; gap: var(--space-2); height: 64px; box-sizing: border-box; padding-top: 24px; color: var(--ink); text-decoration: none; }
 .case-bar .back .parrow { margin-top: 2px; }
 .case-bar__t { flex: 1; min-width: 0; padding-top: 26px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font-family: var(--font-display); font-weight: 600; font-size: 13px; line-height: 20px; font-stretch: var(--stretch-expanded); }   /* Archivo 13/20: baseline 14 -> 40 */
+  font-family: var(--font-display); font-weight: 700; font-size: 13px; line-height: 20px; }   /* Hoop Bold 13/20 */
 .ibtn { width: 48px; height: 48px; margin-top: var(--space-2); display: inline-flex; align-items: center; justify-content: center; border: var(--line-hair) solid var(--ink); color: var(--ink); text-decoration: none; box-sizing: border-box; flex: none; }
 .ibtn.is-off { border-color: var(--rule); color: var(--rule); }
 .case-body { min-width: 0; }
@@ -222,7 +222,7 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 /* case template (fallback when a project has no case.js) */
 .case-top { display: flex; align-items: center; gap: var(--space-4); margin: 0 0 var(--space-4); flex-wrap: wrap; }
 .case-top .glyph { --glyph: 60px; }
-.case-h { font-family: var(--font-title, var(--font-display)); font-weight: var(--to-w, 850); font-size: 48px; line-height: 48px; font-stretch: var(--stretch-expanded); letter-spacing: -.015em; margin: 0; overflow-wrap: anywhere; }
+.case-h { font-family: var(--font-title, var(--font-display)); font-weight: var(--to-w, 700); font-size: 48px; line-height: 48px; letter-spacing: -.015em; margin: 0; overflow-wrap: anywhere; }
 @media (max-width: 560px) { .case-h { font-size: 32px; line-height: 36px; } }
 .case-n { color: var(--ink-muted); margin-left: auto; }
 .case-hero { margin: var(--space-4) 0; min-width: 0; border-top: 2px solid var(--accent); padding-top: var(--space-3); }
