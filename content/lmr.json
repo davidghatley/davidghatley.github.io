@@ -106,6 +106,31 @@
       "One honest note. The sealed evaluation store, 116 private questions, went missing on 2026-10-04, found during final verification. I could not establish the cause, I did not reconstruct or reseal it, and it was never scored, so no result depends on it. The gate reported it absent rather than passing, which is what it was built to do.",
       "It began as an entry idea for the poidh offline-research bounty #31. Instead of building an app first, I asked whether retrieval quality matters on a phone-sized model. It does not, but packing does. Everything here was measured on a desktop; there is no Android build.",
       "It started as an idea for an open bounty for an offline Android research app. Honestly, it is not an entry yet: it meets the size, offline and open-source requirements, but it runs on a Linux laptop CPU, not a phone. The Android path (llama.cpp on arm64, a smaller reranker, a native app) is mapped out, not built."
+    ],
+    "work": [
+      {
+        "src": "public/media/lmr/ui.png",
+        "alt": "The lmr web UI showing an answer, rank movement from BM25 to the reranker, and the 1,000-token budget",
+        "caption": "The web UI draws every stage of an answer, so you can see which paragraphs fit and which were cited."
+      }
+    ],
+    "result": "A 17M reranker moved 13 points more of the needed evidence into the model's 1,000-token budget, offline.",
+    "result_draft": true,
+    "decisions": {
+      "draft": true,
+      "items": [
+        "I asked whether retrieval quality matters on a phone-sized model before building any app.",
+        "I preregistered thresholds and kill conditions and kept a sealed test set outside the repo.",
+        "I set the default rerank depth to 100: the full-depth result in about a quarter of the time."
+      ],
+      "changed": "Seven of my eight freeze reviews sent the agents' work back for repairs before it shipped."
+    },
+    "built_with": [
+      "BM25 search",
+      "17M reranker",
+      "1.5B local model",
+      "command line",
+      "local web UI"
     ]
   }
 ]

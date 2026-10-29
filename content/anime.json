@@ -43,7 +43,42 @@
     "source": "the run log"
    }
   ],
-  "links": []
+  "links": [],
+  "work": [
+   {
+    "src": "public/media/shuto/key-cyberpunk-SH13.jpg",
+    "alt": "Two bike riders on an elevated expressway at night, blades drawn and crossing, pink light trails behind them, a city skyline behind.",
+    "caption": "SHUTO, SH13 the duel: a key frame from the look lab."
+   },
+   {
+    "src": "public/media/shuto/duel-previz-final.mp4",
+    "alt": "Looping muted landscape clip: the SH13 duel previz on the left and the generated shot on the right.",
+    "caption": "The same shot in motion: the previz (left) fixes the bikes, blades and trails; the video model paints over it (right)."
+   }
+  ],
+  "result": "Every frame of meguri and shuto, made on one 12 GB GPU: 1,788 logged generations and no out-of-memory errors.",
+  "result_draft": true,
+  "decisions": {
+   "draft": true,
+   "items": [
+    "Depth passes steer the video model, never line art: line art made it draw edges as new objects.",
+    "I approve the storyboard before any GPU time goes to video.",
+    "Head-on clashes come from Blender previz, because the image models would not draw them."
+   ],
+   "changed": "The model drew the front of the costume on the back in 7 of 18 views. View-aware costume briefs took that to 0 of 18."
+  },
+  "built_with": [
+   "Blender 5.2.2",
+   "ComfyUI",
+   "Krea 2",
+   "Qwen-Image 2.1",
+   "MiniMax H3",
+   "one RTX 3060, 12 GB"
+  ],
+  "outputs": [
+   "meguri",
+   "shuto"
+  ]
  },
  {
   "slug": "meguri",
