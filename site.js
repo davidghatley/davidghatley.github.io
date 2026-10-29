@@ -426,6 +426,63 @@
     };
   }
 
+  // ---------- home: the background strip ----------
+  // Two small pixel instruments, one canvas pixel per cell. A Fourier series adds odd harmonics to a square wave;
+  // single photons land one at a time on a detector and the counts build two-slit fringes. They run only while
+  // on screen; under reduced motion each draws its finished state once.
+  function background() {
+    var figs = [].slice.call(document.querySelectorAll('.bg__fig')); if (!figs.length) return;
+    function ink(c, v) { return getComputedStyle(c).getPropertyValue(v).trim() || '#16181d'; }
+    var VIZ = {
+      fourier: function (f) {
+        var c = f.querySelector('canvas'), x = c.getContext('2d'), out = f.querySelector('b'), W = c.width, H = c.height;
+        var cx = 26, cy = 32, R = 17, X0 = 60, hist = [], t = 0, n = 1, since = 0;
+        function px(a, b) { x.fillRect(Math.round(a), Math.round(b), 1, 1); }
+        function ring(a, b, r) { var k = Math.max(12, Math.ceil(r * 6)); for (var i = 0; i < k; i++) { var q = i / k * 2 * Math.PI; px(a + r * Math.cos(q), b + r * Math.sin(q)); } }
+        function frame(still) {
+          var lo = ink(c, '--rule'), hi = ink(c, '--cobalt-text'), mu = ink(c, '--ink-muted');
+          x.clearRect(0, 0, W, H);
+          var a = cx, b = cy;
+          for (var k = 1; k <= n; k++) { var h = 2 * k - 1, r = R * 4 / (Math.PI * h); x.fillStyle = lo; ring(a, b, r);
+            a += r * Math.cos(h * t); b -= r * Math.sin(h * t); }
+          x.fillStyle = mu; for (var i = Math.round(a) + 2; i < X0; i += 2) px(i, b);
+          x.fillStyle = hi; px(a, b); px(a + 1, b); px(a, b + 1); px(a + 1, b + 1);
+          hist.unshift(b); if (hist.length > W - X0) hist.length = W - X0;
+          for (var j = 0; j < hist.length; j++) { var y0 = Math.round(hist[j]), y1 = Math.round(j + 1 < hist.length ? hist[j + 1] : hist[j]);
+            for (var y = Math.min(y0, y1); y <= Math.max(y0, y1); y++) px(X0 + j, y); }
+          out.textContent = String(2 * n - 1);
+        }
+        return {
+          still: function () { n = 8; for (var i = 0; i < W - X0; i++) { t += .045; frame(); } },
+          step: function () { t += .045; since++; if (since > 280) { since = 0; n = n >= 8 ? 1 : n + 1; hist.length = 0; } frame(); }
+        };
+      },
+      photons: function (f) {
+        var c = f.querySelector('canvas'), x = c.getContext('2d'), out = f.querySelector('b'), W = c.width, H = c.height;
+        var cnt = new Uint16Array(W * H), total = 0, seed = 7;
+        function rnd() { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; }
+        function I(u) { var s = 9.5 * u, e = 2.6 * u; var sinc = e === 0 ? 1 : Math.sin(e) / e; return Math.pow(Math.cos(s), 2) * sinc * sinc; }
+        function hit() { for (;;) { var u = rnd() * 2 - 1; if (rnd() < I(u)) { var i = Math.min(W - 1, Math.floor((u + 1) / 2 * W)), j = Math.floor(rnd() * H); cnt[j * W + i]++; total++; return; } } }
+        function draw() { var hi = ink(c, '--cobalt-text'); x.clearRect(0, 0, W, H); x.fillStyle = hi;
+          for (var j = 0; j < H; j++) for (var i = 0; i < W; i++) { var v = cnt[j * W + i]; if (v) { x.globalAlpha = Math.min(1, .35 + .3 * v); x.fillRect(i, j, 1, 1); } }
+          x.globalAlpha = 1; out.textContent = total.toLocaleString('en-US'); }
+        return {
+          still: function () { while (total < 3000) hit(); draw(); },
+          step: function () { var k = total < 200 ? 1 : total < 1200 ? 4 : 12; for (var q = 0; q < k; q++) hit();
+            if (total > 4200) { cnt.fill(0); total = 0; } draw(); }
+        };
+      }
+    };
+    figs.forEach(function (f) {
+      var v = VIZ[f.dataset.viz] && VIZ[f.dataset.viz](f); if (!v) return;
+      if (REDUCED || !('IntersectionObserver' in window)) { v.still(); return; }
+      v.still();   // the resting frame, until it scrolls into view
+      var on = false, last = 0;
+      function loop(ts) { if (!on) return; if (ts - last > 33) { last = ts; v.step(); } requestAnimationFrame(loop); }
+      new IntersectionObserver(function (es) { var vis = es[0].isIntersecting && !document.hidden; if (vis && !on) { on = true; requestAnimationFrame(loop); } else if (!vis) on = false; }, { threshold: .2 }).observe(f);
+    });
+  }
+
   // optional buttons a project asks for (a download, its own website), shown in the open row and on the case page
   function actions(p) {
     if (!p.actions || !p.actions.length) return null;
@@ -593,7 +650,7 @@
       });
     });
   }
-  if (window.PAGE === 'case') casePage(); else if (window.PAGE !== 'lab') home();
+  if (window.PAGE === 'case') casePage(); else if (window.PAGE !== 'lab') { home(); background(); }
   field();
   if (/[?&]grid=1\b/.test(location.search)) gridOverlay();
 })();
