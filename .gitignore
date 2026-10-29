@@ -5,3 +5,4 @@ autodeploy.log
 studio/*
 drafts/
 ship/
+.claude/
