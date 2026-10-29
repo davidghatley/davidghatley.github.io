@@ -1,0 +1,119 @@
+{
+  "intro": "This is what I'm building now, shown as it stands. Each project moves to the index once it clears a public demo bar, and the board shows how far each one has left to go.",
+  "groups": [
+    {
+      "id": "built",
+      "title": "built, not shipped yet",
+      "note": "Working code on branches. Not public yet.",
+      "items": [
+        {
+          "slug": "napkin",
+          "what": "A working canvas with 577 tests. Every artboard is a React file on disk, and an agent edits the same canvas over MCP while you watch.",
+          "img": {"src": "public/media/napkin/paper-mcp.png", "alt": "The napkin canvas: a Landing artboard, its layers, and the change list showing two edits made by claude.", "ratio": "16 / 10"},
+          "bar": "An agent-edit replay demo is live, with a video.",
+          "steps": [
+            [1, "Canvas that saves every artboard as a TSX file, 577 tests"],
+            [1, "MCP server: an agent edits the same canvas live"],
+            [1, "Static demo that replays a recorded agent edit"],
+            [0, "Replay demo live on a public link"],
+            [0, "Video of the demo"]
+          ]
+        },
+        {
+          "slug": "nibble",
+          "what": "A small model, Kev-4B, composes a landing page section by section in about 1.7 s. A fine-tune on my 3060 made its section order much better.",
+          "chart": {"label": "composer, before and after the fine-tune", "groups": [
+            {"label": "section order", "rows": [["base", 0.35, "0.35"], ["tuned", 0.85, "0.85"]]},
+            {"label": "call to action before footer", "rows": [["base", 0.149, "0.149"], ["tuned", 1.0, "1.00"]]}
+          ], "foot": "A TF-IDF baseline still wins overall: 0.836 vs 0.750."},
+          "bar": "The composer replay demo is live.",
+          "steps": [
+            [1, "Command line, nibble ask and compare, 36 tests"],
+            [1, "Held-out comparison with Sonnet: 0.88 vs 1.00 on 50 prompts"],
+            [1, "Composer: Kev-4B builds a page section by section"],
+            [1, "Fine-tune: section order from 0.35 to 0.85"],
+            [0, "Composer replay demo live"]
+          ]
+        },
+        {
+          "slug": "playdough",
+          "what": "Barely started. One sentence becomes a three.js game that is checked in headless Chromium. Six example games are built.",
+          "img": {"src": "public/media/playdough/frog-pond.jpg", "alt": "An isometric pond diorama generated from the sentence: a frog hops across lily pads and a frozen pond to catch flies.", "ratio": "16 / 10", "pos": "50% 50%"},
+          "bar": "The six games are playable from a public link.",
+          "steps": [
+            [1, "playdough make: plan, build, check in headless Chromium, 28 tests"],
+            [1, "Six playable example games"],
+            [0, "Six games playable from a public link"]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core",
+      "title": "working core",
+      "note": "The hard part runs. The real demo has not.",
+      "items": [
+        {
+          "slug": "bonfire",
+          "what": "Four tries run side by side and the best is kept. A run survives kill -9 by resuming from its event log. So far on recorded model replies.",
+          "log": {"src": "public/media/bonfire/demo-kill-restart.txt", "lines": [
+            "[demo] kill -9 3238142",
+            "r-20261022-135155  INTERRUPTED  (no owner process)",
+            "[demo] restarting: bonfire resume",
+            "  w2  back to step 3 (2 saved)",
+            "round 1  score  w1 0/2  w2 2/2  w3 1/2  w4 2/2",
+            "PASS  every check passes · winner w2 · 1 resume, 0 finished steps re-run"
+          ]},
+          "bar": "A live agent run goes end to end on a real task.",
+          "steps": [
+            [1, "Four tries side by side, best kept"],
+            [1, "Resumes after kill -9 from its event log, 22 tests"],
+            [0, "Live model calls"],
+            [0, "Live run end to end on a real task"]
+          ]
+        },
+        {
+          "slug": "mise_en_place",
+          "what": "A command line and five Claude Code skills prepare any task into a folder whose index records each item's source and status.",
+          "file": {"label": "index.md, recorded from a real agent run", "head": ["path", "status"], "rows": [
+            ["research/launch-event-research.md", "gathered"],
+            ["assets/event-flow.spec.json", "made"],
+            ["assets/event-flow.svg", "made"],
+            ["research/open-decisions.md", "open: date, venue, budget"]
+          ], "foot": "Task: plan a one-day launch event for a neighborhood tool library"},
+          "bar": "An agent's use of the prep is measured.",
+          "steps": [
+            [1, "mep init, index and check, 20 tests"],
+            [1, "Five Claude Code skills"],
+            [1, "Two prep folders recorded from real agent runs"],
+            [0, "Measured use of prep by an agent"]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "designed",
+      "title": "designed, not built",
+      "note": "Every part exists as a file. None is printed yet.",
+      "items": [
+        {
+          "slug": "rack10",
+          "what": "Every part is modelled in OpenSCAD and exported: 61 STLs, printed joints only, no screws.",
+          "img": {"src": "public/media/rack10/exploded.jpg", "alt": "Exploded view of rack10: walls, crossbars and three trays, each a parametric OpenSCAD module.", "ratio": "16 / 10", "pos": "50% 40%"},
+          "bar": "A printed level is photographed.",
+          "steps": [
+            [1, "Every part modelled in OpenSCAD"],
+            [1, "61 STLs exported"],
+            [1, "Fit coupon for the clearance"],
+            [0, "A printed level, photographed"]
+          ]
+        }
+      ]
+    }
+  ],
+  "experiments": {
+    "title": "finished experiments",
+    "note": "Each one is finished, and what it taught went into a tool above.",
+    "slugs": ["system-one-mini", "system-a", "benchlet", "gauntlet", "primitive", "precision-canvas"]
+  }
+}
