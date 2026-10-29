@@ -382,7 +382,7 @@
     var root = document.getElementById('case');
     // case/<slug>/ share pages set window.SLUG; case.html?p=<slug> keeps old links working
     var slug = window.SLUG || new URLSearchParams(location.search).get('p');
-    // asset prefix for previews and case.js, absolute so it resolves the same under <base> (case/<slug>/) and /dive/
+    // asset prefix for previews and case.js, absolute so it resolves the same under <base> (case/<slug>/) and /review/
     var base = new URL('./', document.baseURI).href;
     if (!window.SLUG && slug) { var cl = document.createElement('link'); cl.rel = 'canonical'; cl.href = base + caseUrl(slug); document.head.appendChild(cl); }
     load().then(function (ps) {

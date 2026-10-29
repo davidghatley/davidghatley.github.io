@@ -1,5 +1,5 @@
 refs/
-dive/studio/refs
+review/studio/refs
 *.log
 autodeploy.log
 studio/*

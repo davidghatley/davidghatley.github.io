@@ -1,4 +1,5 @@
 User-agent: *
+Disallow: /review/
 Disallow: /dive/
 
 Sitemap: https://davidghatley.github.io/sitemap.xml

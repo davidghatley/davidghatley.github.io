@@ -10,7 +10,7 @@ What it writes (all at the repo root, all committed; GitHub Pages still serves t
                      project's own <title>, description, canonical and Open Graph tags, plus its text as a static
                      fallback inside #case
   sitemap.xml        the index, the font library and every case page (case/fonts/ redirects, so fonts/ stands in)
-  robots.txt         keeps Disallow: /dive/ and adds the Sitemap line
+  robots.txt         keeps Disallow: /review/ and /dive/ and adds the Sitemap line
   site.js            the CASE_JS line: which projects ship previews/<slug>/case.js
   fonts/**/index.html  an absolute og:image when the generated page has none (fonts/ itself comes from
                      secret-sauce/tools/font/foundry/library.py; only this tag is added)
@@ -161,7 +161,7 @@ def main():
     urls = [SITE, SITE + 'fonts/'] + [SITE + 'case/%s/' % s for s in slugs if s != 'fonts']
     write(ROOT / 'sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
           + ''.join('  <url><loc>%s</loc></url>\n' % u for u in urls) + '</urlset>\n')
-    write(ROOT / 'robots.txt', 'User-agent: *\nDisallow: /dive/\n\nSitemap: %ssitemap.xml\n' % SITE)
+    write(ROOT / 'robots.txt', 'User-agent: *\nDisallow: /review/\nDisallow: /dive/\n\nSitemap: %ssitemap.xml\n' % SITE)
 
     fonts_og()
 

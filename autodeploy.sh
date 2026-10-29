@@ -7,7 +7,7 @@ while true; do
   for f in site.js previews/*/preview.js; do node --check "$f" >/dev/null 2>&1 || { echo "$(date +%T) skip: $f"; ok=0; }; done
   for f in content/*.json previews/*/meta.json; do python3 -m json.tool "$f" >/dev/null 2>&1 || { echo "$(date +%T) skip: $f"; ok=0; }; done
   if [ $ok = 1 ]; then
-    ./make_dive.sh >/dev/null 2>&1 && rm -f dive/previews/_harness.html
+    ./make_review.sh >/dev/null 2>&1
     git add -A
     if ! git diff --cached --quiet; then
       git -c user.name="David Hatley" -c user.email=davidhatley@me.com commit -qm "Auto-deploy $(date +%H:%M)
