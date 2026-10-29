@@ -409,8 +409,8 @@
       set(x0 + 22 * Math.sin(k * Math.PI * 2), false); if (k < 1) requestAnimationFrame(f); })(performance.now()); }
     fr.addEventListener('pointerdown', function (e) { if (e.button) return; drag = true; try { fr.setPointerCapture(e.pointerId); } catch (_) {}
       if (e.pointerType === 'mouse') { e.preventDefault(); set(at(e), true); } });
-    fr.addEventListener('pointermove', function (e) { if (drag) set(at(e), true); });
-    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (n) { fr.addEventListener(n, function () { drag = false; }); });
+    fr.addEventListener('pointermove', function (e) { if (drag) { fr.classList.add('is-drag'); set(at(e), true); } });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (n) { fr.addEventListener(n, function () { drag = false; fr.classList.remove('is-drag'); }); });
     r.addEventListener('input', function () { set(+r.value, true); });
     return {
       play: function () {

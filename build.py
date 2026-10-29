@@ -203,7 +203,7 @@ def lab_card(it, p):
     o = ['<article class="lc acc" id="%s" style="%s">' % (esc(slug), esc(acc_style(m)))]
     o.append('<div class="lc__head">%s%s<span class="lc__n">%d/%d</span></div>' % (svg_cells(p.get('glyph'), 5, 'glyph'), lab_title(p, href), done, len(steps)))
     o.append(lab_evidence(it, href))
-    o.append('<p class="lc__what" data-draft="true">%s</p>' % esc(it['what']))
+    o.append('<p class="lc__what">%s</p>' % esc(it['what']))
     cells = ''.join('<i class="%s"></i>' % ' '.join(c for c in ('is-done' if s[0] else '', 'is-bar' if k == len(steps) - 1 else '') if c)
                     for k, s in enumerate(steps))
     o.append('<div class="lc__foot">')
@@ -234,12 +234,12 @@ def lab_page(ps):
         return
     d = json.loads(f.read_text())
     by = {p['slug']: p for p in ps}
-    o = ['\n<p class="lab-intro" data-draft="true">%s</p>' % esc(d['intro']), '<div class="board">']
+    o = ['\n<p class="lab-intro">%s</p>' % esc(d['intro']), '<div class="board">']
     for g in d['groups']:
         items = [it for it in g['items'] if it['slug'] in by]
         o.append('<section class="lane" id="%s" style="--k:%d" aria-labelledby="h-%s"><div class="cat__head"><h2 class="cat__label" id="h-%s">%s</h2><span class="cat__n">%d</span></div>'
                  % (esc(g['id']), len(items), esc(g['id']), esc(g['id']), esc(g['title']), len(items)))
-        o.append('<p class="lane__note" data-draft="true">%s</p><div class="lane__cards">' % esc(g['note']))
+        o.append('<p class="lane__note">%s</p><div class="lane__cards">' % esc(g['note']))
         o += [lab_card(it, by[it['slug']]) for it in items]
         o.append('</div></section>')
     o.append('</div>')
@@ -247,7 +247,7 @@ def lab_page(ps):
     exps = [by[s] for s in x['slugs'] if s in by]
     o.append('<section class="lane lane--x" id="experiments" aria-labelledby="h-x"><div class="cat__head"><h2 class="cat__label" id="h-x">%s</h2><span class="cat__n">%d</span></div>'
              % (esc(x['title']), len(exps)))
-    o.append('<p class="lane__note" data-draft="true">%s</p><div class="xgrid">' % esc(x['note']))
+    o.append('<p class="lane__note">%s</p><div class="xgrid">' % esc(x['note']))
     o += [lab_exp(p) for p in exps]
     o.append('</div></section>\n')
     idx = ROOT / 'lab' / 'index.html'

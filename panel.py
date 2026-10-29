@@ -142,6 +142,9 @@ def res(t):
     return '<p class="t-res"%s>%s</p>' % (' data-draft="true"' if t.get('draft') else '', esc(t['result']))
 
 
+ARROWS = '<svg viewBox="0 0 11 5" shape-rendering="crispEdges" fill="currentColor"><rect x="0" y="2" width="1" height="1"/><rect x="1" y="1" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="1" y="3" width="1" height="1"/><rect x="2" y="0" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="8" y="0" width="1" height="1"/><rect x="8" y="1" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="9" y="1" width="1" height="1"/><rect x="9" y="2" width="1" height="1"/><rect x="9" y="3" width="1" height="1"/><rect x="10" y="2" width="1" height="1"/></svg>'   # pixel double arrow on the wipe handle
+
+
 def compare(c):
     """Previz over final with a wipe the visitor drags. Without JS the two stills split at --x; site.js swaps in the
     looping clip (one stacked file, drawn to a canvas) once the tile is on screen."""
@@ -149,7 +152,7 @@ def compare(c):
         '<figure class="an-vid"><div class="an-frame cmp" data-src="%s" style="--x:%d%%">'
         '<img class="cmp-a" src="%s" width="1152" height="658" alt="%s" fetchpriority="high" decoding="async">'
         '<div class="cmp-b"><img src="%s" width="1152" height="658" alt="%s" decoding="async"></div>'
-        '<span class="cmp-h" aria-hidden="true"><i></i></span>'
+        '<span class="cmp-h" aria-hidden="true"><i>' + ARROWS + '</i></span>'
         '<span class="cmp-l cmp-l--b" aria-hidden="true">previz</span><span class="cmp-l cmp-l--a" aria-hidden="true">final</span>'
         '<input class="cmp-r" type="range" min="0" max="100" value="%d" step="1" aria-label="Wipe between the previz and the finished shot" aria-valuetext="%d%% previz, %d%% final">'
         '</div>'

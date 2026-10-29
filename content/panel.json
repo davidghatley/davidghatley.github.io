@@ -4,9 +4,9 @@
     {
       "slug": "anime-pipeline",
       "name": "anime pipeline",
-      "result": "Blender previz in, finished anime shots out, from eight open models on one 12 GB GPU.",
-      "draft": true,
-      "caption": "meguri, shot M01: drag to compare previz and final. The camera track was smoothed after the first pass bounced on every step.",
+      "result": "The machine behind meguri and shuto: Blender previz, eight open models and one 12 GB GPU.",
+      "draft": false,
+      "caption": "meguri, shot M01: previz and final. The camera track was smoothed after the first pass bounced on every step.",
       "compare": {
         "_video": "previz on top, final below: one file, so the two halves never drift",
         "video": "public/media/anime-pipeline/m01-stairs-compare.mp4",
@@ -20,7 +20,7 @@
     {
       "slug": "lmr",
       "name": "lmr",
-      "result": "Answers offline in about five seconds on a laptop CPU, and shows which paragraphs it used.",
+      "result": "A research assistant that runs offline on a phone-sized model and cites its sources.",
       "draft": true,
       "question": "Why is the apple associated with the Garden of Eden?",
       "packed": [259, 281, 246, 154, 37],
@@ -29,7 +29,7 @@
     {
       "slug": "tasty_tunez",
       "name": "tasty_tunez",
-      "result": "A two-minute song from a written brief in about 20 seconds on a 12 GB card, with its own cover plate.",
+      "result": "Songs from a text brief on your own GPU, each with a cover drawn from its notes.",
       "draft": false
     },
     {
@@ -37,13 +37,13 @@
       "name": "type & design tools",
       "label": "type and design tools",
       "result": "Sixteen free typefaces I drew in code, and the design system and lint tools this site is built on.",
-      "draft": true,
+      "draft": false,
       "word": "type"
     },
     {
       "slug": "vaasf",
       "name": "vaasf",
-      "result": "A Python script fills the festival's 16-page printed program from its data. It went to print for Oct 23–25, 2026.",
+      "result": "Designer for New Mexico's Vocal Artistry Art Song Festival since 2022: its printed programs, website and applications.",
       "draft": true,
       "rows": [
         {"d": "FRI", "t": "10:00 AM", "e": "Vocal Artistry Division", "box": [5.5, 35.5, 26, 4]},
