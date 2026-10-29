@@ -58,9 +58,7 @@
    }
   ],
   "result": "Every frame of meguri and shuto, on one 12 GB GPU: 1,808 runs logged by Oct 26, 2026, none out of memory.",
-  "result_draft": true,
   "decisions": {
-   "draft": true,
    "items": [
     "Depth passes steer the video model, never line art: line art made it draw edges as new objects.",
     "I approve the storyboard before any GPU time goes to video.",
@@ -360,9 +358,7 @@
    "What I learned: my reference song was about 7 dB louder than anything the model produced. Some of what makes a track hit is mastering, not generation."
   ],
   "result": "A two-minute song from a written brief in about 20 seconds on a 12 GB card, with its cover plate and settings inside the MP3.",
-  "result_draft": true,
   "decisions": {
-   "draft": true,
    "items": [
     "I measured one reference track first (tempo, key, stems, loudness) and tested what moves the model toward it before designing the app.",
     "I chose ACE-Step 1.5 for its MIT licence. YuE2 and LeVo 2 score well but are non-commercial or academic only, so the app lists them and does not install them.",

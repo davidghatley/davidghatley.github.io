@@ -115,9 +115,7 @@
       }
     ],
     "result": "A 17M reranker moved 13 points more of the needed evidence into the model's 1,000-token budget, offline.",
-    "result_draft": true,
     "decisions": {
-      "draft": true,
       "items": [
         "I asked whether retrieval quality matters on a phone-sized model before building any app.",
         "I preregistered thresholds and kill conditions and kept a sealed test set outside the repo.",
