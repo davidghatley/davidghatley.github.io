@@ -6,3 +6,4 @@ studio/*
 drafts/
 ship/
 .claude/
+__pycache__/

@@ -4,8 +4,10 @@
   python3 build.py
 
 What it writes (all at the repo root, all committed; GitHub Pages still serves the repo as-is):
-  index.html         the plain project list between <!-- build:work --> markers inside #work, for crawlers and
-                     no-JS readers; site.js replaces it on load
+  index.html         the instrument panel between <!-- build:work --> markers inside #work (panel.py): five tiles,
+                     each one link, in their finished state, so crawlers and no-JS readers get the whole index;
+                     site.js only adds motion
+  content/runlog.json  aggregates of ~/anime-pipeline/logs/runs.jsonl (read-only; kept as is when the log is absent)
   case/<slug>/       one share page per project: a copy of case.html with <base href="../../">, window.SLUG, and the
                      project's own <title>, description, canonical and Open Graph tags, plus its text as a static
                      fallback inside #case
@@ -28,6 +30,7 @@ ROOT = pathlib.Path(__file__).resolve().parent
 SITE = 'https://davidghatley.github.io/'
 DEFAULT_IMAGE = 'public/media/anime-pipeline/sh13-duel-final.jpg'
 STALE_IMAGES = ('public/media/meguri/hero.jpg',)   # never used again: the stair shot (David, 2026-10-28)
+RUNLOG = pathlib.Path.home() / 'anime-pipeline' / 'logs' / 'runs.jsonl'   # read-only; only aggregates are written
 
 
 def write(p, s):
@@ -80,20 +83,6 @@ def image_of(p):
     if not (ROOT / src).exists():
         src = DEFAULT_IMAGE
     return SITE + src
-
-
-def static_index(ps, cats, cat):
-    out, cur = ['\n<div class="static">'], None
-    for p in ps:
-        c = cat(p)
-        if c != cur:
-            if cur is not None:
-                out.append('</ul>')
-            cur = c
-            out.append('<h2 class="h2">%s</h2><ul class="static-list">' % esc(cats[c] if c < len(cats) else 'other'))
-        out.append('<li><a href="case/%s/">%s</a>: %s</li>' % (esc(p['slug']), esc(p.get('title')), esc(p.get('oneliner'))))
-    out.append('</ul></div>\n')
-    return '\n'.join(out)
 
 
 def static_case(p):
@@ -268,7 +257,7 @@ def lab_page(ps):
 def main():
     sjs = ROOT / 'site.js'
     site_js = sjs.read_text()
-    ps, cats, cat = projects(site_js)
+    ps, cats, cat = projects(site_js)   # cats and cat order the case pages (prev/next)
 
     # site.js: which projects have a bespoke case.js
     have = sorted(d.parent.name for d in (ROOT / 'previews').glob('*/case.js') if not d.parent.name.startswith('_'))
@@ -276,7 +265,11 @@ def main():
     write(sjs, re.sub(r'var CASE_JS = \[[^\]]*\]; // build\.py: case\.js list', lambda m: line, site_js, count=1))
 
     idx = ROOT / 'index.html'
-    write(idx, between(idx.read_text(), 'work', static_index(ps, cats, cat)))
+    # the home instrument panel (panel.py); it is also the no-JS index. Loaded by path: python3 -I drops the script dir
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('panel', ROOT / 'panel.py'); panel = importlib.util.module_from_spec(spec); spec.loader.exec_module(panel)
+    write(ROOT / 'content' / 'runlog.json', panel.runlog_json(RUNLOG, ROOT / 'content' / 'runlog.json'))
+    write(idx, between(idx.read_text(), 'work', panel.render(ROOT, ps)))
 
     tpl = (ROOT / 'case.html').read_text()
     slugs = [p['slug'] for p in ps]
