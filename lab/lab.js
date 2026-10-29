@@ -25,6 +25,10 @@
     c.addEventListener('focusin', function () { swap(c, true); });
     c.addEventListener('focusout', function () { swap(c, false); });
   });
+  // the step lists: always open from 640 up (the summary is hidden there), folded on phones
+  var wide = window.matchMedia('(min-width: 640px)');
+  function fold() { document.querySelectorAll('.lc__more').forEach(function (d) { d.open = wide.matches; }); }
+  fold(); if (wide.addEventListener) wide.addEventListener('change', fold);
   if (REDUCED) return;
   if (!('IntersectionObserver' in window)) { cards.forEach(function (c) { var g = c.querySelector('.glyph'); if (g) g.classList.remove('is-armed'); }); return; }
   var io = new IntersectionObserver(function (es) {

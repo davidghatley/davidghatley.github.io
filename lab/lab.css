@@ -1,41 +1,47 @@
 /* The lab board (lab/index.html). Same grid as the index (site.css, GRID.md): 4px baselines, 16px gutters,
-   12 columns of 64px from 1024, 8 from 640, 4 on phones. Three lanes side by side on desktop, stacked below. */
+   12 columns of 64px from 1024, 8 from 640, 4 on phones. Every card is 4 columns wide from 1024: the first lane is
+   one row of three, the other two lanes share the second row (two cards + one), so the board is a clean 3 x 2.
+   Card text baselines sit on the 4px lattice (checked with the probe in GRID.md "lab cards"). */
 
-.lab-back { display: inline-flex; gap: var(--space-2); margin-top: var(--space-12); color: var(--ink-muted); text-decoration: none; }
+.lab-back { display: inline-flex; gap: var(--space-2); margin-top: var(--space-8); color: var(--ink-muted); text-decoration: none; }
 .lab-back:hover, .lab-back:focus-visible { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
-/* Stem 7 64/72: 8px cells, baseline on the grid */
-.lab-h1 { margin: var(--space-4) 0 0; font-family: var(--font-pixel); font-weight: 400; font-size: 64px; line-height: 72px; letter-spacing: 0;
+/* Stem 7 64/72: 8px cells; baseline 7/8 em + 4 = 60, on the grid */
+.lab-h1 { margin: var(--space-2) 0 0; font-family: var(--font-pixel); font-weight: 400; font-size: 64px; line-height: 72px; letter-spacing: 0;
   -webkit-font-smoothing: none; font-synthesis: none; color: var(--ink); }
-.lab-intro { margin: var(--space-4) 0 0; font: var(--type-lead); max-width: calc(8 * var(--col) + 7 * var(--g)); text-wrap: pretty; }
+.lab-intro { margin: var(--space-2) 0 0; font: var(--type-lead); max-width: calc(8 * var(--col) + 7 * var(--g)); text-wrap: pretty; position: relative; top: var(--ny-lead, 0px); }
 
 /* ---------- the board ---------- */
-.board { display: grid; grid-template-columns: repeat(var(--n), var(--col)); column-gap: var(--g); row-gap: var(--space-12); margin-top: var(--space-16); align-items: start; }
-.lane { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr); row-gap: var(--space-4); align-content: start; min-width: 0; }
-@media (min-width: 1024px) { .lane { grid-column: span 4; } }
-@media (min-width: 640px) and (max-width: 1023px) {
-  .lane { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--g); }
-  .lane > .cat__head, .lane > .lane__note, .lane > .xgrid { grid-column: 1 / -1; }
-}
+.board { margin-top: var(--space-12); display: grid; grid-template-columns: minmax(0, 1fr); row-gap: var(--space-12); }
+.lane { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; min-width: 0; }
 .lane .cat__head { white-space: nowrap; }
+.lane__note { margin: 0; padding: var(--space-2) 0 var(--space-4); font: var(--type-caption); color: var(--ink-muted); position: relative; top: var(--ny-cap, 0px); }
+.lane__cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--g); align-items: stretch; }
+@media (min-width: 640px) { .lane__cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1024px) {
-  /* three lanes on 304px each: the 32px head would not fit "built, not shipped yet", so lane heads go to 16 */
+  .board { grid-template-columns: repeat(12, var(--col)); column-gap: var(--g); row-gap: 0; }
+  .lane { grid-row: span 3; grid-template-rows: subgrid; grid-template-columns: subgrid; }
+  .lane > * { grid-column: 1 / -1; }
+  #built { grid-column: 1 / -1; }
+  #core { grid-column: 1 / span 8; }
+  #designed { grid-column: 9 / span 4; }
+  #built .lane__cards { margin-bottom: var(--space-12); }
+  .lane__cards { grid-template-columns: subgrid; }
+  .lane__cards > .lc { grid-column: span 4; }
+  /* lane heads at 16: "built, not shipped yet" has to fit in four columns */
   .board .cat__head { --tpx: 16px; --tlh: 20px; --tbl: 16px; height: 32px; padding-top: var(--space-1); }
-  /* 304px cards: Stem 7 24/32 (3px cells) so "playdough" clears its count */
-  .board .lc__t { font-size: 24px; line-height: 32px; }
-  .board .lc__n { margin-top: 8px; }
 }
-.lane__note { margin: 0; font: var(--type-caption); color: var(--ink-muted); min-height: 48px; }
-@media (max-width: 1023px) { .lane__note { min-height: 0; } }
 
 /* ---------- a card ---------- */
+/* 1px frame + 15px padding: the content box starts 16px in, on the lattice */
 .lc { position: relative; display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; box-sizing: border-box;
-  background: var(--sheet); border: var(--line-hair) solid var(--rule); padding: var(--space-4);
+  background: var(--sheet); border: var(--line-hair) solid var(--rule); padding: 15px;
   transition: border-color var(--dur-move) var(--ease-move); }
 .lc::before { content: ""; position: absolute; left: -1px; right: -1px; top: -1px; height: 2px; background: var(--accent); }
 .lc:hover, .lc:has(.lc__t a:focus-visible) { border-color: var(--accent); }
 .lc:has(.lc__t a:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
-.lc__head { display: flex; align-items: center; gap: var(--space-3); min-height: 40px; }
+.lc__head { display: flex; align-items: flex-start; gap: var(--space-3); min-height: 40px; }
 .lc__head .glyph { --glyph: 40px; }
+/* Stem 7 32/40, baseline 32 */
 .lc__t { margin: 0; min-width: 0; flex: 1; font-family: var(--font-pixel); font-weight: 400; font-size: 32px; line-height: 40px; letter-spacing: 0;
   -webkit-font-smoothing: none; font-synthesis: none; }
 .lc__t a { color: var(--ink); text-decoration: none; }
@@ -43,43 +49,53 @@
 .lc__t a::after { content: ""; position: absolute; inset: 0; z-index: 0; }   /* the whole card opens the case page */
 .lc__t .ch { line-height: 0; }
 .lc__t .ch--on { font-family: var(--font-title, var(--font-pixel)); -webkit-font-smoothing: auto; }
-.lc__n { align-self: flex-start; margin-top: 12px; color: var(--ink-muted); font-family: var(--font-pixel); font-size: 16px; line-height: 20px;
+/* Stem 7 16/20, baseline 16: hung on the title's baseline (32 = 16 + 16) */
+.lc__n { margin-top: 16px; color: var(--ink-muted); font-family: var(--font-pixel); font-size: 16px; line-height: 20px;
   font-variant-numeric: tabular-nums; -webkit-font-smoothing: none; }
-.lc__what { margin: 0; font: var(--type-body); text-wrap: pretty; }
+.lc__what { margin: 0; font: var(--type-body); text-wrap: pretty; position: relative; top: -1px; }   /* Hoop 16/24: baseline 17 -> 16 */
 
-/* the one picture: square corners, a hairline, cropped to 4:3 */
-.lc__fig { position: relative; z-index: 1; display: block; margin: 0; aspect-ratio: 4 / 3; overflow: hidden; border: var(--line-hair) solid var(--rule); background: var(--paper); }
+/* the evidence: square corners, a hairline; pictures are never cropped or scaled up past their pixels */
+.lc__fig { position: relative; z-index: 1; display: block; margin: 0; overflow: hidden; border: var(--line-hair) solid var(--rule); background: var(--paper); }
 .lc__fig img { display: block; width: 100%; height: 100%; object-fit: cover; }
 a.lc__fig:hover img { opacity: .92; }
-/* nibble: the result as two bars; bonfire: the recorded log */
-.lc__fig--chart, .lc__fig--log { aspect-ratio: auto; min-height: 0; padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); z-index: 0; }
+/* data figures (nibble's bars, bonfire's log, mise en place's index): 1px frame + 11px padding = 12 */
+.lc__fig--data { z-index: 0; padding: 11px; display: flex; flex-direction: column; gap: var(--space-2); }
 .lc__cap { margin: 0; font: 400 12px/16px var(--font-mono); color: var(--ink-muted); }
+.lc__cap--h { color: var(--ink); }
 .lc__cap a { color: inherit; position: relative; z-index: 1; text-underline-offset: 3px; }
-.lc__cr { display: grid; grid-template-columns: 64px minmax(0, 1fr) 32px; column-gap: var(--space-2); align-items: center; font: 400 12px/16px var(--font-mono); font-variant-numeric: tabular-nums; }
+.lc__cg { display: grid; gap: var(--space-1); }
+.lc__cr { display: grid; grid-template-columns: 48px minmax(0, 1fr) 40px; column-gap: var(--space-2); align-items: center; font: 400 12px/16px var(--font-mono); font-variant-numeric: tabular-nums; }
 .lc__cr > :last-child { text-align: right; }
 .lc__cb { display: block; height: 12px; border: var(--line-hair) solid var(--rule); box-sizing: border-box; }
 .lc__cb i { display: block; height: 100%; background: var(--ink-muted); }
-.lc__cr:last-of-type .lc__cb i { background: var(--accent); }
-.lc__fig--log pre { margin: 0; font: 400 12px/16px var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink); }
+.lc__cr:last-child .lc__cb i { background: var(--accent); }
+.lc__fig--data pre { margin: 0; font: 400 12px/16px var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink); }
+.lc__tbl { border-collapse: collapse; width: 100%; font: 400 12px/16px var(--font-mono); }
+.lc__tbl tr { display: flex; flex-wrap: wrap; justify-content: space-between; column-gap: var(--space-2); padding: 3px 0 4px; border-top: var(--line-hair) solid var(--rule); }
+.lc__tbl thead tr { border-top: 0; padding-top: 0; color: var(--ink-muted); }
+.lc__tbl th, .lc__tbl td { padding: 0; text-align: left; font-weight: 400; overflow-wrap: anywhere; }
+.lc__tbl td:last-child { color: var(--ink-muted); }
 
-/* distance to the bar: one cell per step, the last cell is the bar itself (ink frame) */
+/* the foot: distance to the bar. One cell per step; the last cell is the bar itself (ink frame). It sits at the
+   bottom of the card so the tracks line up across a row. */
+.lc__foot { margin-top: auto; display: flex; flex-direction: column; gap: var(--space-3); }
 .lc__track { display: flex; gap: var(--space-1); }
 .lc__track i { flex: 1; height: 12px; box-sizing: border-box; border: var(--line-hair) solid var(--rule); }
 .lc__track i.is-done { background: var(--accent); border-color: var(--accent); }
 .lc__track i.is-bar { border: 2px solid var(--ink); }
 .lc__track i.is-bar.is-done { border-color: var(--ink); }
-.lc__steps { list-style: none; margin: calc(-1 * var(--space-2)) 0 0; padding: 0; display: grid; gap: 0; font: 400 12px/20px var(--font-mono); color: var(--ink-muted); }
+.lc__more summary { display: none; }
+.lc__steps { list-style: none; margin: 0; padding: 0; display: grid; font: 400 12px/20px var(--font-mono); color: var(--ink-muted); }
 .lc__steps li { display: grid; grid-template-columns: 16px minmax(0, 1fr); }
 .lc__steps li::before { content: ""; width: 8px; height: 8px; margin-top: 6px; box-sizing: border-box; border: var(--line-hair) solid var(--ink-muted); }
 .lc__steps li.is-done { color: var(--ink); }
 .lc__steps li.is-done::before { background: var(--accent); border-color: var(--accent); }
 .lc__steps li:last-child::before { border: 2px solid var(--ink); }
-.lc__steps li:last-child.is-done::before { background: var(--accent); }
-.lc__bar { margin: 0; padding-top: var(--space-3); border-top: var(--line-hair) solid var(--rule); font: var(--type-small); }
+.lc__bar { margin: 0; padding-top: 11px; border-top: var(--line-hair) solid var(--rule); font: var(--type-small); }
 .lc__k { display: block; font: 500 12px/16px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: var(--space-1); }
 
 /* ---------- finished experiments ---------- */
-.lane--x { margin: var(--space-16) 0 var(--space-16); }
+.lane--x { margin: var(--space-16) 0; }
 .xgrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--g); }
 @media (min-width: 640px) { .xgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1024px) { .xgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -87,15 +103,39 @@ a.lc__fig:hover img { opacity: .92; }
 .lc--x .lc__head { min-height: 20px; gap: var(--space-2); }
 .lc--x .lc__head .glyph { --glyph: 20px; }
 .lc--x .lc__t { font-size: 16px; line-height: 20px; }
-.lc--x .lc__what { font: var(--type-small); color: var(--ink); }
+.lc--x .lc__what { font: var(--type-small); color: var(--ink); top: 0; }
 .lc__to { margin: auto 0 0; display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-2); font: var(--type-small); color: var(--ink-muted); }
 .lc__to .tag { flex: none; color: var(--accent); border-color: var(--accent); }
 
 @media (max-width: 639px) {
   .lab-back { margin-top: var(--space-8); }
-  .lab-h1 { font-size: 32px; line-height: 40px; margin-top: var(--space-2); }
+  .lab-h1 { font-size: 32px; line-height: 40px; }
   .lab-intro { font: var(--type-body); }
-  .board { margin-top: var(--space-12); }
-  .lc__t { font-size: 32px; }
+  /* phone: the step list folds behind a disclosure; the track and the bar stay */
+  .lc__more summary { display: flex; align-items: center; gap: var(--space-2); cursor: pointer; list-style: none; font: 400 12px/20px var(--font-mono); color: var(--ink); position: relative; z-index: 1; min-height: 24px; }
+  .lc__more summary::-webkit-details-marker { display: none; }
+  .lc__more summary::before { content: "+"; display: inline-block; width: 8px; text-align: center; }
+  .lc__more[open] summary::before { content: "\2212"; }
+  .lc__more[open] summary { margin-bottom: var(--space-1); }
+  .lc__more summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 }
 @media (prefers-reduced-motion: reduce) { .lc { transition: none; } }
+
+/* ---------- 4px lattice fixes (GRID.md "lab cards") ---------- */
+.lab-back { display: flex; width: fit-content; }
+.lc { container-type: inline-size; }
+/* pictures: 16:10 of the card's width, rounded down to whole cells; object-fit trims the remainder, never scales up */
+a.lc__fig { aspect-ratio: auto !important; height: round(down, 62.5cqw, 4px); }
+a.lc__fig { box-sizing: border-box; }                       /* the hairline is inside the cell-rounded height */
+.lc__steps { position: relative; top: -2px; }               /* Plex Mono 12/20: baseline 14 -> 12 */
+.lc__bt { display: block; position: relative; top: 2px; }  /* Hoop 13/20: baseline 14 -> 16 */
+.lc--x .lc__what, .lc__to { position: relative; top: 2px; } /* Hoop 13/20 and the 20px tag frame: 14 -> 16 */
+@media (max-width: 639px) {
+  .lab-intro { top: -1px; }                                 /* Hoop 16/24: 17 -> 16 */
+  .lc__more summary { min-height: 0; padding: 2px 0; }      /* 12/20 baseline 14 + 2 = 16, box 24 */
+}
+@media (min-width: 1024px) {
+  /* 304px cards: Stem 7 24/32 (3px cells) so "playdough" clears its count; box 4-36, baseline 4 + 25 - 1 = 28 */
+  .board .lc__t { font-size: 24px; line-height: 32px; margin-top: 4px; position: relative; top: -1px; }
+  .board .lc__n { margin-top: 12px; }      /* Stem 7 16/20: baseline 12 + 16 = 28 */
+}

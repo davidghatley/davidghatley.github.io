@@ -173,6 +173,34 @@ def lab_title(p, href):
             % (esc(href), esc(t), chs))
 
 
+def lab_evidence(it, href):
+    if it.get('img'):
+        im = it['img']
+        return ('<a class="lc__fig" href="%s" tabindex="-1" style="aspect-ratio:%s"><img src="%s" alt="%s" loading="lazy" decoding="async" style="object-position:%s"></a>'
+                % (esc(href), esc(im.get('ratio', '4 / 3')), esc(im['src']), esc(im['alt']), esc(im.get('pos', '50% 50%'))))
+    if it.get('chart'):
+        c = it['chart']
+        gs, said = [], []
+        for g in c['groups']:
+            rows = ''.join('<div class="lc__cr"><span>%s</span><span class="lc__cb"><i style="width:%.1f%%"></i></span><span>%s</span></div>'
+                           % (esc(a), b * 100, esc(v)) for a, b, v in g['rows'])
+            gs.append('<div class="lc__cg"><p class="lc__cap">%s</p>%s</div>' % (esc(g['label']), rows))
+            said.append('%s: %s' % (g['label'], ', '.join('%s %s' % (a, v) for a, b, v in g['rows'])))
+        return ('<figure class="lc__fig lc__fig--data" role="img" aria-label="%s"><figcaption class="lc__cap lc__cap--h">%s</figcaption>%s<p class="lc__cap">%s</p></figure>'
+                % (esc(c['label'] + '. ' + '; '.join(said) + '. ' + c['foot']), esc(c['label']), ''.join(gs), esc(c['foot'])))
+    if it.get('log'):
+        lg = it['log']
+        return ('<figure class="lc__fig lc__fig--data"><figcaption class="lc__cap lc__cap--h">from <a href="%s">the recorded demo log</a></figcaption><pre>%s</pre></figure>'
+                % (esc(lg['src']), '\n'.join(esc(l) for l in lg['lines'])))
+    if it.get('file'):
+        fl = it['file']
+        rows = ''.join('<tr><td>%s</td><td>%s</td></tr>' % (esc(a), esc(b)) for a, b in fl['rows'])
+        return ('<figure class="lc__fig lc__fig--data"><figcaption class="lc__cap lc__cap--h">%s</figcaption>'
+                '<table class="lc__tbl"><thead><tr><th>%s</th><th>%s</th></tr></thead><tbody>%s</tbody></table><p class="lc__cap">%s</p></figure>'
+                % (esc(fl['label']), esc(fl['head'][0]), esc(fl['head'][1]), rows, esc(fl['foot'])))
+    return ''
+
+
 def lab_card(it, p):
     slug = p['slug']
     m = meta_of(slug)
@@ -181,28 +209,16 @@ def lab_card(it, p):
     href = 'case/%s/' % slug
     o = ['<article class="lc acc" id="%s" style="%s">' % (esc(slug), esc(acc_style(m)))]
     o.append('<div class="lc__head">%s%s<span class="lc__n">%d/%d</span></div>' % (svg_cells(p.get('glyph'), 5, 'glyph'), lab_title(p, href), done, len(steps)))
+    o.append(lab_evidence(it, href))
     o.append('<p class="lc__what" data-draft="true">%s</p>' % esc(it['what']))
-    if it.get('img'):
-        im = it['img']
-        o.append('<a class="lc__fig" href="%s" tabindex="-1"><img src="%s" alt="%s" loading="lazy" decoding="async" style="object-position:%s%s"></a>'
-                 % (esc(href), esc(im['src']), esc(im['alt']), esc(im.get('pos', '50% 50%')),
-                    ';transform:scale(%s);transform-origin:%s' % (im['zoom'], im.get('pos', '50% 50%')) if im.get('zoom') else ''))
-    elif it.get('chart'):
-        c = it['chart']
-        rows = ''.join('<div class="lc__cr"><span>%s</span><span class="lc__cb"><i style="width:%.1f%%"></i></span><span>%s</span></div>' % (esc(a), b * 100, esc(v)) for a, b, v in c['rows'])
-        o.append('<figure class="lc__fig lc__fig--chart" aria-label="%s"><figcaption class="lc__cap">%s</figcaption>%s<p class="lc__cap">%s</p></figure>'
-                 % (esc(c['label'] + ': ' + ', '.join('%s %s' % (a, v) for a, b, v in c['rows'])), esc(c['label']), rows, esc(c['foot'])))
-    elif it.get('log'):
-        lg = it['log']
-        o.append('<figure class="lc__fig lc__fig--log"><figcaption class="lc__cap">from <a href="%s">the recorded demo log</a></figcaption><pre>%s</pre></figure>'
-                 % (esc(lg['src']), '\n'.join(esc(l) for l in lg['lines'])))
     cells = ''.join('<i class="%s"></i>' % ' '.join(c for c in ('is-done' if s[0] else '', 'is-bar' if k == len(steps) - 1 else '') if c)
                     for k, s in enumerate(steps))
+    o.append('<div class="lc__foot">')
     o.append('<div class="lc__track" role="img" aria-label="%d of %d steps done toward the demo bar">%s</div>' % (done, len(steps), cells))
-    lis = ''.join('<li%s%s>%s</li>' % (' class="is-done"' if s[0] else '', ' data-draft="true"' if len(s) > 2 and s[2] else '', esc(s[1])) for s in steps)
-    o.append('<ol class="lc__steps">%s</ol>' % lis)
-    o.append('<p class="lc__bar"><span class="lc__k">Graduates when</span> %s</p>' % esc(it['bar']))
-    o.append('</article>')
+    lis = ''.join('<li%s><span>%s</span></li>' % (' class="is-done"' if s[0] else '', esc(s[1])) for s in steps)
+    o.append('<details class="lc__more" open><summary>%d of %d steps done</summary><ol class="lc__steps">%s</ol></details>' % (done, len(steps), lis))
+    o.append('<p class="lc__bar"><span class="lc__k">Graduates when</span><span class="lc__bt">%s</span></p>' % esc(it['bar']))
+    o.append('</div></article>')
     return '\n'.join(o)
 
 
@@ -228,11 +244,11 @@ def lab_page(ps):
     o = ['\n<p class="lab-intro" data-draft="true">%s</p>' % esc(d['intro']), '<div class="board">']
     for g in d['groups']:
         items = [it for it in g['items'] if it['slug'] in by]
-        o.append('<section class="lane" id="%s" aria-labelledby="h-%s"><div class="cat__head"><h2 class="cat__label" id="h-%s">%s</h2><span class="cat__n">%d</span></div>'
-                 % (esc(g['id']), esc(g['id']), esc(g['id']), esc(g['title']), len(items)))
-        o.append('<p class="lane__note" data-draft="true">%s</p>' % esc(g['note']))
+        o.append('<section class="lane" id="%s" style="--k:%d" aria-labelledby="h-%s"><div class="cat__head"><h2 class="cat__label" id="h-%s">%s</h2><span class="cat__n">%d</span></div>'
+                 % (esc(g['id']), len(items), esc(g['id']), esc(g['id']), esc(g['title']), len(items)))
+        o.append('<p class="lane__note" data-draft="true">%s</p><div class="lane__cards">' % esc(g['note']))
         o += [lab_card(it, by[it['slug']]) for it in items]
-        o.append('</section>')
+        o.append('</div></section>')
     o.append('</div>')
     x = d['experiments']
     exps = [by[s] for s in x['slugs'] if s in by]
