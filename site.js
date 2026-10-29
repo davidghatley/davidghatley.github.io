@@ -393,7 +393,7 @@
     d.appendChild(w);
     var s = el('div', 'dos__sheet');
     var id = el('div', 'dos__id'), g = glyphSvg(p.glyph); g.style.viewTransitionName = 'glyph-' + p.slug; id.appendChild(g);
-    var h = el('h1', 'dos__h'); h.appendChild(el('span', 'sr-only', esc(p.title)));
+    var h = el('h1', 'dos__h' + (String(p.title).split(' ').some(function (wd) { return wd.length > 6; }) ? ' dos__h--long' : ''));   // a long word steps down to 32 so it never breaks mid-word h.appendChild(el('span', 'sr-only', esc(p.title)));
     var tt = el('span', 'tt'); tt.setAttribute('aria-hidden', 'true');
     Array.from(String(p.title)).forEach(function (c) { var q = el('span', 'ch'); q.textContent = c; tt.appendChild(q); });
     h.appendChild(tt); id.appendChild(h); s.appendChild(id);
@@ -414,7 +414,7 @@
         var li = el('li'), a = el('a'); a.href = caseUrl(q.slug);
         var og = glyphSvg(q.glyph); a.appendChild(og);   // only the glyph wears the show's own colour
         var gen = (q.spec || []).filter(function (x) { return /generations/.test(x.label); })[0];
-        a.appendChild(el('span', '', '<b>' + esc(q.title) + '</b><i>' + esc(q.oneliner) + '</i>' + (gen ? '<em>' + esc(gen.value) + ' ' + esc(gen.label) + '</em>' : '')));
+        a.appendChild(el('span', '', '<b>' + esc(q.title) + '</b>' + (gen ? '<em>' + esc(gen.value) + ' ' + esc(gen.label) + '</em>' : '')));
         a.appendChild(parrow()); li.appendChild(a); ol.appendChild(li);
         loadMeta(q).then(function () { applyAccent(og, q.meta); });
       });
@@ -427,8 +427,9 @@
       if (dc.changed) dv.appendChild(dr(el('p', 'dos__ai', '<b>Changed from the AI.</b> ' + esc(dc.changed)), dc.draft));
       s.appendChild(dv);
     }
-    if (p.built_with && p.built_with.length) s.appendChild(el('p', 'dos__built', '<span class="dos__k">Built with</span> ' + p.built_with.map(function (b) { return '<span>' + esc(b) + '</span>'; }).join(' · ')));
-    s.appendChild(el('p', 'dos__status', '<span>' + esc(p.when) + '</span> ' + esc(p.status_note || '')));
+    // one quiet foot: status, then when and what it's built with on one mono line
+    if (p.status_note) s.appendChild(el('p', 'dos__status', esc(p.status_note)));
+    s.appendChild(el('p', 'dos__built', [p.when].concat(p.built_with || []).filter(Boolean).map(function (b) { return '<span>' + esc(b) + '</span>'; }).join(' · ')));
     d.appendChild(s);
     // the signature moment: the glyph builds cell by cell (CSS), then the title steps into the project's own face
     var cs = [].slice.call(tt.children), k = 0;

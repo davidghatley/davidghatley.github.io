@@ -85,7 +85,7 @@ const TECH = [
   ['Effects baked into 3D + per-rider facing prompts', 'mine', 'facing held ~45% → ~85% of keys; weapons in 172/180 keys'],
   ['Guides at frame 0, every story event and the end', 'mine', 'look held 4/4 clips; every keyed event happened'],
   ['One-variable lessons bench (14 tests, fixed seed 7)', 'mine; tests adapted from two tutorials', 'grey sheet beats riso sheet for identity; 8-step i2v holds the key (f0→f20 change 2.7 vs 20.4 at 4 steps)'],
-  ['Run log with peak VRAM and RAM, skip-existing', 'mine', '1,788 rows; every number on this page comes from it'],
+  ['Run log with peak VRAM and RAM, skip-existing', 'mine', '1,788 rows when the numbers on this page were read (Oct 22); 1,808 by Oct 26'],
   ['ComfyUI-channel technique study', 'research', 'bullet-time orbit and split-stack shorts done; keyframes to animation and blockout-first piloted; others proposed or skipped'],
 ];
 // §3b

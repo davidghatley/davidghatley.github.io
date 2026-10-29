@@ -23,9 +23,9 @@
   "media": [],
   "spec": [
    {
-    "label": "generations logged",
-    "value": "1,788",
-    "source": "the pipeline's run log, Oct 12–22, 2026"
+    "label": "runs logged",
+    "value": "1,808",
+    "source": "the pipeline's run log, Oct 12 to 26, 2026, read Oct 28: 1,664 succeeded, 144 failed to submit"
    },
    {
     "label": "GPU hours",
@@ -40,23 +40,24 @@
    {
     "label": "CUDA out-of-memory errors",
     "value": "0",
-    "source": "the run log"
+    "source": "the run log, all 1,808 rows, read Oct 28, 2026"
    }
   ],
   "links": [],
   "work": [
    {
-    "src": "public/media/shuto/key-cyberpunk-SH13.jpg",
-    "alt": "Two bike riders on an elevated expressway at night, blades drawn and crossing, pink light trails behind them, a city skyline behind.",
-    "caption": "SHUTO, SH13 the duel: a key frame from the look lab."
+    "src": "public/media/anime-pipeline/sh13-duel-final.mp4",
+    "poster": "public/media/anime-pipeline/sh13-duel-final.jpg",
+    "alt": "Looping muted clip: two riders on an elevated expressway at night, pink and white light trails behind their bikes, the camera orbiting the duel.",
+    "caption": "SHUTO, SH13 the duel: a generated shot that passed review, 1344 by 768, from one 12 GB GPU."
    },
    {
     "src": "public/media/shuto/duel-previz-final.mp4",
     "alt": "Looping muted landscape clip: the SH13 duel previz on the left and the generated shot on the right.",
-    "caption": "The same shot in motion: the previz (left) fixes the bikes, blades and trails; the video model paints over it (right)."
+    "caption": "The previz (left) fixes the bikes, blades and trails; the video model paints over it (right)."
    }
   ],
-  "result": "Every frame of meguri and shuto, made on one 12 GB GPU: 1,788 logged generations and no out-of-memory errors.",
+  "result": "Every frame of meguri and shuto, on one 12 GB GPU: 1,808 runs logged by Oct 26, 2026, none out of memory.",
   "result_draft": true,
   "decisions": {
    "draft": true,

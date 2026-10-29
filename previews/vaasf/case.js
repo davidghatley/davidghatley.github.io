@@ -21,6 +21,11 @@ export default async function renderCase(root, { project: p, base, meta }) {
 .cs-vaasf .ent span{font-variant:all-small-caps;letter-spacing:.1em;color:var(--bl);white-space:nowrap}
 .cs-vaasf .ent+p{margin:0;font-style:italic;color:var(--mu);font-size:18px;line-height:24px}
 .cs-vaasf .centre{padding:32px 0 40px;border-bottom:1px solid var(--ln)}
+.cs-vaasf .gal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px 28px;align-items:start}
+.cs-vaasf .gal .wide{grid-column:1/-1}
+.cs-vaasf .gal img{background:#fff}
+.cs-vaasf .site{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:28px;align-items:start;margin-top:32px}
+@media (max-width:720px){.cs-vaasf .gal,.cs-vaasf .site{grid-template-columns:minmax(0,1fr)}.cs-vaasf .gal .single{max-width:280px}.cs-vaasf .site .ph{max-width:220px}}
 .cs-vaasf .notes{columns:2 340px;column-gap:48px}
 .cs-vaasf .notes p{margin:0 0 16px;text-align:left;hyphens:manual}
 .cs-vaasf .notes p:first-child::first-letter{font:400 72px/56px 'DM Serif Display',serif;float:left;padding:6px 8px 0 0;color:var(--bl)}
@@ -46,18 +51,26 @@ export default async function renderCase(root, { project: p, base, meta }) {
     ['The Website', 'Webflow', 'Owned and maintained, with the redesigned events schedule.'],
     ['The Application', '2026', 'Collected 92 to 94 entries.']
   ];
+  const fg = (src, alt, cap, cls) => `<figure${cls ? ` class="${cls}"` : ''}><img src="${M + src}" alt="${esc(alt)}" loading="lazy"><figcaption>${cap}</figcaption></figure>`;
   const body = p.body;
   root.innerHTML = `<div class="cs-vaasf"><div class="w">
-<div class="centre"><div class="hero-slot"></div></div>
+
 <section><h2>On the making</h2><div class="notes">${body.map((t, i) => `<p${i === body.length - 1 ? ' class="last"' : ''}>${esc(t)}</p>`).join('')}</div></section>
+<section style="padding-top:40px"><h2>The rest of the book</h2><div class="gal">
+${fg('s4.jpg', 'Photo spread of pages 8 and 9 from the program.', 'Pages 8 and 9, Festivals Past, set photo-led.', 'wide')}
+${fg('s2.jpg', 'Spread of pages 4 and 5, Young Artists Division listings.', 'Pages 4 and 5, listings.')}
+${fg('s6.jpg', 'Spread of pages 12 and 13, high school and middle school listings.', 'Pages 12 and 13, listings continued.')}
+${fg('masterclass.jpg', p.media[1].alt, esc(p.media[1].caption), 'single')}
+${fg('thanks.jpg', p.media[2].alt, esc(p.media[2].caption), 'single')}
+</div></section>
+<section><h2>The site</h2>
+${fg('site-hero.jpg', 'First screen of the live VAASF website: the Canciones Españolas hero with navigation.', 'The first screen of the live site.')}
+<div class="site">${fg('site-full.jpg', p.media[3].alt, esc(p.media[3].caption))}${fg('site-phone.jpg', 'The VAASF home page on a phone.', 'The home page on a phone.', 'ph')}</div>
+</section>
 <section><h2>Program</h2>
 <ol class="prog">${prog.map(e => `<li><div class="ent"><b>${e[0]}</b><i></i><span>${e[1]}</span></div><p>${e[2]}</p></li>`).join('')}</ol></section>
 <section style="border:0"><h2>Particulars</h2><dl>${p.spec.map(s => `<div><dt>${esc(s.label)}</dt><i class="d"></i><dd>${esc(s.value)}</dd><dd>${esc(s.source)}</dd></div>`).join('')}</dl>
 <div class="end">Set in DM Serif Display and EB Garamond.</div></section>
 </div></div>`;
-  const cs = root.querySelector('.cs-vaasf');
-  const slot = cs.querySelector('.hero-slot');
-  let un = () => {};
-  try { const m = await import('./preview.js'); un = m.default(slot, { mode: 'hero', base }) || un; } catch (e) {}
-  return () => { un(); st.remove(); fl.remove(); root.innerHTML = ''; };
+  return () => { st.remove(); fl.remove(); root.innerHTML = ''; };
 }
