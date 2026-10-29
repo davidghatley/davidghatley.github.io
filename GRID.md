@@ -19,6 +19,12 @@ One grid, defined at the top of `site.css` on `.site`. Check it with `index.html
 Hoop 16/24 · Hoop Bold 13/20 · Hoop Bold 25/28 (Archivo retired 2026-10-27) · Stem 7 16/20 -> 16 · Stem 7 16/24 -> 18 · Stem 7 32/40 -> 32 (cap 7/8 em, descender 2 cells) · Hoop 16/24 -> 17 · Hoop 13/20 -> 14 · Plex Mono 11/16 -> 12 · Plex Mono 12/16 -> 12 · Plex Mono 13/28 -> 18 (measured 2026-10-28).
 Place text so `box top + offset` is a multiple of 4: either hang it from a known baseline (`margin-top: calc(B - offset)`) or nudge it with `position: relative; top: ±n` (body text 16/24 uses `top: -1px`, h2 25/28 `top: 2px`, phone H1 16/24 `top: 2px`). Stem 7 at 16px goes on a 20px line (baseline 16), at 32px on 40 (baseline 32).
 
+## Home: the instrument panel (replaces the index rows on the home page, 2026-10-28)
+- `panel.py` renders it at build time from `content/panel.json`, `content/runlog.json` (aggregates of the anime pipeline run log), the tasty_tunez song data and the font list; `site.js home()` only runs it. Rows (below) still describe the old index styles.
+- Tiles sit on the page columns with the normal 16px gutter. Each tile's top rule (ink hairline, 2px accent on hover/focus) spans exactly its columns; a rule-coloured hairline runs down the middle of the gutter between side-by-side tiles; one ink hairline closes the panel.
+- 12 columns: anime pipeline 1-12 (clip 7 columns, run-log readout 5; its result line rides on the head line in Hoop 13/20), lmr 1-6 + tasty_tunez 7-12, type & design tools 1-6 + vaasf 7-12. 8 columns: anime 1-8 with the readout under the clip, then pairs of 4. 4 columns: tiles stack in order, each under 70% of an 844px viewport.
+- Tile head: 48px (40 on phones); glyph 20px (4px cells), name Stem 7 32/40 (16/20 on phones), number Plex Mono 12. Readout labels Plex Mono 12/16 with 0.8px tracking; readout numbers Stem 7 48/48 and 32/40.
+
 ## Index rows
 - Titles and section heads are Stem 7, lowercase: 32/40 (baseline 32) from 640px up, 16/20 (baseline 16) on phones, where 32 can't fit beside the tags. Cells are whole pixels (4px at 32, 2px at 16).
 - Section head: 48px tall (32px on phones), label baseline 32 (20 on phones), ink hairline in its last pixel row; the count is Stem 7 16 muted on the label's baseline, its ink on the right edge (`margin-right: -2px` for Stem 7's right bearing). Sections are 48px apart; rows are sorted by `order` within `software, design system, client work, generative art, hardware, experiments` (`CATS` in site.js).

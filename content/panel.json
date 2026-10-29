@@ -1,0 +1,51 @@
+{
+  "_about": "The home index: five instruments, in this order (David, 2026-10-28). build.py renders them into index.html; site.js only adds motion. Result lines marked draft are written from the project's body text and wait for David's sign-off.",
+  "tiles": [
+    {
+      "slug": "anime-pipeline",
+      "name": "anime pipeline",
+      "result": "Blender previz in, finished anime shots out, from eight open models on one 12 GB GPU.",
+      "draft": true,
+      "caption": "shuto, shot SH13: the finished duel clip.",
+      "video": "public/media/anime-pipeline/sh13-duel.mp4",
+      "poster": "public/media/anime-pipeline/sh13-duel.jpg",
+      "alt": "shuto shot SH13: two riders duel on a night expressway, light trails and a sword arc in magenta."
+    },
+    {
+      "slug": "lmr",
+      "name": "lmr",
+      "result": "Answers offline in about five seconds on a laptop CPU, and shows which paragraphs it used.",
+      "draft": true,
+      "question": "Why is the apple associated with the Garden of Eden?",
+      "packed": [259, 281, 246, 154, 37],
+      "budget": 1000
+    },
+    {
+      "slug": "tasty_tunez",
+      "name": "tasty_tunez",
+      "result": "A two-minute song from a written brief in about 20 seconds on a 12 GB card, with its own cover plate.",
+      "draft": false
+    },
+    {
+      "slug": "fonts",
+      "name": "type & design tools",
+      "label": "type and design tools",
+      "result": "Sixteen free typefaces I drew in code, and the design system and lint tools this site is built on.",
+      "draft": true,
+      "word": "type"
+    },
+    {
+      "slug": "vaasf",
+      "name": "vaasf",
+      "result": "A Python script fills the festival's 16-page printed program from its data. It went to print for Oct 23–25, 2026.",
+      "draft": true,
+      "rows": [
+        {"d": "FRI", "t": "10:00 AM", "e": "Vocal Artistry Division", "box": [5.5, 35.5, 26, 4]},
+        {"d": "FRI", "t": "7:30 PM", "e": "Opening Night Recital", "box": [5.5, 61.5, 26, 7.5]},
+        {"d": "SAT", "t": "7:30 PM", "e": "Closing Night Recital", "box": [33.5, 84, 31, 8]},
+        {"d": "SUN", "t": "2:00 PM", "e": "Final Awards Concert", "box": [66.5, 42, 28, 5]}
+      ]
+    }
+  ],
+  "lab": {"href": "lab/", "text": "Lab: 6 tools in progress, 6 experiments"}
+}

@@ -1,0 +1,88 @@
+{
+ "source": "anime-pipeline/logs/runs.jsonl, aggregated by build.py (panel.py runlog_json)",
+ "runs": 1808,
+ "succeeded": 1664,
+ "cuda_oom": 0,
+ "gpu_hours": 37.9,
+ "peak_vram_mib": 11868,
+ "vram_total_mib": 12288,
+ "first": "2026-10-12",
+ "last": "2026-10-26",
+ "days": [
+  {
+   "d": "2026-10-12",
+   "runs": 239,
+   "peak_mib": 11855
+  },
+  {
+   "d": "2026-10-13",
+   "runs": 256,
+   "peak_mib": 11868
+  },
+  {
+   "d": "2026-10-14",
+   "runs": 441,
+   "peak_mib": 11849
+  },
+  {
+   "d": "2026-10-15",
+   "runs": 32,
+   "peak_mib": 11796
+  },
+  {
+   "d": "2026-10-16",
+   "runs": 0,
+   "peak_mib": 0
+  },
+  {
+   "d": "2026-10-17",
+   "runs": 0,
+   "peak_mib": 0
+  },
+  {
+   "d": "2026-10-18",
+   "runs": 0,
+   "peak_mib": 0
+  },
+  {
+   "d": "2026-10-19",
+   "runs": 0,
+   "peak_mib": 0
+  },
+  {
+   "d": "2026-10-20",
+   "runs": 736,
+   "peak_mib": 11789
+  },
+  {
+   "d": "2026-10-21",
+   "runs": 64,
+   "peak_mib": 11774
+  },
+  {
+   "d": "2026-10-22",
+   "runs": 20,
+   "peak_mib": 11750
+  },
+  {
+   "d": "2026-10-23",
+   "runs": 18,
+   "peak_mib": 11771
+  },
+  {
+   "d": "2026-10-24",
+   "runs": 0,
+   "peak_mib": 0
+  },
+  {
+   "d": "2026-10-25",
+   "runs": 0,
+   "peak_mib": 0
+  },
+  {
+   "d": "2026-10-26",
+   "runs": 2,
+   "peak_mib": 11507
+  }
+ ]
+}

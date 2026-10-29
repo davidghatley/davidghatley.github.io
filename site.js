@@ -298,75 +298,99 @@
     window.addEventListener('resize', draw); setInterval(draw, 1000); draw();
   }
 
+  // ---------- home: the instrument panel ----------
+  // panel.py renders every tile in its finished state; this only runs them. Each instrument starts when its tile
+  // scrolls into view and stops when it leaves (or the tab hides). Under reduced motion nothing runs: the payoff
+  // states stay, the clip shows its poster, and hover swaps the name all at once.
   function home() {
-    var track = document.getElementById('work');
-    var open = null, hoverT = null;
-    var touch = window.matchMedia && matchMedia('(hover: none)').matches;
-    function expand(r) {
-      if (open && open !== r) collapse(open);
-      if (r.classList.contains('is-open')) return;
-      open = r; r.classList.add('is-open'); FIELD.open = r; r.querySelector('.row__btn').setAttribute('aria-expanded', 'true');
-      var g = r.querySelector('.glyph'); if (g) replay(g); if (!r._fonts) { r._fonts = 1; applyFonts(r._p.meta, './'); }
-      swapTitle(r, true);
-      var pv = r.querySelector('.row__preview'), p = r._p;
-      r._token = {};
-      var t = r._token;
-      mountPreview(p, pv, 'row', './').then(function (c) { if (r._token === t && r.classList.contains('is-open')) r._cleanup = c; else c(); });
+    var tiles = [].slice.call(document.querySelectorAll('.tile')); if (!tiles.length) return;
+    var still = REDUCED, CELL = function () { return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dur-cell')) || 70; };
+    function arm(n) { n.classList.remove('is-armed'); void n.getBoundingClientRect(); n.classList.add('is-armed'); }
+    function swapName(t, on) {
+      clearInterval(t._swap); t._swap = 0;
+      var cs = [].slice.call(t.querySelectorAll('.t-name .ch')).filter(function (c) { return c.textContent !== ' ' && c.classList.contains('ch--on') !== on; });
+      if (!on) cs.reverse();   // in left to right, out right to left
+      if (still || !cs.length) { cs.forEach(function (c) { c.classList.toggle('ch--on', on); }); return; }
+      var i = 0; function tick() { var c = cs[i++]; if (c) c.classList.toggle('ch--on', on); if (i >= cs.length) { clearInterval(t._swap); t._swap = 0; } }
+      tick(); t._swap = setInterval(tick, CELL());
     }
-    function collapse(r) {
-      r.classList.remove('is-open'); r.querySelector('.row__btn').setAttribute('aria-expanded', 'false'); swapTitle(r, false);
-      var c = r._cleanup; r._cleanup = null; r._token = null;
-      if (c) c();
-      var pv = r.querySelector('.row__preview');
-      setTimeout(function () { if (!r.classList.contains('is-open')) pv.innerHTML = ''; }, 300);
-      if (open === r) open = null;
-      if (FIELD.open === r) FIELD.open = null;
-    }
-    function go(r, e) {
-      var p = r._p;
-      var g = r.querySelector('.glyph'); if (g) g.style.viewTransitionName = 'glyph-' + p.slug;
-      var pv = r.querySelector('.row__preview'); if (r.classList.contains('is-open')) pv.style.viewTransitionName = 'hero-' + p.slug;
-    }
-    load().then(function (ps) { return Promise.all(ps.map(loadMeta)); }).then(function (ps) {
-      if (!ps.length) return;   // keep build.py's static list if the content didn't load
-      track.innerHTML = '';
-      var sec = null, cat = null;
-      ps.forEach(function (p, idx) {
-        var c = catIndex(p);
-        if (c !== cat) {
-          cat = c; var name = CATS[c] || 'other';
-          var n = ps.filter(function (q) { return catIndex(q) === c; }).length;
-          sec = el('section', 'cat'); sec.setAttribute('aria-label', name);
-          sec.appendChild(el('div', 'cat__head', '<h2 class="cat__label">' + esc(name) + '</h2><span class="cat__n">' + String(n).padStart(2, '0') + '</span>'));
-          track.appendChild(sec);
-        }
-        var r = el('article', 'row'); r.id = p.slug; r._p = p; applyAccent(r, p.meta);
-        // the bar is the mouse target (click anywhere on it); the title's button is the control for keyboards and AT
-        var bar = el('div', 'row__bar');
-        bar.appendChild(el('span', 'row__n', String(idx + 1).padStart(2, '0')));
-        bar.appendChild(glyphSvg(p.glyph));
-        bar.appendChild(titleEl(p));
-        bar.appendChild(el('p', 'row__one', esc(p.oneliner)));
-        var tg = tags(p); if (tg) bar.appendChild(el('span', 'row__tags', tg));
-        var ar = el('a', 'row__arrow'); ar.appendChild(parrow()); ar.href = caseUrl(p.slug); ar.setAttribute('aria-label', 'Case study: ' + p.title); bar.appendChild(ar);
-        var panel = el('div', 'row__panel'); panel.id = 'pn-' + p.slug;
-        var inner = el('div', 'row__inner'), pad = el('div', 'row__pad');
-        var pvw = el('div', 'row__preview'); pad.appendChild(pvw); snap4(pvw);
-        if (p.status_note) pad.appendChild(el('p', 'row__note', esc(p.status_note)));
-        var ac = actions(p); if (ac) pad.appendChild(ac);
-        var ob = el('a', 'open-btn', '<span>Open case study</span>'); ob.appendChild(parrow()); ob.href = caseUrl(p.slug); pad.appendChild(ob);
-        inner.appendChild(pad); panel.appendChild(inner);
-        r.appendChild(bar); r.appendChild(panel); sec.appendChild(r);
-        // interactions
-        // the button's own click (mouse, Enter, Space) bubbles here, so one handler toggles for every input
-        bar.addEventListener('click', function (e) { if (e.target.closest('a')) { go(r); return; } if (r.classList.contains('is-open')) collapse(r); else expand(r); });
-        ob.addEventListener('click', function () { go(r); });
-      });
-      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) collapse(open); });
-      var q = new URLSearchParams(location.search).get('open');
-      if (q) { /* test hook only */ var t = document.getElementById(q); if (t && t._p) { expand(t); t.scrollIntoView({ block: 'nearest' }); } }
-      if (location.hash && !q) { var hh = document.getElementById(location.hash.slice(1)); if (hh) hh.scrollIntoView(); }
+    tiles.forEach(function (t) {
+      var a = t.querySelector('.t-a'), g = t.querySelector('.t-head .glyph');
+      function on() { if (t.classList.contains('is-hot')) return; t.classList.add('is-hot'); FIELD.open = t;
+        if (!t._fonts) { t._fonts = 1; applyFonts({ fonts: (t.dataset.fonts || '').split(' ').filter(Boolean) }, './'); }
+        if (g && !still) replay(g); swapName(t, true); }
+      function off() { t.classList.remove('is-hot'); if (FIELD.open === t) FIELD.open = null; swapName(t, false); }
+      a.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') on(); });
+      a.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse' && document.activeElement !== a) off(); });
+      a.addEventListener('focus', function () { if (a.matches(':focus-visible')) on(); });
+      a.addEventListener('blur', off);
+      a.addEventListener('click', function () { if (g) g.style.viewTransitionName = 'glyph-' + t.id; });
     });
+    if (still) return;
+
+    // each instrument: start() when visible, stop() when not
+    var RUN = {
+      'anime-pipeline': function (t) {
+        var fr = t.querySelector('.an-frame'), v = null, ro = t.querySelector('.an-ro'), scan = t.querySelector('.ro-spark .scan'), lbl = t.querySelector('.ro-scanl');
+        var days = JSON.parse(ro.dataset.days || '[]'), idx = days.map(function (d, i) { return d[1] ? i : -1; }).filter(function (i) { return i >= 0; });
+        var k = 0, timer = 0, built = false;
+        function count(n) { var to = parseInt(n.dataset.count, 10), s = 0, steps = 12; (function f() { s++; n.textContent = Math.round(to * s / steps).toLocaleString('en-US'); if (s < steps) setTimeout(f, CELL()); })(); }
+        function step() { var i = idx[k++ % idx.length], d = days[i]; scan.setAttribute('x', i * 10);
+          lbl.textContent = d[0] + ' · ' + d[1].toLocaleString('en-US') + ' runs · peak ' + d[2].toLocaleString('en-US') + ' MiB'; timer = setTimeout(step, 1100); }
+        return {
+          start: function () {
+            // the clip loads only once the tile is on screen; until then (and without JS) the poster frame stands in
+            if (!v) { v = document.createElement('video'); v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute('aria-hidden', 'true');
+              v.poster = fr.querySelector('img').src; v.src = fr.dataset.src; fr.appendChild(v); }
+            var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
+            if (!built) { built = true; arm(ro); ro.querySelectorAll('[data-count]').forEach(count); timer = setTimeout(step, 2400); }
+            else if (!timer) step();
+          },
+          stop: function () { if (v) v.pause(); clearTimeout(timer); timer = 0; }
+        };
+      },
+      lmr: function (t) {
+        var b = t.querySelector('.lm'), timer = 0;
+        function loop() { arm(b); timer = setTimeout(loop, 7000); }
+        return { start: function () { if (!timer) loop(); }, stop: function () { clearTimeout(timer); timer = 0; } };
+      },
+      tasty_tunez: function (t) {
+        var b = t.querySelector('.tz'), songs = [].slice.call(b.querySelectorAll('.tz-song')), k = 0, timer = 0;
+        function show() { songs.forEach(function (s, i) { s.hidden = i !== k; }); arm(b); k = (k + 1) % songs.length; timer = setTimeout(show, 6400); }
+        return { start: function () { if (!timer) show(); }, stop: function () { clearTimeout(timer); timer = 0; } };
+      },
+      fonts: function (t) {
+        var b = t.querySelector('.ty'), w = b.querySelector('.ty-w'), nb = b.querySelector('.ty-n b'), nf = b.querySelector('.ty-f'), strip = [].slice.call(b.querySelectorAll('.ty-strip i'));
+        var fams = JSON.parse(b.dataset.fams || '[]'), k = 0, timer = 0, alive = false;
+        function set(i) { var f = fams[i]; w.style.fontFamily = '"' + f[0] + '", var(--font-mono)';
+          w.style.webkitFontSmoothing = /Pixel/.test(f[1]) ? 'none' : 'auto';
+          nb.textContent = String(i + 1).padStart(2, '0'); nf.textContent = f[0]; strip.forEach(function (s, j) { s.classList.toggle('on', j === i); }); }
+        function next() { var i = (k + 1) % fams.length, f = fams[i];
+          var go = function () { if (!alive) return; k = i; set(i); timer = setTimeout(next, 1200); };
+          (document.fonts && document.fonts.load ? document.fonts.load('120px "' + f[0] + '"', w.textContent) : Promise.resolve()).then(go, go); }
+        return {
+          start: function () { alive = true;
+            if (!document.querySelector('link[data-fontlib]')) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'fonts/files/fonts.css'; l.dataset.fontlib = '1'; document.head.appendChild(l); }
+            if (!timer) timer = setTimeout(next, 1200); },
+          stop: function () { alive = false; clearTimeout(timer); timer = 0; }
+        };
+      },
+      vaasf: function (t) {
+        var b = t.querySelector('.va'), rows = [].slice.call(b.querySelectorAll('.va-rows li')), boxes = [].slice.call(b.querySelectorAll('.va-page i')), k = 0, timer = 0;
+        function step() { rows.forEach(function (r, i) { r.classList.toggle('on', i === k); }); boxes.forEach(function (x, i) { x.classList.toggle('on', i === k); });
+          k = (k + 1) % rows.length; timer = setTimeout(step, 1400); }
+        return { start: function () { b.classList.add('is-run'); if (!timer) step(); }, stop: function () { clearTimeout(timer); timer = 0; } };
+      }
+    };
+    var ctl = new Map();
+    tiles.forEach(function (t) { if (RUN[t.id]) ctl.set(t, RUN[t.id](t)); });
+    var seen = new Set();
+    function sync() { ctl.forEach(function (c, t) { if (seen.has(t) && !document.hidden) c.start(); else c.stop(); }); }
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) seen.add(e.target); else seen.delete(e.target); }); sync(); }, { threshold: 0.35 });
+      tiles.forEach(function (t) { io.observe(t); });
+    }
+    document.addEventListener('visibilitychange', sync);
   }
 
   // optional buttons a project asks for (a download, its own website), shown in the open row and on the case page
