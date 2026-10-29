@@ -9,7 +9,9 @@ What it writes (all at the repo root, all committed; GitHub Pages still serves t
   case/<slug>/       one share page per project: a copy of case.html with <base href="../../">, window.SLUG, and the
                      project's own <title>, description, canonical and Open Graph tags, plus its text as a static
                      fallback inside #case
-  sitemap.xml        the index, the font library and every case page (case/fonts/ redirects, so fonts/ stands in)
+  lab/index.html     the lab board between <!-- build:lab --> markers, from lab/lab.json, content/*.json and
+                     previews/<slug>/meta.json (accent and display face)
+  sitemap.xml        the index, the font library, the lab and every case page (case/fonts/ redirects, so fonts/ stands in)
   robots.txt         keeps Disallow: /dive/ and adds the Sitemap line
   site.js            the CASE_JS line: which projects ship previews/<slug>/case.js
   fonts/**/index.html  an absolute og:image when the generated page has none (fonts/ itself comes from
@@ -133,6 +135,116 @@ def fonts_og():
         write(f, s.replace('</head>', add + '</head>', 1))
 
 
+
+def svg_cells(rows, n, cls, extra=''):
+    out, i = [], 0
+    for y, r in enumerate(rows or []):
+        for x in range(n):
+            if x < len(r) and r[x] == 'X':
+                out.append('<rect x="%d" y="%d" width="1" height="1" style="--i:%d"/>' % (x, y, i))
+                i += 1
+    return ('<svg class="%s" viewBox="0 0 %d %d" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true"%s>%s</svg>'
+            % (cls, n, n, extra, ''.join(out)))
+
+
+def meta_of(slug):
+    f = ROOT / 'previews' / slug / 'meta.json'
+    try:
+        return json.loads(f.read_text())
+    except (OSError, ValueError):
+        return {}
+
+
+def acc_style(m):
+    st = []
+    if m.get('accent'):
+        st.append('--acc-l:%s' % m['accent'])
+    if m.get('accent_dark'):
+        st.append('--acc-d:%s' % m['accent_dark'])
+    if m.get('font_display'):
+        st.append('--font-title:%s' % m['font_display'].replace('"', "'"))
+    return ';'.join(st)
+
+
+def lab_title(p, href):
+    t = str(p.get('title'))
+    chs = ''.join('<span class="ch">%s</span>' % esc(c) for c in t)
+    return ('<h3 class="lc__t"><a href="%s"><span class="sr-only">%s</span><span class="lc__chs" aria-hidden="true">%s</span></a></h3>'
+            % (esc(href), esc(t), chs))
+
+
+def lab_card(it, p):
+    slug = p['slug']
+    m = meta_of(slug)
+    steps = it['steps']
+    done = sum(1 for s in steps if s[0])
+    href = 'case/%s/' % slug
+    o = ['<article class="lc acc" id="%s" style="%s">' % (esc(slug), esc(acc_style(m)))]
+    o.append('<div class="lc__head">%s%s<span class="lc__n">%d/%d</span></div>' % (svg_cells(p.get('glyph'), 5, 'glyph'), lab_title(p, href), done, len(steps)))
+    o.append('<p class="lc__what" data-draft="true">%s</p>' % esc(it['what']))
+    if it.get('img'):
+        im = it['img']
+        o.append('<a class="lc__fig" href="%s" tabindex="-1"><img src="%s" alt="%s" loading="lazy" decoding="async" style="object-position:%s%s"></a>'
+                 % (esc(href), esc(im['src']), esc(im['alt']), esc(im.get('pos', '50% 50%')),
+                    ';transform:scale(%s);transform-origin:%s' % (im['zoom'], im.get('pos', '50% 50%')) if im.get('zoom') else ''))
+    elif it.get('chart'):
+        c = it['chart']
+        rows = ''.join('<div class="lc__cr"><span>%s</span><span class="lc__cb"><i style="width:%.1f%%"></i></span><span>%s</span></div>' % (esc(a), b * 100, esc(v)) for a, b, v in c['rows'])
+        o.append('<figure class="lc__fig lc__fig--chart" aria-label="%s"><figcaption class="lc__cap">%s</figcaption>%s<p class="lc__cap">%s</p></figure>'
+                 % (esc(c['label'] + ': ' + ', '.join('%s %s' % (a, v) for a, b, v in c['rows'])), esc(c['label']), rows, esc(c['foot'])))
+    elif it.get('log'):
+        lg = it['log']
+        o.append('<figure class="lc__fig lc__fig--log"><figcaption class="lc__cap">from <a href="%s">the recorded demo log</a></figcaption><pre>%s</pre></figure>'
+                 % (esc(lg['src']), '\n'.join(esc(l) for l in lg['lines'])))
+    cells = ''.join('<i class="%s"></i>' % ' '.join(c for c in ('is-done' if s[0] else '', 'is-bar' if k == len(steps) - 1 else '') if c)
+                    for k, s in enumerate(steps))
+    o.append('<div class="lc__track" role="img" aria-label="%d of %d steps done toward the demo bar">%s</div>' % (done, len(steps), cells))
+    lis = ''.join('<li%s%s>%s</li>' % (' class="is-done"' if s[0] else '', ' data-draft="true"' if len(s) > 2 and s[2] else '', esc(s[1])) for s in steps)
+    o.append('<ol class="lc__steps">%s</ol>' % lis)
+    o.append('<p class="lc__bar"><span class="lc__k">Graduates when</span> %s</p>' % esc(it['bar']))
+    o.append('</article>')
+    return '\n'.join(o)
+
+
+def lab_exp(p):
+    slug = p['slug']
+    m = meta_of(slug)
+    note = re.sub(r'^Experiment, finished\.\s*', '', p.get('status_note') or '')
+    o = ['<article class="lc lc--x acc" id="%s" style="%s">' % (esc(slug), esc(acc_style(m)))]
+    o.append('<div class="lc__head">%s%s</div>' % (svg_cells(p.get('glyph'), 5, 'glyph'), lab_title(p, 'case/%s/' % slug)))
+    o.append('<p class="lc__what">%s</p>' % esc(p.get('oneliner')))
+    if p.get('became'):
+        o.append('<p class="lc__to"><span class="tag tag--to">&rarr; %s</span><span>%s</span></p>' % (esc(p['became']), esc(note)))
+    o.append('</article>')
+    return '\n'.join(o)
+
+
+def lab_page(ps):
+    f = ROOT / 'lab' / 'lab.json'
+    if not f.exists():
+        return
+    d = json.loads(f.read_text())
+    by = {p['slug']: p for p in ps}
+    o = ['\n<p class="lab-intro" data-draft="true">%s</p>' % esc(d['intro']), '<div class="board">']
+    for g in d['groups']:
+        items = [it for it in g['items'] if it['slug'] in by]
+        o.append('<section class="lane" id="%s" aria-labelledby="h-%s"><div class="cat__head"><h2 class="cat__label" id="h-%s">%s</h2><span class="cat__n">%d</span></div>'
+                 % (esc(g['id']), esc(g['id']), esc(g['id']), esc(g['title']), len(items)))
+        o.append('<p class="lane__note" data-draft="true">%s</p>' % esc(g['note']))
+        o += [lab_card(it, by[it['slug']]) for it in items]
+        o.append('</section>')
+    o.append('</div>')
+    x = d['experiments']
+    exps = [by[s] for s in x['slugs'] if s in by]
+    o.append('<section class="lane lane--x" id="experiments" aria-labelledby="h-x"><div class="cat__head"><h2 class="cat__label" id="h-x">%s</h2><span class="cat__n">%d</span></div>'
+             % (esc(x['title']), len(exps)))
+    o.append('<p class="lane__note" data-draft="true">%s</p><div class="xgrid">' % esc(x['note']))
+    o += [lab_exp(p) for p in exps]
+    o.append('</div></section>\n')
+    idx = ROOT / 'lab' / 'index.html'
+    write(idx, between(idx.read_text(), 'lab', '\n'.join(o)))
+
+
 def main():
     sjs = ROOT / 'site.js'
     site_js = sjs.read_text()
@@ -158,7 +270,9 @@ def main():
             d.rmdir()
             print('removed', d.relative_to(ROOT))
 
-    urls = [SITE, SITE + 'fonts/'] + [SITE + 'case/%s/' % s for s in slugs if s != 'fonts']
+    lab_page(ps)
+
+    urls = [SITE, SITE + 'lab/', SITE + 'fonts/'] + [SITE + 'case/%s/' % s for s in slugs if s != 'fonts']
     write(ROOT / 'sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
           + ''.join('  <url><loc>%s</loc></url>\n' % u for u in urls) + '</urlset>\n')
     write(ROOT / 'robots.txt', 'User-agent: *\nDisallow: /dive/\n\nSitemap: %ssitemap.xml\n' % SITE)

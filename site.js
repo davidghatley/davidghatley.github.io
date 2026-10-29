@@ -451,7 +451,7 @@
       });
     });
   }
-  if (window.PAGE === 'case') casePage(); else home();
+  if (window.PAGE === 'case') casePage(); else if (window.PAGE !== 'lab') home();
   field();
   if (/[?&]grid=1\b/.test(location.search)) gridOverlay();
 })();
