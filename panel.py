@@ -198,28 +198,39 @@ def lmr_body(t):
 
 def tasty_body(songs):
     plates = []
+    mm = lambda v: '%d:%02d' % (v // 60, v % 60)
     for k, s in enumerate(songs):
         svg, pn, pt = plate(s)
+        ro = [('tempo', '%d BPM' % round(s['bpm'])), ('key', s['key'].upper()), ('model', s['model']), ('peak', '%s · %s' % (pn, pt)), ('length', mm(int(s['duration'])))]
         plates.append(
-            '<div class="tz-song"%s data-i="%d">%s<div class="tz-side"><b class="tz-title">%s</b>'
-            '<span>%d BPM · %s</span><span>%s</span><span class="tz-peak">peak %s · %s</span></div></div>'
-            % ('' if k == 0 else ' hidden', k, svg, esc(s['title']), round(s['bpm']), esc(s['key'].upper()), esc(s['model']), pn, pt))
-    return '<div class="t-body tz"><p class="ro-k"><span>cover plate</span><span>pitch over time, from the song</span></p>%s</div>' % ''.join(plates)
+            '<div class="tz-song"%s data-i="%d"><p class="tz-top"><b class="tz-title">%s</b><span class="ro-k"><span>song <b>%d</b> / %d</span></span></p>%s<div class="tz-side">'
+            '<dl class="tz-ro">%s</dl></div></div>'
+            % ('' if k == 0 else ' hidden', k, esc(s['title']), k + 1, len(songs), svg,
+               ''.join('<div><dt>%s</dt><dd>%s</dd></div>' % (esc(a), esc(b)) for a, b in ro)))
+    return '<div class="t-body tz"><div class="tz-stack">%s</div></div>' % ''.join(plates)
+
+
+def ty_row(k, f, on=False):
+    px = ' is-px' if f.get('grid') or 'Pixel' in (f.get('cats') or []) else ''
+    return ('<li class="ty-row%s%s"><span class="ty-i">%02d</span><span class="ty-m">%s<br><i>%s · %s</i></span>'
+            '<span class="ty-s" style="font-family:&quot;%s&quot;, var(--font-mono)">%s</span></li>'
+            % (' on' if on else '', px, k + 1, esc(f['name']), esc((f.get('cats') or [''])[0]), f.get('glyphs') or '', esc(f['name']), esc(f.get('sample') or f['name'])))
 
 
 def type_body(t, fams, sauce, fonts_p):
-    strip = ''.join('<i%s></i>' % (' class="on"' if k == 0 else '') for k in range(len(fams)))
-    f = fams[0]
+    W = 4   # rows in the window
+    strip = ''.join('<i%s></i>' % (' class="on"' if k == 0 else (' class="w"' if k < W else '')) for k in range(len(fams)))
     lint = next((s['value'] for s in sauce.get('spec', []) if s['label'] == 'lint rules'), '')
     glyphs = next((s['value'] for s in fonts_p.get('spec', []) if s['label'] == 'glyphs drawn'), '')   # content/tools.json, not a sum of the specimen counts
+    data = [[x['name'], (x.get('cats') or [''])[0], x.get('glyphs') or '', x.get('sample') or x['name'], bool(x.get('grid') or 'Pixel' in (x.get('cats') or []))] for x in fams]
     return (
         '<div class="t-body ty" data-fams="%s">'
-        '<p class="ty-spec"><span class="ty-w">%s</span></p>'
-        '<p class="ro-k"><span class="ty-n"><b>01</b> / %d</span><span class="ty-f">%s</span></p>'
+        '<p class="ro-k"><span>specimen · each face sets its own line</span><span class="ty-n"><b>01</b> / %d</span></p>'
+        '<ol class="ty-rows">%s</ol>'
         '<p class="ty-strip" aria-hidden="true">%s</p>'
-        '<p class="ty-sum">%d families · %s glyphs · OFL<br>secret sauce · %s lint rules</p>'
+        '<p class="ro-k ty-sum"><span>%d families · %s glyphs drawn · OFL</span><span>secret sauce · %s lint rules</span></p>'
         '</div>'
-    ) % (esc(json.dumps([[x['name'], ' · '.join(x.get('cats') or [])] for x in fams])), esc(t['word']), len(fams), esc(f['name']), strip, len(fams), glyphs, lint)
+    ) % (esc(json.dumps(data)), len(fams), ''.join(ty_row(k, fams[k], k == 0) for k in range(W)), strip, len(fams), glyphs, lint)
 
 
 def vaasf_body(t):

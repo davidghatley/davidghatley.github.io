@@ -360,20 +360,18 @@
         return { start: function () { if (!timer) show(); }, stop: function () { clearTimeout(timer); timer = 0; } };
       },
       fonts: function (t) {
-        var b = t.querySelector('.ty'), w = b.querySelector('.ty-w'), nb = b.querySelector('.ty-n b'), nf = b.querySelector('.ty-f'), strip = [].slice.call(b.querySelectorAll('.ty-strip i'));
-        var fams = JSON.parse(b.dataset.fams || '[]'), k = 0, timer = 0, alive = false;
-        function set(i) { var f = fams[i]; w.style.fontFamily = '"' + f[0] + '", var(--font-mono)';
-          w.style.webkitFontSmoothing = /Pixel/.test(f[1]) ? 'none' : 'auto';
-          nb.textContent = String(i + 1).padStart(2, '0'); nf.textContent = f[0]; strip.forEach(function (s, j) { s.classList.toggle('on', j === i); }); }
-        function next() { var i = (k + 1) % fams.length, f = fams[i];
-          var go = function () { if (!alive) return; k = i; set(i); timer = setTimeout(next, 1200); };
-          (document.fonts && document.fonts.load ? document.fonts.load('120px "' + f[0] + '"', w.textContent) : Promise.resolve()).then(go, go); }
-        return {
-          start: function () { alive = true;
-            if (!document.querySelector('link[data-fontlib]')) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'fonts/files/fonts.css'; l.dataset.fontlib = '1'; document.head.appendChild(l); }
-            if (!timer) timer = setTimeout(next, 1200); },
-          stop: function () { alive = false; clearTimeout(timer); timer = 0; }
-        };
+        var b = t.querySelector('.ty'), list = b.querySelector('.ty-rows'), nb = b.querySelector('.ty-n b'), strip = [].slice.call(b.querySelectorAll('.ty-strip i'));
+        var fams = JSON.parse(b.dataset.fams || '[]'), W = list.children.length, k = 0, timer = 0, alive = false;
+        function row(i, on) { var f = fams[i], li = el('li', 'ty-row' + (on ? ' on' : '') + (f[4] ? ' is-px' : ''));
+          li.innerHTML = '<span class="ty-i">' + String(i + 1).padStart(2, '0') + '</span><span class="ty-m">' + esc(f[0]) + '<br><i>' + esc(f[1]) + ' · ' + f[2] + '</i></span>';
+          var sm = el('span', 'ty-s'); sm.style.fontFamily = '"' + f[0] + '", var(--font-mono)'; sm.textContent = f[3]; li.appendChild(sm); return li; }
+        function set() { list.innerHTML = ''; for (var j = 0; j < W; j++) list.appendChild(row((k + j) % fams.length, j === 0));
+          nb.textContent = String(k + 1).padStart(2, '0');
+          strip.forEach(function (s, j) { var d = (j - k + fams.length) % fams.length; s.className = d === 0 ? 'on' : d < W ? 'w' : ''; }); }
+        function next() { var i = (k + 1) % fams.length, f = fams[(i + W - 1) % fams.length];
+          var go = function () { if (!alive) return; k = i; set(); timer = setTimeout(next, 1600); };
+          (document.fonts && document.fonts.load ? document.fonts.load('32px "' + f[0] + '"', f[3]) : Promise.resolve()).then(go, go); }
+        return { start: function () { alive = true; if (!timer) timer = setTimeout(next, 1600); }, stop: function () { alive = false; clearTimeout(timer); timer = 0; } };
       },
       vaasf: function (t) {
         var b = t.querySelector('.va'), rows = [].slice.call(b.querySelectorAll('.va-rows li')), boxes = [].slice.call(b.querySelectorAll('.va-page i')), k = 0, timer = 0;
