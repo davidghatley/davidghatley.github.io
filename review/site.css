@@ -201,6 +201,11 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 .static-list a { color: var(--ink); }
 
 /* ---------- about ---------- */
+/* the one way from the home index to the lab board (static, after #work; home() never touches it) */
+.lab-link { margin: var(--space-12) 0 0; font: var(--type-body); position: relative; top: -1px; }
+@media (min-width: 640px) { .lab-link { padding-left: calc(2 * var(--step)); } }
+.lab-link a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--cobalt); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.lab-link a:hover { color: var(--cobalt); }
 .about { margin-top: var(--space-16); padding-bottom: var(--space-16); display: grid; grid-template-columns: repeat(var(--n), var(--col)); column-gap: var(--g); }
 .about .h2 { grid-column: 1 / span 2; font: var(--type-h2); margin: 0; position: relative; top: 2px; }   /* 25/28: baseline 22 -> 24 */
 .about .ss-prose { grid-column: 3 / span 7; max-width: none; }
@@ -240,6 +245,70 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 .pn a > .parrow { margin-top: 2px; }
 .pn a:hover span { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 4px; }
 @media (max-width: 639px) { .pn { flex-direction: column; align-items: flex-start; gap: 0; } }
+
+/* ---------- the dossier: the shared case header (site.js dossier()), same structure on every project ----------
+   >= 1024: the sheet on columns 1-4 (304px, read first, left), the work on 5-12 (624px, 66% of 944, right).
+   The sheet comes first in the DOM, so reading order is title, result, links, decisions, then the work.
+   640-1023: work first, the sheet under it. < 640: title and result first (so the first screen names the
+   project), then the work, then the rest of the sheet (the sheet becomes display: contents and its parts are ordered).
+   Every line box and gap is a multiple of 4; the work's images are snapped with the case body (snap4). */
+.dos { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-8); align-items: start; margin: 0; }
+@media (min-width: 1024px) { .dos { grid-template-columns: calc(4 * var(--step) - var(--g)) minmax(0, 1fr); column-gap: var(--g); } }
+@media (min-width: 640px) and (max-width: 1023px) { .dos__work { order: -1; } }
+.dos__work { display: grid; gap: var(--space-4); min-width: 0; align-items: start; }
+.dos__work--row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--g); }
+.dos__fig { margin: 0; min-width: 0; }
+.dos__fig .zoomable { margin: 0; width: 100%; }
+.dos__fig img, .dos__fig video { display: block; width: 100%; max-width: 100%; height: auto; max-height: none; border: var(--line-hair) solid var(--rule); background: var(--sheet); box-sizing: border-box; }
+.dos__fig figcaption { margin-top: var(--space-2); font: italic 400 14px/20px var(--font-serif); color: var(--ink-muted); max-width: 64ch; }
+.dos__sheet { position: relative; display: grid; gap: var(--space-4); align-content: start; min-width: 0; padding-top: var(--space-4); }
+.dos__sheet::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--accent); }
+.dos__id { display: flex; align-items: flex-start; gap: var(--space-3); }
+.dos__id .glyph { --glyph: 40px; margin-top: 4px; }
+/* the title starts in Stem 7 48/48 and steps into the project's face, one character a --dur-cell (signature moment) */
+.dos__h { margin: 0; min-width: 0; font: 400 48px/48px var(--font-pixel); letter-spacing: 0; overflow-wrap: anywhere; -webkit-font-smoothing: none; font-synthesis: none; }
+.dos__h--long { font-size: 32px; line-height: 40px; }
+.dos__h .ch--on { font-family: var(--font-title, var(--font-display)); font-weight: var(--to-w, 700); text-transform: var(--to-case, none); -webkit-font-smoothing: auto; }
+.dos__result { margin: 0; font: 700 16px/24px var(--font-display); text-wrap: pretty; }
+.dos__k { display: block; margin: 0 0 var(--space-2); font: 500 12px/16px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.dos__dec ul, .dos__out ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.dos__dec li { position: relative; padding-left: var(--space-4); font: var(--type-small); }
+.dos__dec li::before { content: ""; position: absolute; left: 0; top: 6px; width: 8px; height: 8px; background: var(--accent); }
+.dos__ai { margin: var(--space-2) 0 0; padding: var(--space-2) 0 0 var(--space-4); border-top: var(--line-hair) solid var(--rule); font: var(--type-small); }
+.dos__ai b { font-weight: 700; }
+.dos__links { gap: var(--space-2); }
+.dos__links .act { height: auto; min-height: 40px; padding: 10px var(--space-3); line-height: 20px; text-decoration: none; }
+.dos__out ul { gap: 0; }
+.dos__out a { display: grid; grid-template-columns: 24px minmax(0, 1fr) 14px; gap: var(--space-3); align-items: start; padding: var(--space-2) 0; color: var(--ink); text-decoration: none; border-top: var(--line-hair) solid var(--rule); }
+.dos__out .glyph { --glyph: 24px; }
+.dos__out .parrow { margin-top: 5px; color: var(--accent); }
+.dos__out b { display: block; font: 700 16px/24px var(--font-display); text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.dos__out em { display: block; font: 400 12px/16px var(--font-mono); font-style: normal; color: var(--ink-muted); }
+.dos__out a:hover b, .dos__out a:focus-visible b { color: var(--accent); }
+.dos__status { margin: var(--space-2) 0 0; font: var(--type-small); color: var(--ink-muted); }
+.dos__built { margin: 0; font: 400 12px/16px var(--font-mono); color: var(--ink-muted); }
+.dos__built > span { white-space: nowrap; }
+.dos__built > span:first-child { color: var(--ink); }
+/* the deep dive: the project's own case.js, one ink hairline under the dossier */
+.case-deep { position: relative; margin-top: var(--space-16); padding-top: var(--space-4); }
+.case-deep::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: var(--line-hair); background: var(--ink); }
+@media (max-width: 639px) {
+  .dos { gap: var(--space-4); }
+  .dos__sheet { display: contents; }
+  .dos__sheet::before { content: none; }
+  .dos__sheet > * { order: 3; }
+  .dos__id { order: 0; position: relative; padding-top: var(--space-3); }
+  .dos__id::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--accent); }
+  .dos__result { order: 1; }
+  .dos__work { order: 2; margin-bottom: var(--space-2); }
+  .dos__h { font-size: 32px; line-height: 40px; }
+  /* a word over 9 letters (tasty_tunez) in a wide project face: 24/32 (3px cells) on its own line under the glyph */
+  .dos__h--xl { font-size: 24px; line-height: 32px; flex-basis: 100%; }
+  .dos__id:has(.dos__h--xl) { flex-wrap: wrap; row-gap: var(--space-2); }
+  .dos__id .glyph { --glyph: 32px; margin-top: 4px; }
+  .dos__work--row { gap: var(--space-2); }
+  .case-deep { margin-top: var(--space-12); }
+}
 
 /* case template (fallback when a project has no case.js) */
 .case-top { display: flex; align-items: center; gap: var(--space-4); margin: 0 0 var(--space-4); flex-wrap: wrap; }

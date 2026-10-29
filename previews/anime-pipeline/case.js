@@ -54,7 +54,7 @@ const CSS = `
 }
 `;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const TALLY = [['37.6', 'GPU hours'], ['66', 'video clips'], ['1,384', 'stills'], ['18', 'hand-built workflows'], ['8', 'model families run'], ['37', 'commits']];
+const TALLY = [['37.9', 'GPU hours'], ['66', 'video clips'], ['1,384', 'stills'], ['18', 'hand-built workflows'], ['8', 'model families run'], ['37', 'commits']];
 // §1
 const STAGES = [
   ['1', 'Story + lint', 'story bible and a prompt linter', 'no named shows, studios or artists in prompts', 'CPU, minutes'],
@@ -85,7 +85,7 @@ const TECH = [
   ['Effects baked into 3D + per-rider facing prompts', 'mine', 'facing held ~45% → ~85% of keys; weapons in 172/180 keys'],
   ['Guides at frame 0, every story event and the end', 'mine', 'look held 4/4 clips; every keyed event happened'],
   ['One-variable lessons bench (14 tests, fixed seed 7)', 'mine; tests adapted from two tutorials', 'grey sheet beats riso sheet for identity; 8-step i2v holds the key (f0→f20 change 2.7 vs 20.4 at 4 steps)'],
-  ['Run log with peak VRAM and RAM, skip-existing', 'mine', '1,788 rows when the numbers on this page were read (Oct 22); 1,808 by Oct 26'],
+  ['Run log with peak VRAM and RAM, skip-existing', 'mine', '1,808 rows, Oct 12 to 26 (read Oct 28): 0 CUDA out-of-memory errors, 37.9 GPU hours'],
   ['ComfyUI-channel technique study', 'research', 'bullet-time orbit and split-stack shorts done; keyframes to animation and blockout-first piloted; others proposed or skipped'],
 ];
 // §3b
@@ -173,7 +173,7 @@ export default async function renderCase(root, { project: p, base, meta }) {
     <section><h2><span>04</span>Hardware</h2>
     <div class="spec"><div><b>RTX 3060</b><span>12,288 MiB VRAM, Ampere (sm_86)</span></div><div><b>64 GB DDR5</b><span>RAM; i5-12500 CPU</span></div><div><b>12 + ~48 GB</b><span>budget: 12 GB VRAM plus ~48 GB RAM offload, ~16 GB left for the OS and Blender</span></div></div>
     <p style="margin-top:16px">The animated meters at the top step through what I tried. The finding held across all 1,644 successful runs: VRAM ran near full and never failed. RAM and time set the limits. No logged run hit a CUDA out-of-memory error; the only memory kills were Blender RAM. A typical H3 clip peaks at 26.1 GiB of machine RAM, the worst at 58.7 GiB, and one 5 s clip takes 8.4–48 minutes, which is why there are 66 clips and 1,384 stills.</p>
-    <figure>${plate('plate-memory', 'Plate 9.1: peak RAM per job and median peak VRAM per model family, with the 20 GB cap, the 12 GB memory cap and the 16 GB reserve marked, and GPU hours by family.')}<figcaption><b>Fig. 4</b>Plate 9.1, memory and time per model family. The plate counts 49 H3 clips and 18.1 h because it files the round-2 clips under "other"; I count all 66 as H3 (23.0 h). Totals agree: 37.5 vs 37.6 GPU hours.</figcaption></figure>
+    <figure>${plate('plate-memory', 'Plate 9.1: peak RAM per job and median peak VRAM per model family, with the 20 GB cap, the 12 GB memory cap and the 16 GB reserve marked, and GPU hours by family.')}<figcaption><b>Fig. 4</b>Plate 9.1, memory and time per model family. The plate counts 49 H3 clips and 18.1 h because it files the round-2 clips under "other"; I count all 66 as H3 (23.0 h). The plate was drawn from the log as read on Oct 22 (37.5 GPU hours); the full log to Oct 26 sums to 37.9.</figcaption></figure>
     <div class="tw"><table><thead><tr><th>Method</th><th>What</th><th>Before → after</th><th>Kept?</th></tr></thead><tbody>
     ${HW.map(r => `<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class="m">${r[2]}</td><td class="k">${tag(r[3])}</td></tr>`).join('')}</tbody></table></div>
     <div class="note"><p>How memory was measured: peak VRAM is the whole GPU from nvidia-smi, including 0.4–1 GB of desktop; peak RAM is machine-wide, so other sessions and Blender are included. Both are sampled every 0.25 s.</p></div></section>

@@ -10,7 +10,7 @@ cd "$(dirname "$0")"
 python3 -I build.py
 rm -rf review && mkdir review
 cp index.html case.html site.css site.js review/
-cp -r content public previews fonts case review/
+cp -r content public previews fonts case lab review/
 rm -f review/previews/_harness.html
 python3 -I - <<'PY'
 import pathlib

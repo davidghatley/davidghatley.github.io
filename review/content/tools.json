@@ -192,6 +192,37 @@
       "Stem 7 started as my logo and the Dive Club liked it, so I kept going: two new widths of it, then fifteen families that are not Stem 7 at all.",
       "Most of them share one of two skeletons. Hoop's lines and arcs, stroked with a round pen, give a geometric sans; the same skeleton with octagonal bowls and a broad nib at 38 degrees gives a textura; squeezed, sheared or cut by knife lines it gives the display faces. Pip 57's 5×7 bitmaps give the dot, corridor and stencil faces.",
       "What I learned: a typeface is a construction rule plus a list of exceptions. The rule gets you 90% of the alphabet in an afternoon; the exceptions (a three-cell M, a U whose right stem is thin, a v that pathops silently dropped) are where the week goes."
+    ],
+    "result": "Sixteen free typefaces drawn in code, 1,972 glyphs in all, each family with its own specimen page and an OFL download.",
+    "result_draft": true,
+    "decisions": {
+      "draft": true,
+      "items": [
+        "I drew every family as code: bitmap sources, line-and-arc skeletons stroked with different pens, and one Didone as Bézier outlines.",
+        "Most families share one of two skeletons, Hoop's lines and arcs or Pip 57's 5×7 bitmaps, so a new face starts as a new pen or cut.",
+        "Secret Sauce, the system these faces set, keeps its rules as lint checks: sauce-lint flags a page that breaks them."
+      ]
+    },
+    "built_with": [
+      "drawn in code",
+      "pathops",
+      "OFL 1.1"
+    ],
+    "outputs": [
+      "secret-sauce"
+    ],
+    "outputs_label": "Used in",
+    "work": [
+      {
+        "src": "public/media/fonts/library.jpg",
+        "alt": "The top of the font library page: the title set in several of the faces, \"16 free families\", the library totals (16 families, 19 styles, 1,972 glyphs, OFL 1.1) and the first construction plate for Stem 7.",
+        "caption": "The library: sixteen families, each with a construction plate, a specimen page and a download."
+      },
+      {
+        "src": "public/media/fonts/stem7-specimen.jpg",
+        "alt": "The Stem 7 specimen page: the name drawn large on its cap, x-height and baseline lines, download buttons, and the type tester.",
+        "caption": "A specimen page: Stem 7 on its metrics, with a type tester and the download."
+      }
     ]
   }
 ]

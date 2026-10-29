@@ -23,14 +23,14 @@
   "media": [],
   "spec": [
    {
-    "label": "generations logged",
-    "value": "1,788",
-    "source": "the pipeline's run log, Oct 12–22, 2026"
+    "label": "runs logged",
+    "value": "1,808",
+    "source": "run log, read 2026-10-28: Oct 12 to 26, 2026; 1,664 succeeded, 144 failed to submit"
    },
    {
     "label": "GPU hours",
-    "value": "37.6",
-    "source": "the run log, summed run time"
+    "value": "37.9",
+    "source": "run log, read 2026-10-28: summed run time, Oct 12 to 26, 2026"
    },
    {
     "label": "median peak VRAM",
@@ -40,10 +40,46 @@
    {
     "label": "CUDA out-of-memory errors",
     "value": "0",
-    "source": "the run log"
+    "source": "run log, read 2026-10-28: all 1,808 rows, Oct 12 to 26, 2026"
    }
   ],
-  "links": []
+  "links": [],
+  "work": [
+   {
+    "src": "public/media/anime-pipeline/sh13-duel-final.mp4",
+    "poster": "public/media/anime-pipeline/sh13-duel-final.jpg",
+    "alt": "Looping muted clip: two riders on an elevated expressway at night, pink and white light trails behind their bikes, the camera orbiting the duel.",
+    "caption": "SHUTO, SH13 the duel: a generated shot that passed review, 1344 by 768, from one 12 GB GPU."
+   },
+   {
+    "src": "public/media/shuto/duel-previz-final.mp4",
+    "alt": "Looping muted landscape clip: the SH13 duel previz on the left and the generated shot on the right.",
+    "caption": "The previz (left) fixes the bikes, blades and trails; the video model paints over it (right)."
+   }
+  ],
+  "result": "Every frame of meguri and shuto, on one 12 GB GPU: 1,808 runs logged by Oct 26, 2026, none out of memory.",
+  "result_draft": true,
+  "decisions": {
+   "draft": true,
+   "items": [
+    "Depth passes steer the video model, never line art: line art made it draw edges as new objects.",
+    "I approve the storyboard before any GPU time goes to video.",
+    "Head-on clashes come from Blender previz, because the image models would not draw them."
+   ],
+   "changed": "The model drew the front of the costume on the back in 7 of 18 views. View-aware costume briefs took that to 0 of 18."
+  },
+  "built_with": [
+   "Blender 5.2.2",
+   "ComfyUI",
+   "Krea 2",
+   "Qwen-Image 2.1",
+   "MiniMax H3",
+   "one RTX 3060, 12 GB"
+  ],
+  "outputs": [
+   "meguri",
+   "shuto"
+  ]
  },
  {
   "slug": "meguri",
@@ -62,8 +98,8 @@
   "role": "I built the local pipeline and am developing the original series Meguri with it: the Blender world and previz scenes, the ComfyUI and video workflows, the storyboards and the character looks.",
   "when": "2026-10",
   "hero": {
-   "src": "public/media/meguri/hero.jpg",
-   "alt": "Left: a gray-box Blender render of a mannequin climbing a hillside stair. Right: the same frame as a painted anime still, a girl in a yellow raincoat on the same stair."
+   "src": "public/media/meguri/sh050-key.jpg",
+   "alt": "Left: the gray-box Blender previz of shot SH050, a mannequin cycling down a narrow street below a stair. Right: the same frame as a generated anime still, a boy in a white shirt on a bicycle."
   },
   "media": [
    {
@@ -284,10 +320,10 @@
   },
   "media": [
    {
-    "src": "public/media/tasty_tunez/promo.mp4",
-    "poster": "public/media/tasty_tunez/promo.jpg",
-    "alt": "A 37-second silent walkthrough of tasty_tunez: a written brief, the live app, a cover plate drawing itself from the song, and the title card",
-    "caption": "The app in 37 seconds."
+    "src": "public/media/tasty_tunez/promo-app.mp4",
+    "poster": "public/media/tasty_tunez/promo-app.jpg",
+    "alt": "A 14-second silent clip from the tasty_tunez walkthrough: cover plates drawing themselves from each song's pitch and loudness, with the brief, key, length and render time beside them.",
+    "caption": "Each song's cover plate draws itself from the song's own pitch and loudness."
    },
    {
     "src": "public/media/tasty_tunez/cover.jpg",
@@ -322,6 +358,36 @@
    "It started with one slowed phonk track I liked. I measured it (tempo, key, stems, how dark and how bass-heavy) and then tested what moves a model toward that sound. The XL model and briefs written as sentences moved it; a community phonk LoRA moved it the other way. Those measurements became a feature: drop in a reference and the app suggests settings from fixed rules, each with the number behind it.",
    "The model manager shows each model's licence before it downloads. YuE2 and LeVo 2 score well but are non-commercial or academic only, so the app lists them and explains why it doesn't install them.",
    "What I learned: my reference song was about 7 dB louder than anything the model produced. Some of what makes a track hit is mastering, not generation."
+  ],
+  "result": "A two-minute song from a written brief in about 20 seconds on a 12 GB card, with its cover plate and settings inside the MP3.",
+  "result_draft": true,
+  "decisions": {
+   "draft": true,
+   "items": [
+    "I measured one reference track first (tempo, key, stems, loudness) and tested what moves the model toward it before designing the app.",
+    "I chose ACE-Step 1.5 for its MIT licence. YuE2 and LeVo 2 score well but are non-commercial or academic only, so the app lists them and does not install them.",
+    "Every song ships as an MP3 with its cover plate and settings embedded, so any take can be regenerated or remixed."
+   ],
+   "changed_label": "What the AI built.",
+   "changed": "A Claude subagent built most of the app from my brief. I ran the experiments, compared the models and licences, and designed the app, the cover plates and the site."
+  },
+  "built_with": [
+   "ACE-Step 1.5 (MIT)",
+   "2B and XL models",
+   "one RTX 3060, 12 GB"
+  ],
+  "work": [
+   {
+    "src": "public/media/tasty_tunez/promo-app.mp4",
+    "poster": "public/media/tasty_tunez/promo-app.jpg",
+    "alt": "A 14-second silent clip from the tasty_tunez walkthrough: cover plates drawing themselves from each song's pitch and loudness.",
+    "caption": "Each song's cover plate draws itself from the song's own pitch and loudness."
+   },
+   {
+    "src": "public/media/tasty_tunez/app.jpg",
+    "alt": "The tasty_tunez generate view with eight starter presets",
+    "caption": "Eight starting points, every ACE-Step setting, and configs you can export and load."
+   }
   ]
  }
 ]

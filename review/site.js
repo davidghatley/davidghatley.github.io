@@ -12,6 +12,10 @@
   // projects with a bespoke previews/<slug>/case.js; build.py rewrites this line from `ls previews/*/case.js`,
   // so the case page imports only what exists (no HEAD probe, no 404 in the console)
   var CASE_JS = ['anime-pipeline', 'benchlet', 'bonfire', 'fonts', 'gauntlet', 'lmr', 'meguri', 'mise_en_place', 'napkin', 'nibble', 'playdough', 'precision-canvas', 'primitive', 'rack10', 'secret-sauce', 'shuto', 'stem7', 'system-a', 'system-one-mini', 'vaasf']; // build.py: case.js list
+  // prev/next on case pages walk one of these orders: the index (the finished work), the lab board, or a parent
+  // project and its outputs (anime pipeline -> meguri, shuto; font library -> secret sauce)
+  var INDEX = ['anime-pipeline', 'lmr', 'tasty_tunez', 'fonts', 'vaasf'];
+  var LAB = ['napkin', 'nibble', 'playdough', 'bonfire', 'mise_en_place', 'rack10', 'system-one-mini', 'system-a', 'benchlet', 'gauntlet', 'primitive', 'precision-canvas']; // build.py: lab order
   // each project has a static share page at case/<slug>/ (build.py), with its own title and link preview
   function caseUrl(slug) { return 'case/' + encodeURIComponent(slug) + '/'; }
   // cross-document view transitions: the font library (fonts/) doesn't opt in, so a transition into it (the fonts
@@ -378,6 +382,80 @@
   }
   window.projectActions = actions;
 
+  // the dossier: one header, the same structure on every case page that has `decisions` in its content.
+  // Left the finished work (content `work`, else the hero), right a compact sheet: title, one-line result,
+  // my decisions and the one thing I changed from the AI's output, what it's built with, outputs, status, links.
+  // The project's case.js renders below it as the deep dive. Text David hasn't confirmed carries data-draft.
+  function dossier(p, ps, base) {
+    var d = el('section', 'dos'); d.setAttribute('aria-label', p.title + ', summary');
+    var w = el('div', 'dos__work' + (p.work_row ? ' dos__work--row' : '')); w.style.viewTransitionName = 'hero-' + p.slug;
+    (p.work && p.work.length ? p.work : p.hero ? [p.hero] : []).forEach(function (it) {
+      var f = el('figure', 'dos__fig'); f.appendChild(media(it, it.caption));
+      if (it.caption) f.appendChild(el('figcaption', '', esc(it.caption)));
+      w.appendChild(f);
+    });
+    var s = el('div', 'dos__sheet');
+    var id = el('div', 'dos__id'), g = glyphSvg(p.glyph); g.style.viewTransitionName = 'glyph-' + p.slug; id.appendChild(g);
+    var h = el('h1', 'dos__h' + (String(p.title).split(' ').some(function (wd) { return wd.length > 6; }) ? ' dos__h--long' : '') + (String(p.title).split(' ').some(function (wd) { return wd.length > 9; }) ? ' dos__h--xl' : ''));   // a long word steps down to 32 so it never breaks mid-word
+    h.appendChild(el('span', 'sr-only', esc(p.title)));
+    var tt = el('span', 'tt'); tt.setAttribute('aria-hidden', 'true');
+    Array.from(String(p.title)).forEach(function (c) { var q = el('span', 'ch'); q.textContent = c; tt.appendChild(q); });
+    h.appendChild(tt); id.appendChild(h); s.appendChild(id);
+    var dr = function (n, on) { if (on) n.setAttribute('data-draft', 'true'); return n; };
+    s.appendChild(dr(el('p', 'dos__result', esc(p.result || p.oneliner)), p.result_draft));
+    var ls = (p.links || []).filter(function (l) { return l.url; });
+    if (ls.length || (p.actions && p.actions.length)) {
+      var lk = el('div', 'acts dos__links'), pri = ls.filter(function (l) { return /live|site|demo|play/i.test(l.label); })[0] || ls[0];
+      ls.forEach(function (l) {
+        var ext = /^https?:/.test(l.url), a = el('a', 'act' + (l === pri ? ' act--primary' : ''), esc(l.label) + (ext ? ' ↗' : ''));
+        a.href = l.url; if (ext) { a.target = '_blank'; a.rel = 'noopener'; }
+        if (l === pri) lk.insertBefore(a, lk.firstChild); else lk.appendChild(a);
+      });
+      // an action that repeats a link's address is left out
+      (p.actions || []).filter(function (a0) { return !ls.some(function (l) { return l.url === a0.url; }); }).forEach(function (a0) { var b = el('a', 'act', esc(a0.label)); b.href = a0.url; lk.appendChild(b); });
+      s.appendChild(lk);
+    }
+    var outs = (p.outputs || []).map(function (sl) { return ps.filter(function (q) { return q.slug === sl; })[0]; }).filter(Boolean);
+    if (outs.length) {
+      var ov = el('div', 'dos__out'); ov.appendChild(el('h2', 'dos__k', esc(p.outputs_label || 'Outputs')));
+      var ol = el('ul');
+      outs.forEach(function (q) {
+        var li = el('li'), a = el('a'); a.href = caseUrl(q.slug);
+        var og = glyphSvg(q.glyph); a.appendChild(og);   // only the glyph wears the show's own colour
+        var gen = (q.spec || []).filter(function (x) { return /generations/.test(x.label); })[0];
+        a.appendChild(el('span', '', '<b>' + esc(q.title) + '</b>' + (gen ? '<em>' + esc(gen.value) + ' ' + esc(gen.label) + '</em>' : '')));
+        a.appendChild(parrow()); li.appendChild(a); ol.appendChild(li);
+        loadMeta(q).then(function () { applyAccent(og, q.meta); });
+      });
+      ov.appendChild(ol); s.appendChild(ov);
+    }
+    var dc = p.decisions || {};
+    if (dc.items && dc.items.length) {
+      var dv = el('div', 'dos__dec'); dv.appendChild(el('h2', 'dos__k', 'My decisions'));
+      var ul = el('ul'); dc.items.forEach(function (t) { ul.appendChild(dr(el('li', '', esc(t)), dc.draft)); }); dv.appendChild(ul);
+      if (dc.changed) dv.appendChild(dr(el('p', 'dos__ai', '<b>' + esc(dc.changed_label || 'Changed from the AI.') + '</b> ' + esc(dc.changed)), dc.draft));
+      s.appendChild(dv);
+    }
+    // one quiet foot: status, then when and what it's built with on one mono line
+    if (p.status_note) s.appendChild(el('p', 'dos__status', esc(p.status_note)));
+    s.appendChild(el('p', 'dos__built', [p.when].concat(p.built_with || []).filter(Boolean).map(function (b) { return '<span>' + esc(b) + '</span>'; }).join(' · ')));
+    d.appendChild(s); d.appendChild(w);
+    // the signature moment: the glyph builds cell by cell (CSS), then the title steps into the project's own face
+    var cs = [].slice.call(tt.children), k = 0;
+    if (REDUCED) cs.forEach(function (c) { c.classList.add('ch--on'); });
+    else setTimeout(function step() { if (k < cs.length) { cs[k++].classList.add('ch--on'); setTimeout(step, 70); } }, 70 * (g.childNodes.length + 2));
+    return d;
+  }
+
+  function order(ps, p) {
+    var by = {}; ps.forEach(function (q) { by[q.slug] = q; });
+    var pick = function (l) { return l.map(function (sl) { return by[sl]; }).filter(Boolean); };
+    if (INDEX.indexOf(p.slug) >= 0) return pick(INDEX);
+    if (LAB.indexOf(p.slug) >= 0) return pick(LAB);
+    var par = ps.filter(function (q) { return (q.outputs || []).indexOf(p.slug) >= 0; })[0];
+    return par ? pick([par.slug].concat(par.outputs)) : ps;
+  }
+
   function casePage() {
     var root = document.getElementById('case');
     // case/<slug>/ share pages set window.SLUG; case.html?p=<slug> keeps old links working
@@ -389,7 +467,7 @@
       var i = ps.findIndex(function (p) { return p.slug === slug; });
       root.innerHTML = '';
       if (i < 0) { root.appendChild(el('p', '', 'No such project. <a href="index.html#work">Back to the work</a>.')); return; }
-      var p = ps[i], pr = ps[i - 1], nx = ps[i + 1];
+      var p = ps[i], sq = order(ps, p), j = sq.indexOf(p), pr = sq[j - 1], nx = sq[j + 1];
       return Promise.all([loadMeta(p), pr ? loadMeta(pr) : 0, nx ? loadMeta(nx) : 0]).then(function () {
         var bar0 = el('div', 'case-bar'); var top0 = el('a', 'back'); top0.appendChild(parrow(true)); top0.appendChild(el('span', '', 'INDEX')); top0.href = 'index.html#work'; bar0.appendChild(top0);
         bar0.appendChild(el('span', 'case-bar__t', esc(p.title)));
@@ -402,23 +480,29 @@
         var m = el('div', 'case-body'); root.appendChild(m); snap4(m);
         document.title = p.title + ' · David Hatley';
         applyAccent(root, p.meta); applyFonts(p.meta, base);
-                function template() {
+        // the shared template; under a dossier (slim) it drops what the dossier already shows: title, hero,
+        // status, links and the media that are already in the work column
+        function template(slim) {
+        var m0 = m; if (slim) m = deep;
+        var shown = slim ? (p.work || []).map(function (x) { return x.src; }) : [];
+        if (!slim) {
         var top = el('div', 'case-top'); var g = glyphSvg(p.glyph); g.style.viewTransitionName = 'glyph-' + p.slug; top.appendChild(g);
         top.appendChild(el('h1', 'case-h', esc(p.title)));
         var tg = tags(p); if (tg) top.appendChild(el('span', '', tg).firstChild);
-        top.appendChild(el('span', 'px16 case-n', 'No. ' + String(i + 1).padStart(2, '0') + ' / ' + ps.length));
+        top.appendChild(el('span', 'px16 case-n', 'No. ' + String(j + 1).padStart(2, '0') + ' / ' + sq.length));
         m.appendChild(top);
         var hero = el('div', 'case-hero'); hero.style.viewTransitionName = 'hero-' + p.slug; m.appendChild(hero);
         mountPreview(p, hero, 'hero', base);
+        }
         var col = el('div', 'case-col');
-        col.appendChild(el('p', 'oneliner', esc(p.oneliner)));
+        if (!slim) col.appendChild(el('p', 'oneliner', esc(p.oneliner)));
         if (p.role) col.appendChild(el('p', '', esc(p.role)));
-        if (p.status_note) col.appendChild(el('p', 'ss-plate__cap', esc(p.status_note)));
+        if (p.status_note && !slim) col.appendChild(el('p', 'ss-plate__cap', esc(p.status_note)));
         (p.body || []).forEach(function (t) { col.appendChild(el('p', '', esc(t))); });
         var s = spec(p.spec); if (s) col.appendChild(s);
         m.appendChild(col);
         var figs = el('div', 'figs');
-        (p.media || []).forEach(function (m, k) {
+        (p.media || []).filter(function (x) { return shown.indexOf(x.src) < 0; }).forEach(function (m, k) {
           var f = el('figure', 'ss-plate fig');
           f.appendChild(el('div', 'ss-plate__head', '<span class="ss-label">FIG ' + (k + 1) + ' · ' + esc(p.title).toUpperCase() + '</span>'));
           f.appendChild(media(m, m.caption));
@@ -428,13 +512,18 @@
         m.appendChild(figs);
         var yt = (p.links || []).map(function (l) { var m = /youtube\.com\/watch\?(?:[^#]*&)?v=([\w-]{6,20})/.exec(l.url || ''); return m ? { id: m[1], l: l } : null; }).filter(Boolean);
         yt.forEach(function (y) { var f = el('figure', 'ss-plate fig fig--yt'); f.appendChild(el('div', 'ss-plate__head', '<span class="ss-label">VIDEO · ' + esc(y.l.label).toUpperCase() + '</span>')); var w = el('div', 'yt'); var fr = el('iframe'); fr.src = 'https://www.youtube-nocookie.com/embed/' + y.id; fr.loading = 'lazy'; fr.title = y.l.label || 'Video'; fr.setAttribute('allow', 'accelerometer; encrypted-media; picture-in-picture'); fr.allowFullscreen = true; fr.referrerPolicy = 'strict-origin-when-cross-origin'; w.appendChild(fr); f.appendChild(w); m.appendChild(f); });
-        if (p.links && p.links.length) { var ul = el('ul', 'links'); p.links.forEach(function (l) { ul.appendChild(el('li', '', '<a href="' + esc(l.url) + '">' + esc(l.label) + ' &rarr;</a>')); }); m.appendChild(ul); }
-        var ac = actions(p); if (ac) m.appendChild(ac);
+        if (p.links && p.links.length && !slim) { var ul = el('ul', 'links'); p.links.forEach(function (l) { ul.appendChild(el('li', '', '<a href="' + esc(l.url) + '">' + esc(l.label) + ' &rarr;</a>')); }); m.appendChild(ul); }
+        var ac = slim ? null : actions(p); if (ac) m.appendChild(ac);
+        m = m0;
         }
         var done = function () { template(); };
         var cu = 'previews/' + p.slug + '/case.js';
-        if (CASE_JS.indexOf(p.slug) < 0) { template(); } else import('./' + cu).then(function (mod) {
-          try { var c = mod.default(m, { project: p, base: base, meta: p.meta }); if (typeof c === 'function') window.addEventListener('pagehide', c); }
+        // a project with `decisions` gets the shared dossier header; its case.js renders below it as the deep dive
+        // (a project without case.js gets the slim template as its deep dive)
+        var deep = m;
+        if (p.decisions) { m.appendChild(dossier(p, ps, base)); deep = el('div', 'case-deep'); m.appendChild(deep); }
+        if (CASE_JS.indexOf(p.slug) < 0) { template(!!p.decisions); } else import('./' + cu).then(function (mod) {
+          try { var c = mod.default(deep, { project: p, base: base, meta: p.meta }); if (c && typeof c.then === 'function') c.then(function (f) { if (typeof f === 'function') window.addEventListener('pagehide', f); }, function () {}); else if (typeof c === 'function') window.addEventListener('pagehide', c); }
           catch (e) { m.innerHTML = ''; template(); }
         }).catch(function () { m.innerHTML = ''; template(); });
         var pn = el('nav', 'pn'); pn.setAttribute('aria-label', 'More work');
@@ -451,7 +540,7 @@
       });
     });
   }
-  if (window.PAGE === 'case') casePage(); else home();
+  if (window.PAGE === 'case') casePage(); else if (window.PAGE !== 'lab') home();
   field();
   if (/[?&]grid=1\b/.test(location.search)) gridOverlay();
 })();

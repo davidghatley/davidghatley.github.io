@@ -50,11 +50,11 @@ export default function mount(root, { mode, base }) {
     <div class="tt-side"><span class="tt-k">Generated songs · cover drawn from each</span><div class="tt-songs" data-songs></div>
     <div class="tt-row"><button class="tt-play" type="button" data-play disabled>Loading</button><span class="tt-time" data-time>0:00</span><span class="tt-k" data-hover></span></div>
     <p class="tt-cap">Press play and the plate draws itself from the song: a column per slice, its three strongest notes, the loudness underneath. Click the grid to jump.</p>
-    <figure class="tt-promo"><video muted loop playsinline preload="metadata" controls aria-label="A 37-second silent walkthrough of the app: a written brief, the live app and a cover plate drawing itself from the song"></video><figcaption class="tt-cap">The app in 37 seconds.</figcaption></figure></div>`;
+    <figure class="tt-promo"><video muted loop playsinline preload="metadata" controls aria-label="A 14-second silent clip from the app walkthrough: cover plates drawing themselves from each song"></video><figcaption class="tt-cap">Each cover plate draws itself from its song.</figcaption></figure></div>`;
   const cv = el.querySelector('canvas'), ctx = cv.getContext('2d');
   const songsEl = el.querySelector('[data-songs]'), playB = el.querySelector('[data-play]'), timeEl = el.querySelector('[data-time]'), hoverEl = el.querySelector('[data-hover]');
   const vid = el.querySelector('video'), still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  vid.poster = base + 'public/media/tasty_tunez/promo.jpg'; vid.muted = true; vid.src = base + 'public/media/tasty_tunez/promo.mp4';
+  vid.poster = base + 'public/media/tasty_tunez/promo-app.jpg'; vid.muted = true; vid.src = base + 'public/media/tasty_tunez/promo-app.mp4';
   // autoplay only with motion allowed, and only while the video is on screen
   const io = new IntersectionObserver(([e]) => { if (still) return; if (e.isIntersecting) vid.play().catch(() => {}); else vid.pause(); });
   io.observe(vid);

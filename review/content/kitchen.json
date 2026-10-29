@@ -11,7 +11,7 @@
    "X...X"
   ],
   "status": "software",
-  "status_note": "Six example games built with the generator; not public yet.",
+  "status_note": "Barely started, and local only: a command that plans a game from one sentence, builds it on a three.js starter and checks it in headless Chromium, with 28 tests. Six example games are built; none is public yet.",
   "oneliner": "One sentence in, a small game you can play from a link.",
   "role": "I wrote the intent, the research behind it and the landing page, and I am steering the visual direction.",
   "when": "2026-10",
@@ -73,8 +73,8 @@
    "XXXXX"
   ],
   "status": "software",
-  "status_note": "Intent, landing page and a manual are written; the prep-pack tool is not built.",
-  "oneliner": "Preps any project from one sentence so the agent skips setup.",
+  "status_note": "Working locally, not public yet: a command line (mep init, index, check), five Claude Code skills, 20 tests and two prep folders recorded from real agent runs. Not built yet: measuring how much of the prep an agent uses.",
+  "oneliner": "Prepares any task into a folder an agent can start from.",
   "role": "I defined the prep-pack idea, wrote the intent and the landing page, and drew its look.",
   "when": "2026-10",
   "hero": {
@@ -116,7 +116,7 @@
    }
   ],
   "body": [
-   "The target: give it one sentence about any project and it lays out a prep pack on disk, with a chosen template, an asset kit, a context brief and a manifest, before the agent starts. Zero setup steps for the agent is the goal. The tool does not exist yet.",
+   "The target: give it any task and it lays out a prep folder whose index.md records each item's source and status, before the agent starts. Today a small command line and five Claude Code skills do that, and two example folders were recorded from real agent runs.",
    "What exists is the intent, a landing page, a manual, and a short list of lessons borrowed from my earlier research repos, including one finding that packing evidence loses more than searching for it.",
    "I learned to write down what a tool is not. It is not an agent harness and not the decision model."
   ],
@@ -134,7 +134,7 @@
    "X.X.X"
   ],
   "status": "software",
-  "status_note": "A core slice runs on a working branch (not yet merged or published); the full live demo on a real task has not run.",
+  "status_note": "Working on recorded model replies, not public yet: four tries run side by side, the best is kept, and a run survives kill -9 by resuming from its event log. 22 tests. Live model calls are next.",
   "oneliner": "Runs AI agents until the work passes your checks, even after a crash.",
   "role": "I wrote the intent and the fork-base decision, and I am reusing the loop design from my older gauntlet repo.",
   "when": "2026-10",
@@ -200,7 +200,7 @@
    "XXXXX"
   ],
   "status": "prototype",
-  "status_note": "Experiments on a branch. Compared with Claude Sonnet on 50 held-out prompts: 12 points behind, 1.3x faster; too few prompts to call.",
+  "status_note": "Working locally, not public yet: a command line with 36 tests, and on a separate branch a composer where Kev-4B builds a landing page section by section. A fine-tune raised section-order accuracy from 0.35 to 0.85; a TF-IDF baseline still wins overall (0.836 vs 0.750).",
   "oneliner": "Answers an agent's multiple-choice questions fast and says how sure it is.",
   "role": "I wrote the intent, run the experiments, and studied what my earlier classifier attempts got wrong.",
   "when": "2026-10",
@@ -266,8 +266,8 @@
    "X...."
   ],
   "status": "software",
-  "status_note": "Spikes and a demo in separate checkouts. Roadmap phase 4, so not started in earnest.",
-  "oneliner": "A design canvas where you and an AI agent edit one component.",
+  "status_note": "Working on a branch, not public yet: 577 tests, a canvas that saves every artboard as a React TSX file, and an MCP server so an agent edits the same canvas live while you watch. A static demo replays a recorded agent edit.",
+  "oneliner": "A design canvas where every artboard is a real React file, and an agent edits it with you.",
   "role": "I wrote the spec, ran spikes in separate checkouts for canvas, files, tokens and agents, and captured the demos.",
   "when": "2026-10",
   "hero": {
@@ -294,8 +294,13 @@
   "spec": [
    {
     "label": "commits",
-    "value": "6",
-    "source": "commits in the napkin repo, Oct 22, 2026"
+    "value": "248",
+    "source": "commits on the v1/paper branch, unpushed, read Oct 28, 2026"
+   },
+   {
+    "label": "tests",
+    "value": "577",
+    "source": "the napkin test suite on v1/paper, per the lab board, Oct 28, 2026"
    },
    {
     "label": "spike checkouts",

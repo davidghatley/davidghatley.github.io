@@ -294,8 +294,13 @@
   "spec": [
    {
     "label": "commits",
-    "value": "6",
-    "source": "commits in the napkin repo, Oct 22, 2026"
+    "value": "248",
+    "source": "commits on the v1/paper branch, unpushed, read Oct 28, 2026"
+   },
+   {
+    "label": "tests",
+    "value": "577",
+    "source": "the napkin test suite on v1/paper, per the lab board, Oct 28, 2026"
    },
    {
     "label": "spike checkouts",

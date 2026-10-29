@@ -66,7 +66,7 @@ export default function renderCase(root, { project: p, base, meta }) {
 <h1>${esc(p.title)}</h1><span class="no">RECIPE<br>${esc(p.when)}</span></header>
 <p class="one">${esc(p.oneliner)}</p>
 <div class="meta">
-<div><span class="k">YIELD</span><span class="v">1 prep pack<em>target, not built</em></span></div>
+<div><span class="k">YIELD</span><span class="v">1 prep folder<em>2 recorded from real agent runs</em></span></div>
 <div><span class="k">PREP TIME</span><span class="v">Not measured<em>target: zero setup steps</em></span></div>
 <div><span class="k">STATUS</span><span class="v">${esc(p.status)}<em>${esc(p.when)}</em></span></div>
 <div><span class="k">COOK</span><span class="v">${esc(p.role || '')}</span></div></div>

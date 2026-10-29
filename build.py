@@ -11,9 +11,9 @@ What it writes (all at the repo root, all committed; GitHub Pages still serves t
                      fallback inside #case
   lab/index.html     the lab board between <!-- build:lab --> markers, from lab/lab.json, content/*.json and
                      previews/<slug>/meta.json (accent and display face)
-  sitemap.xml        the index, the font library, the lab and every case page (case/fonts/ redirects, so fonts/ stands in)
+  sitemap.xml        the index, the font library, the lab and every case page
   robots.txt         keeps Disallow: /review/ and /dive/ and adds the Sitemap line
-  site.js            the CASE_JS line: which projects ship previews/<slug>/case.js
+  site.js            the CASE_JS line (which projects ship previews/<slug>/case.js) and the LAB line (lab board order)
   fonts/**/index.html  an absolute og:image when the generated page has none (fonts/ itself comes from
                      secret-sauce/tools/font/foundry/library.py; only this tag is added)
 
@@ -26,7 +26,8 @@ import re
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SITE = 'https://davidghatley.github.io/'
-DEFAULT_IMAGE = 'public/media/meguri/hero.jpg'
+DEFAULT_IMAGE = 'public/media/anime-pipeline/sh13-duel-final.jpg'
+STALE_IMAGES = ('public/media/meguri/hero.jpg',)   # never used again: the stair shot (David, 2026-10-28)
 
 
 def write(p, s):
@@ -107,7 +108,7 @@ def static_case(p):
 
 def case_page(tpl, p):
     slug = p['slug']
-    url = SITE + ('fonts/' if slug == 'fonts' else 'case/%s/' % slug)   # the font library is the fonts case study
+    url = SITE + 'case/%s/' % slug
     title = '%s · David Hatley' % p.get('title')
     desc = p.get('oneliner') or ''
     s = tpl.replace('<head>', '<head>\n<base href="../../">', 1)
@@ -127,6 +128,9 @@ def fonts_og():
     for f in sorted((ROOT / 'fonts').glob('**/index.html')):
         s = f.read_text()
         if 'property="og:image"' in s:
+            for old in STALE_IMAGES:
+                if SITE + old in s:
+                    write(f, s.replace(SITE + old, SITE + DEFAULT_IMAGE))
             continue
         rel = f.parent.relative_to(ROOT).as_posix() + '/'
         add = '<meta property="og:image" content="%s">\n' % (SITE + DEFAULT_IMAGE)
@@ -287,8 +291,15 @@ def main():
             print('removed', d.relative_to(ROOT))
 
     lab_page(ps)
+    lab = ROOT / 'lab' / 'lab.json'
+    if lab.exists():
+        d = json.loads(lab.read_text())
+        order = [it['slug'] for g in d['groups'] for it in g['items']] + list(d['experiments']['slugs'])
+        site_js = sjs.read_text()
+        line = 'var LAB = [%s]; // build.py: lab order' % ', '.join("'%s'" % s for s in order)
+        write(sjs, re.sub(r'var LAB = \[[^\]]*\]; // build\.py: lab order', lambda m: line, site_js, count=1))
 
-    urls = [SITE, SITE + 'lab/', SITE + 'fonts/'] + [SITE + 'case/%s/' % s for s in slugs if s != 'fonts']
+    urls = [SITE, SITE + 'lab/', SITE + 'fonts/'] + [SITE + 'case/%s/' % s for s in slugs]
     write(ROOT / 'sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
           + ''.join('  <url><loc>%s</loc></url>\n' % u for u in urls) + '</urlset>\n')
     write(ROOT / 'robots.txt', 'User-agent: *\nDisallow: /review/\nDisallow: /dive/\n\nSitemap: %ssitemap.xml\n' % SITE)
