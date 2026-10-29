@@ -75,6 +75,34 @@
       "The booklet is a Python script that fills HTML pages from the repertoire data and prints each one to PDF. A late schedule change is a data edit and a rebuild, not a layout rework. It replaced a first draft built in Canva.",
       "What I learned: with a small nonprofit, the deadline is the design brief. A real PDF in front of the board by noon beat any talk about options."
     ],
-    "category": "client work"
+    "category": "client work",
+    "work": [
+      {
+        "src": "public/media/vaasf/hero.jpg",
+        "alt": "Cover of the 2026 VAASF program, titled Canciones Espanolas, deep blue with a painted portrait and the festival mark.",
+        "caption": "The cover the board approved."
+      },
+      {
+        "src": "public/media/vaasf/schedule.jpg",
+        "alt": "Schedule of Events page: three day columns with times, venue and guest faculty list.",
+        "caption": "Page 2, set from the director's schedule files."
+      }
+    ],
+    "work_row": true,
+    "result": "The 2026 program is 16 pages built by a script, so a late schedule change is a data edit and a rebuild.",
+    "result_draft": true,
+    "decisions": {
+      "draft": true,
+      "items": [
+        "I replaced the Canva draft with a Python script that fills HTML pages from the repertoire data and prints each one to PDF.",
+        "I ran the photo-led pages in black and white so the blue stays the only color.",
+        "I put a real PDF in front of the board by noon instead of talking through options."
+      ]
+    },
+    "built_with": [
+      "Python",
+      "HTML to PDF",
+      "Webflow"
+    ]
   }
 ]

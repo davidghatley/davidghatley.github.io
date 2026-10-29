@@ -378,6 +378,66 @@
   }
   window.projectActions = actions;
 
+  // the dossier: one header, the same structure on every case page that has `decisions` in its content.
+  // Left the finished work (content `work`, else the hero), right a compact sheet: title, one-line result,
+  // my decisions and the one thing I changed from the AI's output, what it's built with, outputs, status, links.
+  // The project's case.js renders below it as the deep dive. Text David hasn't confirmed carries data-draft.
+  function dossier(p, ps, base) {
+    var d = el('section', 'dos'); d.setAttribute('aria-label', p.title + ', summary');
+    var w = el('div', 'dos__work' + (p.work_row ? ' dos__work--row' : '')); w.style.viewTransitionName = 'hero-' + p.slug;
+    (p.work && p.work.length ? p.work : p.hero ? [p.hero] : []).forEach(function (it) {
+      var f = el('figure', 'dos__fig'); f.appendChild(media(it, it.caption));
+      if (it.caption) f.appendChild(el('figcaption', '', esc(it.caption)));
+      w.appendChild(f);
+    });
+    d.appendChild(w);
+    var s = el('div', 'dos__sheet');
+    var id = el('div', 'dos__id'), g = glyphSvg(p.glyph); g.style.viewTransitionName = 'glyph-' + p.slug; id.appendChild(g);
+    var h = el('h1', 'dos__h' + (String(p.title).split(' ').some(function (wd) { return wd.length > 6; }) ? ' dos__h--long' : ''));   // a long word steps down to 32 so it never breaks mid-word h.appendChild(el('span', 'sr-only', esc(p.title)));
+    var tt = el('span', 'tt'); tt.setAttribute('aria-hidden', 'true');
+    Array.from(String(p.title)).forEach(function (c) { var q = el('span', 'ch'); q.textContent = c; tt.appendChild(q); });
+    h.appendChild(tt); id.appendChild(h); s.appendChild(id);
+    var dr = function (n, on) { if (on) n.setAttribute('data-draft', 'true'); return n; };
+    s.appendChild(dr(el('p', 'dos__result', esc(p.result || p.oneliner)), p.result_draft));
+    var ls = (p.links || []).filter(function (l) { return l.url; });
+    if (ls.length || (p.actions && p.actions.length)) {
+      var lk = el('div', 'acts dos__links'), pri = ls.filter(function (l) { return /live|site|demo|play/i.test(l.label); })[0] || ls[0];
+      ls.forEach(function (l) { var a = el('a', 'act' + (l === pri ? ' act--primary' : ''), esc(l.label) + ' ↗'); a.href = l.url; a.target = '_blank'; a.rel = 'noopener'; if (l === pri) lk.insertBefore(a, lk.firstChild); else lk.appendChild(a); });
+      (p.actions || []).forEach(function (a0) { var b = el('a', 'act', esc(a0.label)); b.href = a0.url; lk.appendChild(b); });
+      s.appendChild(lk);
+    }
+    var outs = (p.outputs || []).map(function (sl) { return ps.filter(function (q) { return q.slug === sl; })[0]; }).filter(Boolean);
+    if (outs.length) {
+      var ov = el('div', 'dos__out'); ov.appendChild(el('h2', 'dos__k', 'Outputs'));
+      var ol = el('ul');
+      outs.forEach(function (q) {
+        var li = el('li'), a = el('a'); a.href = caseUrl(q.slug);
+        var og = glyphSvg(q.glyph); a.appendChild(og);   // only the glyph wears the show's own colour
+        var gen = (q.spec || []).filter(function (x) { return /generations/.test(x.label); })[0];
+        a.appendChild(el('span', '', '<b>' + esc(q.title) + '</b>' + (gen ? '<em>' + esc(gen.value) + ' ' + esc(gen.label) + '</em>' : '')));
+        a.appendChild(parrow()); li.appendChild(a); ol.appendChild(li);
+        loadMeta(q).then(function () { applyAccent(og, q.meta); });
+      });
+      ov.appendChild(ol); s.appendChild(ov);
+    }
+    var dc = p.decisions || {};
+    if (dc.items && dc.items.length) {
+      var dv = el('div', 'dos__dec'); dv.appendChild(el('h2', 'dos__k', 'My decisions'));
+      var ul = el('ul'); dc.items.forEach(function (t) { ul.appendChild(dr(el('li', '', esc(t)), dc.draft)); }); dv.appendChild(ul);
+      if (dc.changed) dv.appendChild(dr(el('p', 'dos__ai', '<b>Changed from the AI.</b> ' + esc(dc.changed)), dc.draft));
+      s.appendChild(dv);
+    }
+    // one quiet foot: status, then when and what it's built with on one mono line
+    if (p.status_note) s.appendChild(el('p', 'dos__status', esc(p.status_note)));
+    s.appendChild(el('p', 'dos__built', [p.when].concat(p.built_with || []).filter(Boolean).map(function (b) { return '<span>' + esc(b) + '</span>'; }).join(' · ')));
+    d.appendChild(s);
+    // the signature moment: the glyph builds cell by cell (CSS), then the title steps into the project's own face
+    var cs = [].slice.call(tt.children), k = 0;
+    if (REDUCED) cs.forEach(function (c) { c.classList.add('ch--on'); });
+    else setTimeout(function step() { if (k < cs.length) { cs[k++].classList.add('ch--on'); setTimeout(step, 70); } }, 70 * (g.childNodes.length + 2));
+    return d;
+  }
+
   function casePage() {
     var root = document.getElementById('case');
     // case/<slug>/ share pages set window.SLUG; case.html?p=<slug> keeps old links working
@@ -433,8 +493,11 @@
         }
         var done = function () { template(); };
         var cu = 'previews/' + p.slug + '/case.js';
+        // a project with `decisions` gets the shared dossier header; its case.js renders below it as the deep dive
+        var deep = m;
+        if (CASE_JS.indexOf(p.slug) >= 0 && p.decisions) { m.appendChild(dossier(p, ps, base)); deep = el('div', 'case-deep'); m.appendChild(deep); }
         if (CASE_JS.indexOf(p.slug) < 0) { template(); } else import('./' + cu).then(function (mod) {
-          try { var c = mod.default(m, { project: p, base: base, meta: p.meta }); if (typeof c === 'function') window.addEventListener('pagehide', c); }
+          try { var c = mod.default(deep, { project: p, base: base, meta: p.meta }); if (c && typeof c.then === 'function') c.then(function (f) { if (typeof f === 'function') window.addEventListener('pagehide', f); }, function () {}); else if (typeof c === 'function') window.addEventListener('pagehide', c); }
           catch (e) { m.innerHTML = ''; template(); }
         }).catch(function () { m.innerHTML = ''; template(); });
         var pn = el('nav', 'pn'); pn.setAttribute('aria-label', 'More work');
