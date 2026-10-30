@@ -1,3 +1,4 @@
+const OPENED = (a) => !!(a[1] && a[1].opened);   // the dossier already opens on the instrument
 // anime pipeline deep dive, under the shared dossier header (site.js), which owns the title, the best frame and clip,
 // the result, my decisions and the outputs list (meguri, shuto). This is the machine behind them. Pipeline, models, techniques, hardware, what carried over.
 // Numbers are from ship/anime-pipeline-facts.md.
@@ -198,6 +199,6 @@ export default async function renderCase(root, { project: p, base, meta }) {
   const mo = new MutationObserver(syncPlates); mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   const hero = el.querySelector('.hero');
   let un = () => {};
-  try { const mod = await import('./preview.js'); un = mod.default(hero, { mode: 'hero', base }) || un; } catch (e) { console.warn(e); }
+  if (OPENED(arguments)) hero.remove(); else try { const mod = await import('./preview.js'); un = mod.default(hero, { mode: 'hero', base }) || un; } catch (e) { console.warn(e); }
   return () => { un(); mo.disconnect(); el.remove(); style.remove(); };
 }

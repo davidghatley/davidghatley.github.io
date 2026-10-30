@@ -1,3 +1,4 @@
+const OPENED = (a) => !!(a[1] && a[1].opened);   // the dossier already opens on the instrument
 // lmr deep dive, rendered under the shared dossier header (site.js): the header owns the title, the work, the
 // result, my decisions, status and links, so this page starts at the abstract and reads like a technical report.
 const CSS = `
@@ -65,6 +66,6 @@ export default async function renderCase(root, { project: p, base }) {
     <div class="pair">${fig(2)}${fig(3)}${fig(4)}</div>`;
   const hero = el.querySelector('.pv');
   let un = () => {};
-  try { const mod = await import('./preview.js'); un = mod.default(hero, { mode: 'hero', base }) || un; } catch (e) { console.warn(e); }
+  if (OPENED(arguments)) hero.closest('.hero').remove(); else try { const mod = await import('./preview.js'); un = mod.default(hero, { mode: 'hero', base }) || un; } catch (e) { console.warn(e); }
   return () => { un(); el.remove(); style.remove(); };
 }

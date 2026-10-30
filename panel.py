@@ -111,35 +111,36 @@ def plate(s, cols=26):
     C, D = 8, 6   # cell and dot, in viewBox units
     W, gy, ly = cols * C, 0, 12 * C + 6
     H = ly + 6 * 4
+    box = lambda x, y, w, h: 'M%d %dh%dv%dh-%dz' % (x, y, w, h, w)
     dots, cols_g = [], []
     for c in range(cols):
         live = energy[c] / pe > 0.15
-        on = []
+        on, pk = [], ''
         for j in range(12):
             p = 11 - j; x, y = c * C, gy + j * C
             if live and p in top[c]:
-                cls = ' class="pk"' if (c, p) == peak else ''
-                on.append('<rect%s x="%d" y="%d" width="%d" height="%d"/>' % (cls, x, y, D, D))
+                if (c, p) == peak: pk = '<path class="pk" d="%s"/>' % box(x, y, D, D)
+                else: on.append(box(x, y, D, D))
             else:
-                dots.append('<rect x="%d" y="%d" width="2" height="2"/>' % (x + 2, y + 2))
+                dots.append(box(x + 2, y + 2, 2, 2))
         k = max(1, round(energy[c] / pe * 6))
-        on += ['<rect class="ld" x="%d" y="%d" width="%d" height="3"/>' % (c * C, ly + (5 - q) * 4, D) for q in range(k)]
-        cols_g.append('<g style="--i:%d">%s</g>' % (c, ''.join(on)))
+        ld = ''.join(box(c * C, ly + (5 - q) * 4, D, 3) for q in range(k))
+        cols_g.append('<g style="--i:%d"><path d="%s"/>%s<path class="ld" d="%s"/></g>' % (c, ''.join(on), pk, ld))
     mm = lambda v: '%d:%02d' % (v // 60, v % 60)
     pk_t = mm(int((peak[0] + 0.5) / cols * s['duration']))
     svg = ('<svg class="tz-plate" viewBox="0 -2 %d %d" shape-rendering="crispEdges" aria-hidden="true">'
-           '<g class="off">%s</g><g class="on">%s</g></svg>' % (W, H + 2, ''.join(dots), ''.join(cols_g)))
+           '<path class="off" d="%s"/><g class="on">%s</g></svg>' % (W, H + 2, ''.join(dots), ''.join(cols_g)))
     return svg, NOTES[peak[1]], pk_t
 
 
 # ---------- tiles ----------
 def head(p, t, k, faces=None):
-    return ('<div class="t-head">%s<h3 class="t-name"><span class="sr-only">%s</span>%s</h3><span class="t-n">%02d</span></div>'
-            % (glyph(p.get('glyph')), esc(t.get('label') or t['name']), name_html(t['name'], faces), k))
+    return ('<div class="t-head">%s<h2 class="t-name"><a class="t-link" href="case/%s/" aria-describedby="res-%s"><span class="sr-only">%s</span>%s</a></h2><span class="t-n">%02d</span></div>'
+            % (glyph(p.get('glyph')), esc(t['slug']), esc(t['slug']), esc(t.get('label') or t['name']), name_html(t['name'], faces), k))
 
 
 def res(t):
-    return '<p class="t-res"%s>%s</p>' % (' data-draft="true"' if t.get('draft') else '', esc(t['result']))
+    return '<p class="t-res" id="res-%s"%s>%s</p>' % (esc(t['slug']), ' data-draft="true"' if t.get('draft') else '', esc(t['result']))
 
 
 ARROWS = '<svg viewBox="0 0 11 5" shape-rendering="crispEdges" fill="currentColor"><rect x="0" y="2" width="1" height="1"/><rect x="1" y="1" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="1" y="3" width="1" height="1"/><rect x="2" y="0" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="8" y="0" width="1" height="1"/><rect x="8" y="1" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="9" y="1" width="1" height="1"/><rect x="9" y="2" width="1" height="1"/><rect x="9" y="3" width="1" height="1"/><rect x="10" y="2" width="1" height="1"/></svg>'   # pixel double arrow on the wipe handle
@@ -267,6 +268,8 @@ def render(root, ps):
     R = json.loads((root / 'content' / 'runlog.json').read_text())
     songs = json.loads((root / 'public' / 'media' / 'tasty_tunez' / 'songs.json').read_text())
     fams = json.loads((root / 'fonts' / 'files' / 'families.json').read_text())
+    for f in fams:
+        if 'dive' in (f.get('sample') or '').lower(): f['sample'] = f['name']   # the library's old sample line
     by = {p['slug']: p for p in ps}
     meta = lambda s: json.loads((root / 'previews' / s / 'meta.json').read_text()) if (root / 'previews' / s / 'meta.json').exists() else {}
     faces = [f['name'] for f in fams if not f.get('grid')] or None
@@ -278,14 +281,13 @@ def render(root, ps):
         elif s == 'tasty_tunez': body = tasty_body(songs)
         elif s == 'fonts': body = type_body(t, fams, by.get('secret-sauce', {}), p)
         else: body = vaasf_body(t)
-        # a tile is one link, except one that holds a control of its own (the previz wipe): there the link is an
-        # overlay that covers the tile, and the control sits above it, so the rest of the tile still clicks through
-        lead = '<a class="t-a" href="case/%s/" aria-label="%s: %s">' % (esc(s), esc(t.get('label') or t['name']), esc(t['result']))
-        if 'compare' in t: lead = '<div class="t-a t-a--x">' + lead.replace('class="t-a"', 'class="t-link"') + '</a>'
+        # the tile's one link is its name, stretched over the tile (.t-link::after), so a reader hears the name and the
+        # result, not every number in the tile; a control of its own (the previz wipe) sits above the stretch
+        lead = '<div class="t-a">'
         out.append(
             '<li class="tile t-%s acc%s" id="%s" style="%s" data-fonts="%s">%s%s%s%s%s</li>'
             % (s, ' has-l' if s in ('tasty_tunez', 'vaasf') else '', s, style_vars(m), esc(' '.join(m.get('fonts') or [])),
-               lead, head(p, t, k, faces if s == 'fonts' else None), res(t), body, '</div>' if 'compare' in t else '</a>'))
+               lead, head(p, t, k, faces if s == 'fonts' else None), res(t), body, '</div>'))
     out.append('</ol>')
     lab = cfg['lab']
     out.append('<p class="lab-line"><a href="%s"><span>%s</span>%s</a></p>\n' % (esc(lab['href']), esc(lab['text']), parrow()))

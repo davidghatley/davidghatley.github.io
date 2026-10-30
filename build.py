@@ -35,6 +35,26 @@ STALE_IMAGES = ('public/media/meguri/hero.jpg',)   # never used again: the stair
 RUNLOG = pathlib.Path.home() / 'anime-pipeline' / 'logs' / 'runs.jsonl'   # read-only; only aggregates are written
 
 
+def sync_runlog():
+    """The case page quotes the same run log the home tile draws: rewrite those lines from content/runlog.json."""
+    import datetime
+    R = json.loads((ROOT / 'content' / 'runlog.json').read_text())
+    n = lambda v: format(v, ',')
+    last = datetime.date.fromisoformat(R['last']); span = 'Oct 12 to %d, %d' % (last.day, last.year)
+    f = ROOT / 'content' / 'anime.json'; s = f.read_text()
+    s = re.sub(r'"value": "[\d,]+",(\s+"source": "run log, read )[\d-]+: Oct 12 to \d+, \d+; [\d,]+ succeeded, [\d,]+ failed to submit',
+               lambda m: '"value": "%s",%s%s: %s; %s succeeded, %s failed to submit' % (n(R['runs']), m.group(1), R['last'], span, n(R['succeeded']), n(R['runs'] - R['succeeded'])), s)
+    s = re.sub(r'"value": "[\d.]+",(\s+"source": "run log, read )[\d-]+: summed run time, Oct 12 to \d+, \d+',
+               lambda m: '"value": "%s",%s%s: summed run time, %s' % (R['gpu_hours'], m.group(1), R['last'], span), s)
+    s = re.sub(r'run log, read [\d-]+: all [\d,]+ rows, Oct 12 to \d+, \d+', 'run log, read %s: all %s rows, %s' % (R['last'], n(R['runs']), span), s)
+    s = re.sub(r'[\d,]+ runs logged by Oct \d+, \d+', '%s runs logged by Oct %d, %d' % (n(R['runs']), last.day, last.year), s)
+    write(f, s)
+    f = ROOT / 'previews' / 'anime-pipeline' / 'case.js'; s = f.read_text()
+    s = re.sub(r"'[\d,]+ rows, Oct 12 to \d+ \(read Oct \d+\): 0 CUDA out-of-memory errors, [\d.]+ GPU hours'",
+               "'%s rows, Oct 12 to %d (read Oct %d): %d CUDA out-of-memory errors, %s GPU hours'" % (n(R['runs']), last.day, last.day, R['cuda_oom'], R['gpu_hours']), s)
+    write(f, s)
+
+
 def write(p, s):
     """Write only when the text changes, so a second run touches nothing."""
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -181,7 +201,7 @@ def lab_evidence(it, href):
                            % (esc(a), b * 100, esc(v)) for a, b, v in g['rows'])
             gs.append('<div class="lc__cg"><p class="lc__cap">%s</p>%s</div>' % (esc(g['label']), rows))
             said.append('%s: %s' % (g['label'], ', '.join('%s %s' % (a, v) for a, b, v in g['rows'])))
-        return ('<figure class="lc__fig lc__fig--data" role="img" aria-label="%s"><figcaption class="lc__cap lc__cap--h">%s</figcaption>%s<p class="lc__cap">%s</p></figure>'
+        return ('<div class="lc__fig lc__fig--data" role="img" aria-label="%s"><p class="lc__cap lc__cap--h">%s</p>%s<p class="lc__cap">%s</p></div>'
                 % (esc(c['label'] + '. ' + '; '.join(said) + '. ' + c['foot']), esc(c['label']), ''.join(gs), esc(c['foot'])))
     if it.get('log'):
         lg = it['log']
@@ -257,6 +277,8 @@ def lab_page(ps):
 
 
 def main():
+    write(ROOT / 'content' / 'runlog.json', panel.runlog_json(RUNLOG, ROOT / 'content' / 'runlog.json'))
+    sync_runlog()
     sjs = ROOT / 'site.js'
     site_js = sjs.read_text()
     ps, cats, cat = projects(site_js)   # cats and cat order the case pages (prev/next)

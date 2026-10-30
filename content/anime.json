@@ -352,12 +352,13 @@
    }
   ],
   "body": [
-   "tasty_tunez turns a written brief into a two-minute song in about 20 seconds on a 12 GB card, using ACE-Step 1.5 (MIT). Every song comes out as an MP3 with its own cover plate and settings embedded, so it can be regenerated or remixed later.",
+   "tasty_tunez turns a written brief into a song on your own GPU, using ACE-Step 1.5 (MIT). Every song comes out as an MP3 with its own cover plate and settings embedded, so it can be regenerated or remixed later.",
    "It started with one slowed phonk track I liked. I measured it (tempo, key, stems, how dark and how bass-heavy) and then tested what moves a model toward that sound. The XL model and briefs written as sentences moved it; a community phonk LoRA moved it the other way. Those measurements became a feature: drop in a reference and the app suggests settings from fixed rules, each with the number behind it.",
    "The model manager shows each model's licence before it downloads. YuE2 and LeVo 2 score well but are non-commercial or academic only, so the app lists them and explains why it doesn't install them.",
    "What I learned: my reference song was about 7 dB louder than anything the model produced. Some of what makes a track hit is mastering, not generation."
   ],
-  "result": "A two-minute song from a written brief in about 20 seconds on a 12 GB card, with its cover plate and settings inside the MP3.",
+  "result": "Songs from a text brief on your own GPU, each with a cover drawn from its notes.",
+  "result_draft": true,
   "decisions": {
    "items": [
     "I measured one reference track first (tempo, key, stems, loudness) and tested what moves the model toward it before designing the app.",

@@ -396,6 +396,13 @@
 
   // the previz wipe: drag (or arrow keys on the hidden range) to move --x. Previz is left of the line, final right.
   // The clip is one file with previz stacked over final, drawn to a canvas each frame, so the halves stay in sync.
+  // The clip is 1.7 MB, so it waits for the first sign of a person (pointer, touch, key or scroll); the stills and the
+  // wipe's sweep carry the tile until then.
+  var awake = false, wakers = [];
+  function wake(f) { if (wakers.push(f) > 1) return;
+    var evs = ['pointermove', 'pointerdown', 'touchstart', 'keydown', 'scroll'];
+    function go() { awake = true; evs.forEach(function (n) { window.removeEventListener(n, go, true); }); wakers.forEach(function (w) { w(); }); wakers = []; }
+    evs.forEach(function (n) { window.addEventListener(n, go, { capture: true, passive: true }); }); }
   function wipe(fr, still) {
     var r = fr.querySelector('.cmp-r'), x = +r.value, x0 = x, v = null, cv = null, cx = null, raf = 0, drag = false, touched = false, hinted = still;
     function draw() { if (!cx || v.readyState < 2) return; var W = cv.width, H = cv.height, s = Math.round(W * x / 100);
@@ -412,18 +419,21 @@
     fr.addEventListener('pointermove', function (e) { if (drag) { fr.classList.add('is-drag'); set(at(e), true); } });
     ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (n) { fr.addEventListener(n, function () { drag = false; fr.classList.remove('is-drag'); }); });
     r.addEventListener('input', function () { set(+r.value, true); });
-    return {
+    function hintLater() { if (!hinted) { hinted = true; setTimeout(function () { requestAnimationFrame(hint); }, 900); } }
+    var wanted = false, api = {
       play: function () {
+        wanted = true; if (!awake) { wake(function () { if (wanted) api.play(); }); hintLater(); return; }
         if (!v) { v = document.createElement('video'); v.className = 'cmp-v'; v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
           v.setAttribute('aria-hidden', 'true'); v.src = fr.dataset.src; fr.appendChild(v);
           v.addEventListener('playing', function () { if (cv) return; cv = document.createElement('canvas'); cv.width = 1152; cv.height = 658;
             cv.setAttribute('aria-hidden', 'true'); cx = cv.getContext('2d'); fr.insertBefore(cv, fr.querySelector('.cmp-h')); draw(); }); }
         var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
         cancelAnimationFrame(raf); (function f() { draw(); raf = requestAnimationFrame(f); })();
-        if (!hinted) { hinted = true; setTimeout(function () { requestAnimationFrame(hint); }, 900); }
+        hintLater();
       },
-      pause: function () { if (v) v.pause(); cancelAnimationFrame(raf); raf = 0; }
+      pause: function () { wanted = false; if (v) v.pause(); cancelAnimationFrame(raf); raf = 0; }
     };
+    return api;
   }
 
   // ---------- home: the background strip ----------
@@ -546,6 +556,7 @@
   // Left the finished work (content `work`, else the hero), right a compact sheet: title, one-line result,
   // my decisions and the one thing I changed from the AI's output, what it's built with, outputs, status, links.
   // The project's case.js renders below it as the deep dive. Text David hasn't confirmed carries data-draft.
+  var OPENS = { 'anime-pipeline': 1, lmr: 0, tasty_tunez: 0, fonts: 0 };
   function dossier(p, ps, base) {
     var d = el('section', 'dos'); d.setAttribute('aria-label', p.title + ', summary');
     var w = el('div', 'dos__work' + (p.work_row ? ' dos__work--row' : '')); w.style.viewTransitionName = 'hero-' + p.slug;
@@ -554,6 +565,12 @@
       if (it.caption) f.appendChild(el('figcaption', '', esc(it.caption)));
       w.appendChild(f);
     });
+    // the project's working instrument opens the page: first in the column, or second under a moving clip
+    if (OPENS[p.slug] != null) {
+      var inst = el('div', 'dos__inst'), probe = el('div'); inst.appendChild(probe);
+      w.insertBefore(inst, w.children[OPENS[p.slug]] || null);
+      mountPreview(p, probe, 'hero', base).then(function (f) { window.addEventListener('pagehide', f); });
+    }
     var s = el('div', 'dos__sheet');
     var id = el('div', 'dos__id'), g = glyphSvg(p.glyph); g.style.viewTransitionName = 'glyph-' + p.slug; id.appendChild(g);
     var h = el('h1', 'dos__h' + (String(p.title).split(' ').some(function (wd) { return wd.length > 6; }) ? ' dos__h--long' : '') + (String(p.title).split(' ').some(function (wd) { return wd.length > 9; }) ? ' dos__h--xl' : ''));   // a long word steps down to 32 so it never breaks mid-word
@@ -563,7 +580,8 @@
     String(p.title).split(/( )/).forEach(function (wd) {
       if (!wd) return;
       if (wd === ' ') { var sp = el('span', 'ch'); sp.textContent = ' '; tt.appendChild(sp); return; }
-      var wr = el('span', 'w'); Array.from(wd).forEach(function (c) { var q = el('span', 'ch'); q.textContent = c; wr.appendChild(q); }); tt.appendChild(wr);
+      // a snake_case name may break after its underscore instead of running off the column
+      wd.split(/(?<=_)/).forEach(function (pt) { var wr = el('span', 'w'); Array.from(pt).forEach(function (c) { var q = el('span', 'ch'); q.textContent = c; wr.appendChild(q); }); tt.appendChild(wr); });
     });
     h.appendChild(tt); id.appendChild(h); s.appendChild(id);
     var dr = function (n, on) { if (on) n.setAttribute('data-draft', 'true'); return n; };
@@ -657,7 +675,7 @@
       return Promise.all([loadMeta(p), pr ? loadMeta(pr) : 0, nx ? loadMeta(nx) : 0]).then(function () {
         var bar0 = el('div', 'case-bar'); var top0 = el('a', 'back'); top0.appendChild(parrow(true)); top0.appendChild(el('span', '', 'INDEX')); top0.href = 'index.html#work'; bar0.appendChild(top0);
         bar0.appendChild(el('span', 'case-bar__t', esc(p.title)));
-        function ib(q, left, lbl) { var a = el(q ? 'a' : 'span', 'ibtn' + (q ? '' : ' is-off')); a.appendChild(parrow(left)); a.setAttribute('aria-label', lbl + (q ? ': ' + q.title : '')); if (q) a.href = caseUrl(q.slug); return a; }
+        function ib(q, left, lbl) { var a = el(q ? 'a' : 'span', 'ibtn' + (q ? '' : ' is-off')); a.appendChild(parrow(left)); if (q) { a.setAttribute('aria-label', lbl + ': ' + q.title); a.href = caseUrl(q.slug); } else a.setAttribute('aria-hidden', 'true'); return a; }
         bar0.appendChild(ib(pr, true, 'Previous')); bar0.appendChild(ib(nx, false, 'Next'));
         root.appendChild(bar0);
         var sx = 0, sy = 0, st = 0;
@@ -709,7 +727,7 @@
         var deep = m;
         if (p.decisions) { m.appendChild(dossier(p, ps, base)); deep = el('div', 'case-deep'); m.appendChild(deep); }
         if (CASE_JS.indexOf(p.slug) < 0) { template(!!p.decisions); } else import('./' + cu).then(function (mod) {
-          try { var c = mod.default(deep, { project: p, base: base, meta: p.meta }); if (c && typeof c.then === 'function') c.then(function (f) { if (typeof f === 'function') window.addEventListener('pagehide', f); }, function () {}); else if (typeof c === 'function') window.addEventListener('pagehide', c); }
+          try { var c = mod.default(deep, { project: p, base: base, meta: p.meta, opened: OPENS[p.slug] != null }); if (c && typeof c.then === 'function') c.then(function (f) { if (typeof f === 'function') window.addEventListener('pagehide', f); }, function () {}); else if (typeof c === 'function') window.addEventListener('pagehide', c); }
           catch (e) { m.innerHTML = ''; template(); }
         }).catch(function () { m.innerHTML = ''; template(); });
         var pn = el('nav', 'pn'); pn.setAttribute('aria-label', 'More work');

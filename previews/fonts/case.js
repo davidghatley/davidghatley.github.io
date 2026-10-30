@@ -1,3 +1,4 @@
+const OPENED = (a) => !!(a[1] && a[1].opened);   // the dossier already opens on the instrument
 // font library case page: the shared dossier header sits above this (site.js). Below it, the families one at a
 // time (the row preview in hero mode), how they are built (project.body), the numbers and the way into the library.
 export default function renderCase(root, { project: p, base }) {
@@ -27,6 +28,6 @@ ${spec ? `<section><h2>the numbers</h2><dl>${spec}</dl></section>` : ''}
 <a class="act act--primary go" href="${esc(base + lib.url)}">${esc(lib.label)}</a>`;
   root.appendChild(el);
   let un = () => {};
-  import('./preview.js').then(m => { const c = m.default(el.querySelector('.pv'), { mode: 'hero', base }); if (typeof c === 'function') un = c; }).catch(() => {});
+  if (OPENED(arguments)) el.querySelector('.pv').closest('section').remove(); else import('./preview.js').then(m => { const c = m.default(el.querySelector('.pv'), { mode: 'hero', base }); if (typeof c === 'function') un = c; }).catch(() => {});
   return () => { un(); css.remove(); el.remove(); };
 }
