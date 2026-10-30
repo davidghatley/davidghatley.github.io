@@ -349,6 +349,7 @@
     return { w: 0, how: 'none' };
   }
   function detailJunction(pair) {
+    if (box(pair[1]).b <= box(pair[0]).t + 1) pair = [pair[1], pair[0]]; // stacked in reverse order at this width
     var A = box(pair[0]), B = box(pair[1]), across = B.l >= A.r - 1, gap = Math.max(0, across ? B.l - A.r : B.t - A.b), ra = ruleOf(pair[0]), rb = ruleOf(pair[1]);
     var D = 152, c = D / 2, M = 4, sv = mk('svg', { viewBox: '0 0 ' + D + ' ' + D, 'class': 'dwg-dsvg', role: 'img', 'aria-label': 'Where two blocks meet, magnified' });
     var cp = mk('clipPath', { id: 'dwgclipA' }, mk('defs', {}, sv)); mk('circle', { cx: c, cy: c, r: c - 1 }, cp);
@@ -374,7 +375,7 @@
     mk('circle', { cx: c, cy: c, r: c - 1, 'class': 'dwg-ring' }, sv);
     var tl = mk('text', { x: c, y: across ? D - 20 : c + 4, 'class': 'dwg-dt', 'text-anchor': 'middle' }, sv); tl.textContent = 'G';
     var L = ra.w || rb.w, ll = null;
-    if (L) { ll = mk('text', { x: 30, y: Y(Math.max(A.t, B.t)) - 6, 'class': 'dwg-dt' }, sv); ll.textContent = 'L'; }
+    if (L) { ll = mk('text', { x: 30, y: Math.max(26, Math.min(D - 26, across ? Y(Math.max(A.t, B.t)) - 6 : Y(B.t) - 6)), 'class': 'dwg-dt' }, sv); ll.textContent = 'L'; }
     var off = across ? (A.r + gap / 2) % bPx : A.b % bPx;
     return { key: 'DET-A', svg: sv, labelG: tl, labelL: ll, L: L, ruleEl: ra.w ? pair[0] : pair[1], ruleHow: (ra.w ? ra : rb).how, gap: gap, rawEl: pair[0].parentElement, short: 'A JOIN: ' + nameOf(pair[0]).replace('dossier ', '').toUpperCase() + ' + ' + nameOf(pair[1]).replace('dossier ', '').toUpperCase(), title: 'DETAIL A · ' + (nameOf(pair[0]).replace('dossier ', '') + ' MEETS ' + nameOf(pair[1]).replace('dossier ', '')).toUpperCase(),
       caption: 'SCALE ' + M + ':1. GAP ' + fmt(gap) + ', ' + fmt(gap / bPx) + '·B. LINE ' + fmt(L) + ' (' + (ra.w ? ra : rb).how.toUpperCase() + '). EDGES ' + (A.r % bPx === 0 || !across ? 'ON' : 'OFF') + ' THE ' + fmt(bPx) + ' PX LATTICE.' };
