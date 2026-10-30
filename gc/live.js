@@ -42,7 +42,9 @@ const el = {
   seg: [{ in: $$('[data-tail="0"][data-seg="in"]'), out: $$('[data-tail="0"][data-seg="out"]') }, { in: $$('[data-tail="1"][data-seg="in"]'), out: $$('[data-tail="1"][data-seg="out"]') }],
   carriage: $$('[data-name="pen.bush"],[data-name="pen.post"]'),
   pen: $$('[data-name="pen.slider"],[data-name="pen.tip"]'),
-  detector: { dro: $$('[data-name^="fid"]'), haa: $$('[data-name^="ecd"]') },
+  detector: { dro: $$('[data-name="fid"],[data-name^="fid.chimney"],[data-name="fid.insulator"]'), haa: $$('[data-name^="ecd"]') },
+  jet: $('[data-part="jet"]'),
+  cell: $$('[data-name="ecd.can"]'),
   coil: [$$('[data-name="coil0"]'), $$('[data-name="coil1"]')],
   lamp: Object.fromEntries(["ready", "run", "fid", "ecd"].map((n) => [n, $$(`[data-lamp="${n}"]`)])),
   labels: $$("[data-for]"),
@@ -277,7 +279,10 @@ function drawBands() {
   const ch = CHANNEL[s.m];
   const count = el.turns[ch].length;
   const next = new Set();
-  if (s.t !== null) for (const f of bandsAt(s.m, s.t)) next.add(Math.min(count - 1, Math.floor(f * count)));
+  if (s.t !== null) for (const f of bandsAt(s.m, s.t)) {
+    const i = Math.min(count - 1, Math.floor(f * count));
+    next.add(i);
+  }
   for (const c of [0, 1]) {
     const want = c === ch ? next : new Set();
     for (const i of lit[c]) if (!want.has(i)) el.turns[c][i]?.removeAttribute("data-on");
@@ -422,6 +427,7 @@ function inject() {
   run();
 }
 function pick(p) {
+  if (p && p.t > s.drawn[s.m]) p = null; // only peaks on the paper can be named
   s.picked = p;
   drawPick();
   drawStatusText();
@@ -470,7 +476,7 @@ function tick(now) {
   if (s.next && s.T <= SWAP_BELOW) selectMethod(s.next.id, s.next.user);
   if (s.stroke !== null && !swapping) {
     s.stroke += dt;
-    if (s.pendingClear) {
+    if (s.pendingClear && s.stroke >= INJECT_AT - 0.45) {
       s.inkFade = Math.max(0, s.inkFade - dt / 0.45);
       el.ink[id].style.opacity = s.inkFade.toFixed(3);
       if (s.inkFade === 0) {
@@ -569,11 +575,12 @@ function tick(now) {
   el.seg[1 - ch].out.forEach((n) => n.removeAttribute("data-on"));
   el.stem.fid.toggleAttribute("data-on", eluting && id === "dro");
   el.stem.ecd.toggleAttribute("data-on", eluting && id === "haa");
-  el.detector.dro.forEach((n) => n.toggleAttribute("data-pulse", eluting && id === "dro"));
-  el.detector.haa.forEach((n) => n.toggleAttribute("data-pulse", eluting && id === "haa"));
+  el.jet.toggleAttribute("data-on", eluting && id === "dro");
+  el.cell.forEach((n) => n.toggleAttribute("data-pulse", eluting && id === "haa"));
   drawBands();
   drawDial();
   drawLamps();
+  if (s.picked && s.picked.t > s.drawn[id]) pick(null);
   drawStatusText();
   const flameOn = id === "dro" ? 1 : 0;
   const liveSig = s.t !== null && id === "dro" ? Math.min(1, sig * 1.2 + flash) : 0;
@@ -606,10 +613,11 @@ const observer = new IntersectionObserver((entries) => {
 observer.observe(stage);
 
 // ---------- input ----------
-const hitsNow = () => $$(`[data-sheet="${s.m}"] .gc-hit`);
+const hitsNow = () => $$(`[data-sheet="${s.m}"] .gc-hit`).filter((h) => peakById(s.m, h.dataset.peak).t <= s.drawn[s.m]);
 const peakOf = (node) => peakById(s.m, node.dataset.peak);
 function stepPeak(by, to) {
   const hits = hitsNow();
+  if (!hits.length) return;
   const now = hits.indexOf(document.activeElement);
   const i = to !== undefined ? to : Math.max(0, Math.min(hits.length - 1, (now < 0 ? (by > 0 ? -1 : hits.length) : now) + by));
   hits.forEach((h, j) => h.setAttribute("tabindex", j === i ? "0" : "-1"));
@@ -684,6 +692,7 @@ stage.addEventListener("pointerenter", () => hold());
 root.querySelectorAll("[data-step]").forEach((b) => b.addEventListener("click", () => {
   hold();
   const hits = hitsNow();
+  if (!hits.length) return;
   const i = s.picked ? hits.findIndex((h) => h.dataset.peak === s.picked.id) : -1;
   const n = Math.max(0, Math.min(hits.length - 1, i + Number(b.dataset.step)));
   pick(peakOf(hits[n]));
@@ -696,7 +705,7 @@ el.zoom?.addEventListener("pointerdown", (e) => {
   const x = vb.x + ((e.clientX - box.left) / box.width) * vb.width;
   let best = null;
   for (const p of METHODS[s.m].peaks) {
-    if (p.kind === "solvent") continue;
+    if (p.kind === "solvent" || p.t > s.drawn[s.m]) continue;
     const d = Math.abs(uOf(s.m, p.t) - x);
     if (!best || d < best.d) best = { p, d };
   }

@@ -16,7 +16,7 @@ URL: https://www.nemi.gov/methods/method_pdf/7229 (text extracted from the PDF a
 | Oven: 40 °C for 10 min, 2.5 °C/min to 65, 10 °C/min to 85, 20 °C/min to 205, hold 7 min | Table 1 |
 | 1 µL injection | Table 1 |
 | Helium carrier on the 552.3 run | Table 1 ("Helium (UHP)"). The bulkhead is labelled CARRIER with no gas named, because the 8015-style run uses hydrogen. |
-| Relative peak heights, tallest scaled to 70% of the sheet | Read by eye from Figure 1, counts above baseline. Approximate. Figure 1's unlabelled peaks and bromoform are omitted (caption says so). |
+| Relative peak heights, tallest scaled to about 86% of the plot | Read by eye from Figure 1, counts above baseline. Approximate. Figure 1's unlabelled peaks and bromoform are omitted (caption says so). |
 
 Peak names as methyl esters (for example "methyl chloroacetate" for MCAA) follow from the derivatization. The internal standard is not derivatized. The name of each ester is my naming from the parent acid; the method lists the acids.
 
@@ -66,6 +66,7 @@ Upper temperature limit typical for this phase, about 280/300 °C (isothermal/pr
 - Diesel and oil hump shapes and the small unresolved peaks (seeded pseudo-random, placed by carbon number).
 - 8015-style peak heights and all peak widths (drawn narrow, but wider than a real capillary peak so they show at this scale).
 - Oven cooldown rate after a run.
+- The column bleed rise above about 290 °C on the 8015-style trace.
 - The swap mechanism, the autosampler's motion and the number of drawn windings.
 - Ni-63 plate on the ECD: a cue only, not a sourced statement. EPA 552.3 names a micro ECD but not an isotope. Grey until the ECD is selected.
 - "A lab would normally run these on separate instruments": my reasoning from the column limit, not a sourced statement.

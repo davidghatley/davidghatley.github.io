@@ -79,7 +79,7 @@ const haaProgram = [[0, 40], [10, 40], [20, 65], [22, 85], [28, 205], [35, 205]]
 const haaTemp = makeTemp(haaProgram);
 const HAA_TM = 30 / 0.33 / 60; // 30 m at 33 cm/s
 const FULL = 12500;
-const ester = (id, kind, name, t, counts) => ({ id, kind, code: id, name, t, h: (0.7 * counts) / FULL, published: t, w: 0.03 });
+const ester = (id, kind, name, t, counts) => ({ id, kind, code: id, name, t, h: (0.86 * counts) / FULL, published: t, w: 0.03 });
 const haaPeaks = [
   ester("MCAA", "ester", "Methyl chloroacetate, from MCAA", 9.29, 250),
   ester("MBAA", "ester", "Methyl bromoacetate, from MBAA", 14.19, 1300),
@@ -207,7 +207,8 @@ export function signalAt(id, t) {
     const hump = humpOf(n);
     s += hump + oilOf(t > 14.33 ? 40 + (t - 14.33) * 1.6 : n);
     if (hump > 0) for (const g of grass) if (Math.abs(g.t - t) < g.w * 4.2) s += g.h * Math.min(1, hump * 4.2) * gauss(t, g.t, g.w);
-    s += 0.012 * Math.max(0, m.temp(t) - 250) / 150; // column bleed rising with the oven
+    const hot = Math.max(0, m.temp(t) - 290) / 110;
+    s += 0.13 * hot * hot; // illustrative column bleed, rising with the oven
   }
   for (const p of m.peaks) s += p.h * gauss(t, p.t, p.w);
   return Math.min(1, s);
