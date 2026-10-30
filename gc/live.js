@@ -1,7 +1,7 @@
+function mountGC(root) {
 const D = __DATA__;
 const P = D.P;
-const stage = document.querySelector("[data-gc]");
-const root = stage.closest("[data-gc-root]");
+const stage = root.querySelector("[data-gc]");
 const svg = stage.querySelector("svg");
 const $ = (sel) => svg.querySelector(sel);
 const $$ = (sel) => [...svg.querySelectorAll(sel)];
@@ -35,6 +35,10 @@ const el = {
   turns: [$$('[data-ch="0"]'), $$('[data-ch="1"]')],
   tails: [$$('[data-tail="0"]'), $$('[data-tail="1"]')],
   nut: $('[data-part="nut"]'),
+  plungerHead: $('[data-part="plunger-head"]'),
+  vapour: $('[data-part="vapour"]'),
+  stem: { inlet: $('[data-stem="inlet"]'), fid: $('[data-stem="fid"]'), ecd: $('[data-stem="ecd"]') },
+  seg: [{ in: $$('[data-tail="0"][data-seg="in"]'), out: $$('[data-tail="0"][data-seg="out"]') }, { in: $$('[data-tail="1"][data-seg="in"]'), out: $$('[data-tail="1"][data-seg="out"]') }],
   carriage: $$('[data-name="pen.bush"],[data-name="pen.post"]'),
   pen: $$('[data-name="pen.slider"],[data-name="pen.tip"]'),
   detector: { dro: $$('[data-name^="fid"]'), haa: $$('[data-name^="ecd"]') },
@@ -296,7 +300,7 @@ function drawStatusText() {
   }
   const T = `${Math.round(s.T)} °C`;
   if (s.phase === "stroke") say(`${m.short} · injecting 1 µL`);
-  else if (s.phase === "run") say(`${m.short} · ${s.t.toFixed(2)} min · ${T}`);
+  else if (s.phase === "run") say(`${m.short} · ${s.t.toFixed(2)} min · ${T}${holdAt(s.m, s.t) ? " hold" : ""}`);
   else if (s.phase === "cool") say(`${m.short} · cooling · ${T}`);
   else say(`${m.short} · ${m.detector} · ready · ${T}`);
 }
@@ -462,13 +466,25 @@ function tick(now) {
   drawKnob();
   drawMechanism();
   const sig = drawPen();
-  const sinceInject = s.stroke === null ? -1 : s.stroke - INJECT_AT;
-  el.nut?.toggleAttribute?.("data-on", sinceInject > -0.5 && sinceInject < 0.5);
-  el.tails[CHANNEL[id]].forEach((n) => {
-    const out = n.dataset.route?.includes(".out");
-    const on = s.t !== null && (out ? sig > 0.08 : s.t < 1.1);
-    n.toggleAttribute("data-on", on);
-  });
+  // The flow path lights in order: plunger, nut, liner vapour, inlet stem, pigtail, windings; each elution lights the outlet pigtail, the stem and the detector.
+  const age = s.stroke === null ? -9 : s.stroke - INJECT_AT;
+  const ch = CHANNEL[id];
+  el.plungerHead.toggleAttribute("data-on", age > -0.4 && age < 0.5);
+  el.nut.toggleAttribute("data-on", age > -0.3 && age < 0.9);
+  const puff = age > -0.1 && age < 1.5 ? Math.sin(Math.PI * Math.min(1, (age + 0.1) / 1.6)) : 0;
+  el.vapour.setAttribute("opacity", puff.toFixed(2));
+  el.vapour.setAttribute("r", (1 + 3.4 * Math.min(1, Math.max(0, age + 0.1))).toFixed(2));
+  el.vapour.setAttribute("cy", (-3 + 7 * Math.min(1, Math.max(0, age) / 1.2)).toFixed(2));
+  el.stem.inlet.toggleAttribute("data-on", age > 0.3 && age < 1.5);
+  el.seg[0].in.forEach((n) => n.toggleAttribute("data-on", ch === 0 && age > 0.8 && age < 2.1));
+  el.seg[1].in.forEach((n) => n.toggleAttribute("data-on", ch === 1 && age > 0.8 && age < 2.1));
+  const eluting = s.t !== null && METHODS[id].peaks.some((p) => p.kind !== "solvent" && Math.abs(s.t - p.t) < p.w * 2.4);
+  el.seg[ch].out.forEach((n) => n.toggleAttribute("data-on", eluting));
+  el.seg[1 - ch].out.forEach((n) => n.removeAttribute("data-on"));
+  el.stem.fid.toggleAttribute("data-on", eluting && id === "dro");
+  el.stem.ecd.toggleAttribute("data-on", eluting && id === "haa");
+  el.detector.dro.forEach((n) => n.toggleAttribute("data-pulse", eluting && id === "dro"));
+  el.detector.haa.forEach((n) => n.toggleAttribute("data-pulse", eluting && id === "haa"));
   drawBands();
   drawDial();
   drawLamps();
@@ -493,14 +509,15 @@ function drawAll() {
   last = 0;
   run();
 }
-new IntersectionObserver((entries) => {
+const observer = new IntersectionObserver((entries) => {
   visible = entries[entries.length - 1].isIntersecting;
   if (visible) run();
   else if (frame) {
     cancelAnimationFrame(frame);
     frame = 0;
   }
-}, { rootMargin: "120px 0px" }).observe(stage);
+}, { rootMargin: "120px 0px" });
+observer.observe(stage);
 
 // ---------- input ----------
 const hitsNow = () => $$(`[data-sheet="${s.m}"] .gc-hit`);
@@ -613,3 +630,14 @@ drawDial();
 drawLamps();
 drawPick();
 drawStatusText();
+return {
+  inject,
+  destroy() {
+    observer.disconnect();
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0;
+    clearTimeout(tour.timer);
+    visible = false;
+  },
+};
+}

@@ -8,14 +8,13 @@
 .gc-flame{position:absolute;pointer-events:none;display:block}
 .gc-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 
-.gc-root [data-c="cavity"],.gc-root .it[data-c="cavity"]{--anatomy-paper:#3f3f40;--anatomy-top:#4a4a4b;--anatomy-shade-0:#373738;--anatomy-shade-1:#3c3c3d;--anatomy-shade-2:#424243;--anatomy-shade-3:#48484a;--anatomy-mid:#6a6a6c;--anatomy-lo:#5b5b5d;--anatomy-faint:#505052;--anatomy-hi:#8c8c8f}
+.gc-root [data-c="cavity"],.gc-root .it[data-c="cavity"]{--anatomy-paper:#c4c4c1;--anatomy-top:#cfcfcc;--anatomy-shade-0:#b4b4b1;--anatomy-shade-1:#babab7;--anatomy-shade-2:#c0c0bd;--anatomy-shade-3:#c6c6c3;--anatomy-mid:#8d8d8c;--anatomy-lo:#9f9f9d;--anatomy-faint:#afafad;--anatomy-hi:#5a5a5c}
 .iso[data-theme="dark"] .gc-root [data-c="cavity"]{--anatomy-paper:#0e0e0e;--anatomy-top:#121212;--anatomy-shade-0:#0a0a0a;--anatomy-shade-1:#0c0c0c;--anatomy-shade-2:#0e0e0e;--anatomy-shade-3:#101010;--anatomy-mid:#6a6a6a;--anatomy-lo:#4c4c4c;--anatomy-faint:#2e2e2e;--anatomy-hi:#b0b0b0}
 .gc-bore{fill:var(--gc-bore)}
 .gc-fan-hole{fill:var(--anatomy-shade-0)}
 .gc-blade{fill:var(--anatomy-shade-3);stroke:var(--anatomy-lo);stroke-width:.4px;vector-effect:non-scaling-stroke}
 .gc-fan-hub{fill:var(--anatomy-top);stroke:var(--anatomy-mid);stroke-width:.5px;vector-effect:non-scaling-stroke}
 .gc-guard{fill:none;stroke:var(--anatomy-mid);stroke-width:.5px;vector-effect:non-scaling-stroke}
-.gc-turn{transition:stroke .25s linear}
 .gc-turn[data-on]{stroke:var(--gc-band);stroke-width:1.1px}
 .it[data-c="heater"] .iso-edge{stroke:color-mix(in srgb,var(--gc-heat) calc(var(--gc-t,0)*100%),var(--anatomy-hi))}
 .it[data-c="heater"] .iso-top,.it[data-c="heater"] .iso-shade{fill:color-mix(in srgb,var(--gc-heat) calc(var(--gc-t,0)*70%),var(--anatomy-shade-1))}
@@ -23,7 +22,7 @@
 .gc-recess{fill:var(--anatomy-shade-0)}
 .gc-paper{fill:var(--gc-paper,#fffdf6)}
 .iso[data-theme="dark"] .gc-root{--gc-paper:#0c0c0b;--gc-rule:#2c2c2a;--gc-rule2:#454542}
-.gc-root{--gc-tail:#d6d6d2;--gc-bore:#8f8f8c;--gc-paper:#ffffff;--gc-rule:#e2e2de;--gc-rule2:#b8b8b4}
+.gc-root{--gc-tail:#2c2c30;--gc-bore:#a9a9a6;--gc-paper:#ffffff;--gc-rule:#e2e2de;--gc-rule2:#b8b8b4}
 .iso[data-theme="dark"] .gc-root{--gc-bore:#080808;--gc-paper:#0c0c0b;--gc-rule:#2c2c2a;--gc-rule2:#454542}
 .gc-sheet{transition:opacity .35s var(--anatomy-ease)}
 .gc-sheet[data-off]{opacity:0;pointer-events:none}
@@ -43,7 +42,7 @@
 .gc-tag-peak{fill:none;stroke:var(--gc-band);stroke-width:1.4px;stroke-linejoin:round;vector-effect:non-scaling-stroke}
 .gc-tag-back{fill:var(--gc-paper);stroke:var(--gc-band);stroke-width:.5px;vector-effect:non-scaling-stroke}
 .gc-tag-text{font-size:3.4px;fill:var(--gc-band);font-weight:600}
-.gc-sheet[data-dim]{opacity:.62}
+.gc-sheet[data-dim]:not([data-off]){opacity:.62}
 .gc-label{opacity:0;transition:opacity .25s}
 .gc-label[data-on]{opacity:1}
 .gc-leader{fill:none;stroke:var(--anatomy-mid);stroke-width:.35px;vector-effect:non-scaling-stroke}
@@ -96,6 +95,20 @@
 .gc-root button:focus-visible{outline:2px solid var(--anatomy-strong);outline-offset:2px}
 .gc-name{margin:8px 0 0;font:11.5px/1.45 var(--anatomy-mono);color:var(--anatomy-strong);min-height:3em}
 @media (max-width:560px){.gc-root button{padding:9px 8px;font-size:11px}}
-@media (prefers-reduced-motion:reduce){.gc-turn,.gc-sheet,.gc-engrave{transition:none}}
+@media (prefers-reduced-motion:reduce){.gc-sheet,.gc-engrave{transition:none}}
 
 .iso[data-theme="dark"] .gc-root{--gc-tail:#8c8c8c}
+
+.gc-liner-win{fill:#2a2a2c;stroke:var(--anatomy-mid);stroke-width:.5px;vector-effect:non-scaling-stroke}
+.gc-liner{fill:#6e6e70}
+.gc-vapour{fill:#ffb14a}
+.gc-rad-plate{fill:#f1d04a;stroke:#3a3320;stroke-width:.5px;vector-effect:non-scaling-stroke}
+.gc-rad{fill:#17150d}
+.gc-rad-text{font-family:var(--anatomy-mono);font-size:3.4px;font-weight:700;fill:#17150d}
+.gc-port{font-size:2.2px;fill:var(--anatomy-strong)}
+.it[data-stem][data-on] .iso-edge,.it[data-seg][data-on] .iso-edge,.it[data-seg][data-on] .tb-edge{stroke:var(--gc-band)}
+.it[data-stem][data-on] .iso-top,.it[data-stem][data-on] .iso-shade{fill:var(--gc-band)}
+[data-part="plunger-head"][data-on] .iso-top,[data-part="plunger-head"][data-on] .iso-shade{fill:var(--gc-band)}
+[data-part="plunger-head"][data-on] .iso-edge{stroke:var(--gc-band)}
+.it[data-name^="ecd.can"][data-pulse] .iso-edge,.it[data-name^="fid"][data-pulse] .iso-edge{stroke:var(--gc-band);stroke-width:1.3px}
+.gc-root[data-gc-root]{display:block}

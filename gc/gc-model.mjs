@@ -213,6 +213,12 @@ export function signalAt(id, t) {
   return Math.min(1, s);
 }
 
+// True while the oven sits on a flat stretch of the program.
+export function holdAt(id, t) {
+  const p = METHODS[id].program;
+  for (let i = 1; i < p.length; i++) if (t <= p[i][0]) return p[i][1] === p[i - 1][1];
+  return true;
+}
 export const tempAt = (id, t) => METHODS[id].temp(t);
 export const peakById = (id, peakId) => METHODS[id].peaks.find((p) => p.id === peakId);
 export function travelOf(id, peak, t) {

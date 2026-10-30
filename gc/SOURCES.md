@@ -38,7 +38,7 @@ Note: 8015D's own DRO program (45 °C to 275 °C at 12 °C/min, hold 12 min, Sec
 ## The 8015-style channel: program and anchor times
 URL: https://ez.restek.com/images/cgram/gc_ev1380.pdf ("DRO/ORO Calibration Standard", GC_EV1380, text and plot read directly)
 
-- Oven 40 °C (hold 0.1 min) to 400 °C at 19.6 °C/min (hold 1.53 min). 15 m x 0.25 mm x 0.10 µm thin-film column. 1 µL, split 50:1, hydrogen carrier. FID. The caption states the carrier and split and says this is not a typical lab program.
+- Oven 40 °C (hold 0.1 min) to 400 °C at 19.6 °C/min (hold 1.53 min). 15 m x 0.25 mm x 0.10 µm thin-film column. 1 µL, split 50:1, hydrogen carrier. FID. The caption states the carrier and split, and calls the conditions a vendor's.
 - Tabulated times, shown to two decimals: C10 124.3 s, C12 203.5 s, C14 279.8 s, C16 348.9 s, C18 411.5 s.
 - "C40 elution area" mark on the plot, read as about 860 s. Shown as "about 14.3".
 - Why this program and not 8015D's: 8015D's 45 to 275 °C gives no published times, and I judged it too cool to place a C40 marker. The figure stays true by naming the conditions as a vendor's.
@@ -59,13 +59,14 @@ The trace is a composite, not one injection, and the caption says so.
 - Elution position: retention indices 1886 (HP-5MS) and 1903 (DB-5) from the NIST WebBook, https://webbook.nist.gov/cgi/cbook.cgi?ID=C84151&Units=SI&Mask=2000 . The model places it at carbon number 18.9. Modelled, shown as "about".
 
 ## Why one column at a time
-DB-1701 upper temperature limit of about 280/300 °C (isothermal/programmed): vendor catalog listing for a 0.25/0.32 mm column, https://chromtech.com/123-0732e-5cg-db-1701-30m-032mm-025um (the exact 30 m x 0.25 mm x 0.25 µm part was not checked). A 400 °C program would exceed it, so the figure never heats both columns: the selector racks one into the oven and parks the other behind a gate. The caption says a lab runs these on separate instruments, and that the shared chassis is for comparison. The rack, shuttle, gates and parking bays are invented for the figure, not a real instrument feature.
+Upper temperature limit typical for this phase, about 280/300 °C (isothermal/programmed): vendor catalog listing for a 0.25/0.32 mm column, https://chromtech.com/123-0732e-5cg-db-1701-30m-032mm-025um (the exact 30 m x 0.25 mm x 0.25 µm part was not checked). A 400 °C program would exceed it, so the figure never heats both columns: the selector racks one into the oven and the other waits in an unheated bay behind the case front. The caption says a lab would normally run these on separate instruments, and that the shared chassis is for comparison. The rack, shuttle, gates and bays are invented for the figure, not a real instrument feature.
 
 ## Illustrative, with no source
 - Diesel and oil hump shapes and the small unresolved peaks (seeded pseudo-random, placed by carbon number).
 - 8015-style peak heights and all peak widths.
 - Oven cooldown rate after a run.
 - The swap mechanism, the autosampler's motion and the number of drawn windings.
+- Ni-63 plate on the ECD: a cue. EPA 552.3 names a micro ECD but not an isotope.
 - Gas line layout. FID makeup is drawn through a tee shared with the ECD; the actual makeup gas differs by method (nitrogen in the vendor note, 95% Ar/5% CH4 in EPA 552.3 Table 1) and the figure does not label it.
 
 ## Not on the figure
