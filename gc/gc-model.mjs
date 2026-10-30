@@ -63,14 +63,14 @@ export function alkaneTime(n) {
 }
 const droPeaks = [];
 // The solvent front's time and height are illustrative; the standard's diluent is methylene chloride.
-droPeaks.push({ id: "solvent", kind: "solvent", code: "solvent", name: "Methylene chloride, the solvent", t: 0.58, h: 1.5, w: 0.05, offScale: true, approx: true });
+droPeaks.push({ id: "solvent", kind: "solvent", code: "solvent", name: "Methylene chloride, the solvent", t: 0.58, h: 1.5, w: 0.035, offScale: true, approx: true });
 for (let n = 10; n <= 40; n += 2) {
   const window = n === 10 || n === 28 || n === 40;
   const h = n <= 28 ? 0.66 - 0.006 * (n - 10) : 0.552 - 0.024 * (n - 28);
   const tabulated = ALKANE_ANCHORS.find(([c]) => c === n && c <= 18);
-  droPeaks.push({ id: `C${n}`, kind: window ? "window" : "alkane", code: `C${n}`, name: alkaneNames[n], carbon: n, h, w: n > 30 ? 0.06 : 0.045, lnk: (T) => lnkAlkane(n, T), published: tabulated ? tabulated[1] / 60 : null, approx: !tabulated });
+  droPeaks.push({ id: `C${n}`, kind: window ? "window" : "alkane", code: `C${n}`, name: alkaneNames[n], carbon: n, h, w: n > 30 ? 0.03 : 0.022, lnk: (T) => lnkAlkane(n, T), published: tabulated ? tabulated[1] / 60 : null, approx: !tabulated });
 }
-droPeaks.push({ id: "OTP", kind: "surrogate", code: "SUR", name: "o-Terphenyl, the surrogate", carbon: 18.9, h: 0.72, w: 0.045, lnk: (T) => lnkAlkane(18.9, T), approx: true });
+droPeaks.push({ id: "OTP", kind: "surrogate", code: "SUR", name: "o-Terphenyl, the surrogate", carbon: 18.9, h: 0.72, w: 0.022, lnk: (T) => lnkAlkane(18.9, T), approx: true });
 
 // ---------- 552.3: nine haloacetic acid methyl esters on ECD ----------
 // Oven program, retention times and the primary column are EPA 552.3 Table 1 (MTBE).
@@ -79,7 +79,7 @@ const haaProgram = [[0, 40], [10, 40], [20, 65], [22, 85], [28, 205], [35, 205]]
 const haaTemp = makeTemp(haaProgram);
 const HAA_TM = 30 / 0.33 / 60; // 30 m at 33 cm/s
 const FULL = 12500;
-const ester = (id, kind, name, t, counts) => ({ id, kind, code: id, name, t, h: (0.7 * counts) / FULL, published: t, w: 0.055 });
+const ester = (id, kind, name, t, counts) => ({ id, kind, code: id, name, t, h: (0.7 * counts) / FULL, published: t, w: 0.03 });
 const haaPeaks = [
   ester("MCAA", "ester", "Methyl chloroacetate, from MCAA", 9.29, 250),
   ester("MBAA", "ester", "Methyl bromoacetate, from MBAA", 14.19, 1300),
@@ -185,7 +185,7 @@ function seeded(seed) {
 const grass = (() => {
   const rnd = seeded(8015);
   const list = [];
-  for (let t = 1.6; t < 11.2; t += 0.035 + rnd() * 0.05) list.push({ t, h: 0.03 + rnd() * rnd() * 0.17, w: 0.022 + rnd() * 0.018 });
+  for (let t = 1.6; t < 11.2; t += 0.035 + rnd() * 0.05) list.push({ t, h: 0.03 + rnd() * rnd() * 0.17, w: 0.014 + rnd() * 0.012 });
   return list;
 })();
 const gauss = (t, c, w) => {
@@ -243,7 +243,7 @@ export function nextPeakAfter(id, t) {
   return METHODS[id].peaks.find((p) => p.t > t) ?? null;
 }
 export function programText(id) {
-  return id === "dro" ? "40 °C, 19.6 °C/min to 400 °C, 1.5 min hold" : "40 °C 10 min, 2.5 to 65, 10 to 85, 20 to 205 °C, 7 min";
+  return id === "dro" ? "40 °C, 19.6 °C/min to 400 °C, 1.5 min hold" : "40 °C 10 min, 2.5 to 65, 10 to 85, 20 to 205 °C, 7 min. Helium carrier";
 }
 
 // Dial: 0..420 °C over 270 degrees of sweep, starting lower left.
@@ -290,6 +290,10 @@ export function swapAt(u) {
   const gate = ease(Math.min(1, u / 0.22)) * (1 - ease((u - 0.78) / 0.22));
   return { gate, shuttle: ease((u - 0.2) / 0.6) };
 }
+// How long, in run minutes, a compound takes from the coil's outlet to the detector in the figure's packet.
+export const FLOW_LEAD = 0.95;
+export const SWAP_BELOW = 60; // the shuttle waits until the oven is below this
+export const strokeWord = (s) => (s < STROKE.slice(0, 5).reduce((a, [, d]) => a + d, 0) ? "drawing sample" : "injecting");
 export const runOf = (seconds) => seconds * MIN_PER_S;
 // Oven door vents after a run: a plain exponential toward the start temperature, about 4 s of figure time.
 export const coolAt = (from, to, seconds) => to + (from - to) * Math.exp(-seconds / 1.1);

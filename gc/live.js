@@ -35,6 +35,7 @@ const el = {
   turns: [$$('[data-ch="0"]'), $$('[data-ch="1"]')],
   tails: [$$('[data-tail="0"]'), $$('[data-tail="1"]')],
   nut: $('[data-part="nut"]'),
+  flap: $('[data-part="flap"]'),
   plungerHead: $('[data-part="plunger-head"]'),
   vapour: $('[data-part="vapour"]'),
   stem: { inlet: $('[data-stem="inlet"]'), fid: $('[data-stem="fid"]'), ecd: $('[data-stem="ecd"]') },
@@ -82,6 +83,33 @@ function placePieces() {
   }
 }
 
+const SVGNS = "http://www.w3.org/2000/svg";
+const packetLayer = $('[data-part="packets"]');
+const PACKETS = Array.from({ length: 9 }, () => {
+  const c = document.createElementNS(SVGNS, "circle");
+  c.setAttribute("class", "gc-packet");
+  c.setAttribute("r", "0");
+  packetLayer.appendChild(c);
+  return c;
+});
+const RING = document.createElementNS(SVGNS, "circle");
+RING.setAttribute("class", "gc-ring");
+RING.setAttribute("opacity", "0");
+packetLayer.appendChild(RING);
+const FLOW = Object.fromEntries(Object.entries(D.FLOWS).map(([id, pts]) => {
+  const at = [0];
+  for (let i = 1; i < pts.length; i++) at.push(at[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  pts.lengths = at;
+  return [id, pts];
+}));
+function pointOn(pts, u) {
+  const L = pts.lengths;
+  const d = u * L[L.length - 1];
+  let i = 1;
+  while (i < L.length - 1 && L[i] < d) i++;
+  const f = (d - L[i - 1]) / (L[i] - L[i - 1] || 1);
+  return [pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * f, pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * f];
+}
 const plotW = g.PLOT.x1 - g.PLOT.x0;
 const uOf = (id, t) => g.PLOT.x0 + (t / METHODS[id].end) * plotW;
 const clipX = g.PLOT.x0 - 3;
@@ -98,7 +126,10 @@ const s = {
   T: 40,
   penT: METHODS.dro.end,
   penS: 0,
-  drawn: { dro: METHODS.dro.end, haa: 0 },
+  drawn: { dro: METHODS.dro.end, haa: METHODS.haa.end },
+  next: null,
+  flap: 0,
+  arrived: null,
   inkFade: 1,
   lit: { x: 1, v: 0 },
   sig: { x: 0, v: 0 },
@@ -299,8 +330,9 @@ function drawStatusText() {
     return;
   }
   const T = `${Math.round(s.T)} °C`;
-  if (s.phase === "stroke") say(`${m.short} · injecting 1 µL`);
-  else if (s.phase === "run") say(`${m.short} · ${s.t.toFixed(2)} min · ${T}${holdAt(s.m, s.t) ? " hold" : ""}`);
+  if (s.next) say(`cooling, then swap · ${T}`);
+  else if (s.phase === "stroke") say(`${m.short} · ${strokeWord(s.stroke ?? 0)} · 1 µL`);
+  else if (s.phase === "run") say(`${m.short} · ${s.t.toFixed(2)} min · ${T}${holdAt(s.m, s.t) ? " hold" : ""}${s.arrived ? ` · ${s.arrived.code} at detector` : ""}`);
   else if (s.phase === "cool") say(`${m.short} · cooling · ${T}`);
   else say(`${m.short} · ${m.detector} · ready · ${T}`);
 }
@@ -312,14 +344,33 @@ function drawLamps() {
 }
 
 // ---------- actions ----------
-const tour = { on: !still.matches, at: 0, wait: 1.4, quietUntil: 0 };
-function selectMethod(id, user) {
-  if (id === s.m) return;
+const tour = { on: !still.matches, at: 0, wait: 3.2, quietUntil: 0 };
+function requestMethod(id, user) {
+  if (user) tour.queued = false;
+  // The shuttle never racks a column into a hot oven: stop the run, vent, then swap.
+  if (id === s.m && !s.next) return;
   if (s.stroke !== null || s.t !== null) {
     if (s.t !== null) s.drawn[s.m] = s.t;
     s.stroke = null;
     s.t = null;
   }
+  if (id === s.m) {
+    s.next = null;
+    return;
+  }
+  methodBtns.forEach((b) => b.setAttribute("aria-pressed", b.dataset.method === id ? "true" : "false"));
+  if (s.T > SWAP_BELOW && !still.matches) {
+    s.next = { id, user };
+    if (!s.cool) s.cool = { from: s.T, age: 0 };
+    s.phase = "cool";
+    announce("Cooling, then swap.");
+    run();
+    return;
+  }
+  selectMethod(id, user);
+}
+function selectMethod(id, user) {
+  s.next = null;
   s.phase = s.T > 45 ? "cool" : "ready";
   s.m = id;
   s.cool = s.T > METHODS[id].temp(0) + 0.5 ? { from: s.T, age: 0 } : null;
@@ -347,6 +398,7 @@ function selectMethod(id, user) {
 }
 function inject() {
   const id = s.m;
+  if (s.next) return;
   pick(null);
   if (still.matches) {
     s.drawn[id] = METHODS[id].end;
@@ -415,6 +467,7 @@ function tick(now) {
       }
     }
   }
+  if (s.next && s.T <= SWAP_BELOW) selectMethod(s.next.id, s.next.user);
   if (s.stroke !== null && !swapping) {
     s.stroke += dt;
     if (s.pendingClear) {
@@ -456,6 +509,7 @@ function tick(now) {
       s.T = m.temp(0);
       s.cool = null;
       if (s.phase === "cool") s.phase = "ready";
+      if (s.next) selectMethod(s.next.id, s.next.user);
     }
   }
   const knobTarget = KNOB_ANGLE[id];
@@ -478,7 +532,39 @@ function tick(now) {
   el.stem.inlet.toggleAttribute("data-on", age > 0.3 && age < 1.5);
   el.seg[0].in.forEach((n) => n.toggleAttribute("data-on", ch === 0 && age > 0.8 && age < 2.1));
   el.seg[1].in.forEach((n) => n.toggleAttribute("data-on", ch === 1 && age > 0.8 && age < 2.1));
-  const eluting = s.t !== null && METHODS[id].peaks.some((p) => p.kind !== "solvent" && Math.abs(s.t - p.t) < p.w * 2.4);
+  // The coin-run moment: each compound leaves the coil as a packet and reaches the detector as the pen kicks.
+  let arrived = null;
+  let flash = 0;
+  let inFlight = 0;
+  const route = FLOW[id];
+  if (s.t !== null) {
+    for (const p of m.peaks) {
+      if (p.kind === "solvent") continue;
+      const u = (s.t - (p.t - FLOW_LEAD)) / FLOW_LEAD;
+      if (u >= 0 && u < 1 && inFlight < PACKETS.length) {
+        const q = pointOn(route, u);
+        PACKETS[inFlight].setAttribute("cx", q[0].toFixed(1));
+        PACKETS[inFlight].setAttribute("cy", q[1].toFixed(1));
+        PACKETS[inFlight].setAttribute("r", (p.h > 0.3 ? 1.9 : 1.3).toFixed(1));
+        inFlight++;
+      }
+      if (s.t >= p.t && s.t - p.t < 0.6) {
+        arrived = p;
+        flash = Math.max(flash, burst((s.t - p.t) / MIN_PER_S, 0.02, 0.1) * Math.min(1, 0.45 + p.h));
+      }
+    }
+  }
+  for (let i = 0; i < PACKETS.length; i++) if (i >= inFlight && PACKETS[i].getAttribute("r") !== "0") PACKETS[i].setAttribute("r", "0");
+  s.arrived = arrived;
+  const endPt = route[route.length - 1];
+  RING.setAttribute("cx", endPt[0]);
+  RING.setAttribute("cy", endPt[1]);
+  RING.setAttribute("r", (3 + 14 * (1 - flash)).toFixed(1));
+  RING.setAttribute("opacity", (flash * 0.9).toFixed(2));
+  const eluting = s.t !== null && m.peaks.some((p) => p.kind !== "solvent" && s.t > p.t - FLOW_LEAD * 0.45 && s.t < p.t + 0.1);
+  const flapOpen = s.cool ? 1 : 0;
+  s.flap += (flapOpen - s.flap) * (calm ? 1 : 1 - Math.exp(-dt / 0.2));
+  el.flap.setAttribute("transform", `scale(1 ${(1 - 0.72 * s.flap).toFixed(3)})`);
   el.seg[ch].out.forEach((n) => n.toggleAttribute("data-on", eluting));
   el.seg[1 - ch].out.forEach((n) => n.removeAttribute("data-on"));
   el.stem.fid.toggleAttribute("data-on", eluting && id === "dro");
@@ -490,12 +576,12 @@ function tick(now) {
   drawLamps();
   drawStatusText();
   const flameOn = id === "dro" ? 1 : 0;
-  const liveSig = s.t !== null && id === "dro" ? Math.min(1, sig * 1.6) : 0;
+  const liveSig = s.t !== null && id === "dro" ? Math.min(1, sig * 1.2 + flash) : 0;
   const movingLit = settle(s.lit, flameOn, dt, 0.24, calm);
   settle(s.sig, liveSig, dt, 0.05, calm);
   stage.style.setProperty("--gc-lit", s.lit.x.toFixed(3));
   if (flame) flame.draw({ uLit: s.lit.x, uSig: s.sig.x }, calm ? 0.8 : s.clock);
-  const keepGoing = !calm && (tour.on || s.stroke !== null || s.cool || knobMoving || swapping || movingLit || s.lit.x > 0.002);
+  const keepGoing = !calm && (tour.on || s.stroke !== null || s.cool || s.next || knobMoving || swapping || movingLit || s.lit.x > 0.002);
   frame = visible && keepGoing ? requestAnimationFrame(tick) : 0;
 }
 function run() {
@@ -537,7 +623,7 @@ stage.addEventListener("keydown", (e) => {
     inject();
   } else if (key === "m") {
     hold();
-    selectMethod(s.m === "dro" ? "haa" : "dro", true);
+    requestMethod((s.next?.id ?? s.m) === "dro" ? "haa" : "dro", true);
   } else if (key === "arrowright" || key === "arrowdown") {
     hold();
     stepPeak(1);
@@ -580,7 +666,7 @@ stage.addEventListener("click", (e) => {
   if (e.target.classList?.contains("gc-hit")) return;
   if (name.startsWith("knob")) {
     hold();
-    selectMethod(s.m === "dro" ? "haa" : "dro", true);
+    requestMethod((s.next?.id ?? s.m) === "dro" ? "haa" : "dro", true);
   } else if (name.startsWith("button")) {
     hold();
     inject();
@@ -592,7 +678,7 @@ injectBtn.addEventListener("click", () => {
 });
 methodBtns.forEach((b) => b.addEventListener("click", () => {
   hold();
-  selectMethod(b.dataset.method, true);
+  requestMethod(b.dataset.method, true);
 }));
 stage.addEventListener("pointerenter", () => hold());
 root.querySelectorAll("[data-step]").forEach((b) => b.addEventListener("click", () => {

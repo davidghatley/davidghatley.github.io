@@ -20,7 +20,7 @@ const AZ = 57;
 const EL = 25;
 
 // ---------- world layout (x along the case, y toward the front, z up) ----------
-const PLATE = { x: -176, y: -14, w: 352, d: 278, r: 10 };
+const PLATE = { x: -176, y: -14, w: 352, d: 272, r: 10 };
 const PLATE_H = 8;
 const FOOT_H = 4;
 const CASE = { x0: -150, x1: 150, y0: 0, y1: 170 };
@@ -248,8 +248,6 @@ for (const px of [PL, PR]) {
   const plan = { x: -66, y: 36, w: 112, d: 74, r: 0.8 };
   box("deck.cover", [plan.x, plan.y, Z.deck], [plan.x + plan.w, plan.y + plan.d, Z.deck + 0.5], { tone: "mid" }, { r: 0.8, extra: screws(k.corners(plan, 3).map(([x, y]) => [x, y, Z.deck + 0.5])) });
   for (const x of [28, 40]) disc("deck.hinge", G.frameOf([x - 3, 34.6, Z.deck + 1.4], [1, 0, 0], [0, 1, 0], [0, 0, 1]), 0, 6, 1.4, { tone: "mid" }, { steps: 10 });
-  disc("deck.lift", G.frameOf([30, 104, Z.deck + 2.1], [1, 0, 0], [0, 1, 0], [0, 0, 1]), 0, 14, 0.9, { tone: "hi" }, { steps: 10 });
-  for (const x of [32, 42]) box("deck.liftpost", [x - 0.8, 103.2, Z.deck + 0.5], [x + 0.8, 104.8, Z.deck + 1.2], { tone: "lo" });
 }
 
 // ---------- oven interior ----------
@@ -274,14 +272,14 @@ for (const px of [PL, PR]) {
   }
   // Rear vent flap, up and to the right of the fan: it exhausts the oven when it cools.
   box("vent.frame", [-58, WALL_Y, 106], [-14, WALL_Y + 1, 124], { tone: "lo" }, { cls: CAV });
-  box("vent.flap", [-56.6, WALL_Y + 1, 107.4], [-15.4, WALL_Y + 1.8, 122.6], { tone: "mid" }, { cls: CAV, extra: Ln(Array.from({ length: 6 }, (_, i) => path3([[-54 + i * 6.4, WALL_Y + 1.8, 110], [-50 + i * 6.4, WALL_Y + 1.8, 110], [-50 + i * 6.4, WALL_Y + 1.8, 120], [-54 + i * 6.4, WALL_Y + 1.8, 120]], true)).join(""), { tone: "lo" }) });
+  box("vent.flap", [-56.6, WALL_Y + 1, 107.4], [-15.4, WALL_Y + 1.8, 122.6], { tone: "mid" }, { cls: CAV, extra: `<g transform="${yFace(-56.6, WALL_Y + 1.82, 122.6)}"><rect class="gc-slot" width="41.2" height="15.2"/><rect data-part="flap" class="gc-flap" width="41.2" height="15.2"/></g>` });
   const PF = G.frameOf([-65, WALL_Y, 44], [0, 1, 0], [1, 0, 0], [0, 0, 1]);
   disc("oven.probe.boss", PF, 0, 2, 2, { tone: "mid" }, { cls: CAV, steps: 12 });
   disc("oven.probe", PF, 2, 18, 0.7, { tone: "hi" }, { cls: CAV, steps: 10 });
 }
 // Rail: sections end in brackets on the outer walls and partition headers.
 // The left section only reaches the parked trolley's bay, behind the door.
-for (const [x0, x1] of [[CASE.x0 + 4, -124], [PL + 3, PR - 3], [PR + 3, CASE.x1 - 4]]) {
+for (const [x0, x1] of [[CASE.x0 + 4, -118], [PL + 3, PR - 3], [PR + 3, CASE.x1 - 4]]) {
   const y = LANE_Y;
   const z = Z.rail;
   disc("rail", G.frameOf([x0, y, z], [1, 0, 0], [0, 1, 0], [0, 0, 1]), 0, x1 - x0, 1, { tone: "hi" }, { steps: 12 });
@@ -289,45 +287,52 @@ for (const [x0, x1] of [[CASE.x0 + 4, -124], [PL + 3, PR - 3], [PR + 3, CASE.x1 
 }
 // Column cages: the wound coil is the mass; the cage is thin wire with two hanger tabs.
 const COILS = [{ x: CX, ch: 0, out: 0 }, { x: CX - BAY, ch: 1, out: 26 }];
-const COIL = { y: LANE_Y, z: Z.cz, rIn: 24.6, rOut: 30, half: 7 };
+const COIL = { y: LANE_Y, z: Z.cz, rIn: 28, rOut: 30, half: 7 };
 for (const coil of COILS) {
   const F = G.frameOf([coil.x, COIL.y, COIL.z], [0, 1, 0], [1, 0, 0], [0, 0, 1]);
   const own = `cage${coil.ch}`;
   const piece = "swap";
   const outer = [];
-  for (let i = 0; i < 12; i++) outer.push(G.arcOf(F, -6.3 + i * 1.15, COIL.rOut, P));
+  for (let i = 0; i < 16; i++) outer.push(G.arcOf(F, -6.4 + i * 0.85, COIL.rOut, P));
   const face = [];
-  for (let i = 0; i < 9; i++) face.push(G.circleOf(F, COIL.half, COIL.rIn + 0.5 + i * 0.58, P, 44));
+  for (let i = 0; i < 3; i++) face.push(G.circleOf(F, COIL.half, COIL.rIn + 0.5 + i * 0.5, P, 44));
   const inner = [];
   for (let i = 0; i < 5; i++) inner.push(G.arcOf(F, -6 + i * 2.6, COIL.rIn, P, { inward: true, least: -0.15 }));
   const mk = (list, base) => list.map((d, i) => `<path class="iso-line gc-turn" data-tone="lo" data-ch="${coil.ch}" data-turn="${base + i}" d="${d}"/>`).join("");
-  ringPart(`coil${coil.ch}`, F, -COIL.half, COIL.half, COIL.rIn, COIL.rOut, { tone: "hi", crease: "lo" }, { owner: own, piece, cls: "coil", extra: mk(outer, 0) + mk(face, 12), under: mk(inner, 21), steps: 40 });
-  // Two thin wire hoops and three cross wires.
-  for (const s of [-COIL.half - 0.7, COIL.half]) ringPart(`cage${coil.ch}.hoop`, F, s, s + 0.7, COIL.rOut, COIL.rOut + 0.8, { tone: "mid" }, { owner: own, piece, steps: 28 });
-  for (const a of [Math.PI * 0.5 + 2.2, Math.PI * 0.5 - 2.2, -Math.PI / 2]) {
-    const o = [coil.x + (COIL.rOut + 1.2) * Math.cos(a), COIL.y, COIL.z + (COIL.rOut + 1.2) * Math.sin(a)];
-    disc(`cage${coil.ch}.wire`, G.frameAlong(o, [0, 1, 0]), -COIL.half - 0.7, COIL.half + 0.7, 0.4, { tone: "mid" }, { owner: own, piece, steps: 8 });
+  ringPart(`coil${coil.ch}`, F, -COIL.half, COIL.half, COIL.rIn, COIL.rOut, { tone: "mid", crease: "faint" }, { owner: own, piece, cls: "coil", extra: mk(outer, 0) + mk(face, 16), under: mk(inner, 19), steps: 40 });
+  // The cage: two thin wire hoops, cross wires, and a spider of wire spokes at the front to a small hub.
+  for (const s of [-COIL.half - 0.5, COIL.half]) ringPart(`cage${coil.ch}.hoop`, F, s, s + 0.5, COIL.rOut, COIL.rOut + 0.6, { tone: "mid" }, { owner: own, piece, steps: 28 });
+  const sy = COIL.y + COIL.half + 0.25;
+  disc(`cage${coil.ch}.hub`, G.frameOf([coil.x, sy, COIL.z], [0, 1, 0], [1, 0, 0], [0, 0, 1]), -0.25, 0.25, 1.5, { tone: "hi" }, { owner: own, piece, steps: 12 });
+  for (const deg of [30, 150, 270]) {
+    const a = (deg * Math.PI) / 180;
+    const u = [Math.cos(a), 0, Math.sin(a)];
+    disc(`cage${coil.ch}.spoke`, G.frameAlong(G.add3([coil.x, sy, COIL.z], G.mul3(u, 1.4)), u), 0, COIL.rOut - 1.4, 0.2, { tone: "mid" }, { owner: own, piece, steps: 6 });
   }
-  const top = Z.rail - 5;
-  box(`cage${coil.ch}.trolley`, [coil.x - 14, COIL.y - 3, top], [coil.x + 14, COIL.y + 3, Z.rail - 1], { tone: "mid" }, { piece, owner: own, extra: screws([[coil.x - 12, COIL.y + 3, top + 2], [coil.x + 12, COIL.y + 3, top + 2]], 0.4) });
-  for (const dx of [-13, 11]) box(`cage${coil.ch}.tab`, [coil.x + dx, COIL.y - 1, COIL.z + 27.95], [coil.x + dx + 2, COIL.y + 1, top], { tone: "lo" }, { piece, owner: own });
-  box(`cage${coil.ch}.arm`, [coil.x + 5, STUB.y + 2, top], [coil.x + 9, COIL.y - 3, top + 2], { tone: "lo" }, { piece, owner: own });
-  box(`cage${coil.ch}.armpost`, [coil.x + 5, STUB.y + 2, top + 2], [coil.x + 9, STUB.y + 6, Z.gate - 3], { tone: "lo" }, { piece, owner: own });
+  for (const a of [Math.PI * 0.5 + 2.2, Math.PI * 0.5 - 2.2, -Math.PI / 2]) {
+    const o = [coil.x + (COIL.rOut + 0.9) * Math.cos(a), COIL.y, COIL.z + (COIL.rOut + 0.9) * Math.sin(a)];
+    disc(`cage${coil.ch}.wire`, G.frameAlong(o, [0, 1, 0]), -COIL.half - 0.5, COIL.half + 0.5, 0.3, { tone: "mid" }, { owner: own, piece, steps: 6 });
+  }
+  const top = Z.rail - 4;
+  box(`cage${coil.ch}.trolley`, [coil.x - 10, COIL.y - 2, top], [coil.x + 10, COIL.y + 2, Z.rail - 1], { tone: "mid" }, { piece, owner: own, extra: screws([[coil.x - 8, COIL.y + 2, top + 1.5], [coil.x + 8, COIL.y + 2, top + 1.5]], 0.35) });
+  for (const dx of [-9, 8]) box(`cage${coil.ch}.tab`, [coil.x + dx, COIL.y - 0.8, COIL.z + 29], [coil.x + dx + 1, COIL.y + 0.8, top], { tone: "lo" }, { piece, owner: own });
+  box(`cage${coil.ch}.arm`, [coil.x + 5, STUB.y + 2, top], [coil.x + 8, COIL.y - 2, top + 1.4], { tone: "lo" }, { piece, owner: own });
+  box(`cage${coil.ch}.armpost`, [coil.x + 5, STUB.y + 2, top + 1.4], [coil.x + 8, STUB.y + 5, Z.gate - 3], { tone: "lo" }, { piece, owner: own });
   box(`cage${coil.ch}.ferrulebar`, [coil.x - 32, STUB.y - 2, Z.gate - 3], [coil.x + 32, STUB.y + 2, Z.gate - 0.15], { tone: "mid" }, { piece, owner: own, extra: screws([[coil.x - 30, STUB.y + 2, Z.gate - 1.5], [coil.x + 30, STUB.y + 2, Z.gate - 1.5]], 0.35) });
   const tail = (name, dx, stubDx, side, kind) => {
-    const startR = COIL.rOut - 0.6;
+    const startR = COIL.rOut - 0.5;
     const start = [coil.x + dx, COIL.y - COIL.half, COIL.z + Math.sqrt(startR * startR - dx * dx)];
-    const cz = start[2] + 4;
+    const cz = start[2] + 3;
     const cx = coil.x + dx + side * 2;
     const pts = [start, [start[0], start[1] - 2.5, start[2]]];
     const yy = start[1] - 3.2;
     for (let i = 0; i <= 18; i++) {
       const a = -Math.PI / 2 + (i / 18) * Math.PI * 2 * side;
-      pts.push([cx + 4.6 * Math.cos(a), yy - (i / 18) * 2.4, cz + 4.6 * Math.sin(a)]);
+      pts.push([cx + 3 * Math.cos(a), yy - (i / 18) * 1.6, cz + 3 * Math.sin(a)]);
     }
     const end = [coil.x + stubDx, STUB.y, Z.gate - 3];
     pts.push([(cx + end[0]) / 2, (yy + STUB.y) / 2, cz + 2], [end[0], STUB.y, end[2] - 5], end);
-    line(name, pts, 0.42, { raw: false, bend: 1.2, shells: [false, true], piece, touch: [own, `cage${coil.ch}*`, `coil${coil.ch}`, "rail", `cage${coil.ch}.ferrulebar`], cls: "tail", attrs: ` data-tail="${coil.ch}" data-seg="${kind}"` });
+    line(name, pts, 0.22, { raw: false, bend: 1, shells: [false, true], piece, touch: [own, `cage${coil.ch}*`, `coil${coil.ch}`, "rail", `cage${coil.ch}.ferrulebar`], cls: "tail", attrs: ` data-tail="${coil.ch}" data-seg="${kind}"` });
   };
   tail(`tail${coil.ch}.in`, -15, -26, -1, "in");
   tail(`tail${coil.ch}.out`, coil.out > 0 ? 16 : -3, coil.out, coil.out > 0 ? 1 : -1, "out");
@@ -498,11 +503,11 @@ const PORTS = { carrier: -92, h2: -18, air: -10, makeup: -2 };
 const LANES = [9, 13, 17, 21];
 const SIDE_X = CASE.x1 + 7;
 const CLAMP_Z = [60, 120];
-box("gas.block", [CASE.x1 + 1, 4, 0], [CASE.x1 + 14, 26, 10], { tone: "mid" }, { bevel: 0.4, extra: screws([[CASE.x1 + 3, 6, 10], [CASE.x1 + 12, 24, 10]]) });
+box("gas.block", [CASE.x1 + 1, 4, 0], [CASE.x1 + 14, 26, 10], { tone: "mid" }, { bevel: 0.4, extra: screws([[CASE.x1 + 3, 6, 10], [CASE.x1 + 12, 24, 10]]) + `<g transform="${xFace(CASE.x1 + 14, 6, 6)}"><text class="gc-engrave gc-small">GAS IN</text></g>` });
 ["carrier", "hydrogen", "air", "makeup"].forEach((name, i) => {
   const y = LANES[i];
   const gaps = CLAMP_Z.map((z) => [z - 10, z - 10 + 3]);
-  line(`feed.${name}`, [[SIDE_X, y, 10], [SIDE_X, y, GAS], [BAR.x1, y, GAS]], 0.7, { bend: 4, gaps, touch: ["clamp*"], bundle: "feed", shells: [false, true] });
+  line(`feed.${name}`, [[SIDE_X, y, 10], [SIDE_X, y, GAS], [BAR.x1, y, GAS]], 0.7, { bend: 4, gaps, touch: ["clamp*"], bundle: "feed" });
 });
 for (const z of CLAMP_Z) {
   box("clamp", [SIDE_X - 1.6, LANES[0] - 2, z], [SIDE_X + 1.6, LANES[3] + 2, z + 3], { tone: "hi" }, { owner: "clamp", bevel: 0.2 });
@@ -529,20 +534,23 @@ const TEE = [PORTS.makeup, 72, GAS];
   box("side.plate", [x, 100, 88], [x + 0.6, 146, 116], { tone: "lo" }, {
     extra: screws([[x + 0.6, 103, 91], [x + 0.6, 143, 91], [x + 0.6, 103, 113], [x + 0.6, 143, 113]]) + Ln([30, 22, 34, 18].map((w, i) => path3([[x + 0.6, 107, 110 - i * 5], [x + 0.6, 107 + w, 110 - i * 5]])).join(""), { tone: "lo", free: true }),
   });
+  // A service hatch with seams and a cooling fan behind a guard, so the right face has its own parts.
+  box("side.hatch", [x, 22, 70], [x + 0.5, 90, 122], { tone: "lo" }, { extra: screws([[x + 0.5, 25, 73], [x + 0.5, 87, 73], [x + 0.5, 25, 119], [x + 0.5, 87, 119]]) + `<g transform="${xFace(x + 0.52, 56, 96)}"><path class="gc-guard" d="M18 0A18 18 0 1 1 -18 0A18 18 0 1 1 18 0ZM12 0A12 12 0 1 1 -12 0A12 12 0 1 1 12 0ZM6 0A6 6 0 1 1 -6 0A6 6 0 1 1 6 0ZM-18 0H18M0 -18V18"/></g>` });
   box("side.inlet", [x, 36, 34], [x + 3, 60, 50], { tone: "mid" }, { r: 0.8, extra: Dots([[41, 42], [48, 42], [55, 42]].map(([y, z]) => at([x + 3, y, z])), { size: 0.7, tone: "lo" }) });
 }
 // Electrometer on the deck; signal leads in, then one cable down the right side to the chart recorder on the bench.
-const EM = { x0: 60, x1: 96, y0: 74, y1: 106, z1: Z.deck + 12 };
+const EM = { x0: 48, x1: 84, y0: 74, y1: 106, z1: Z.deck + 12 };
 {
   const plan = { x: EM.x0, y: EM.y0, w: EM.x1 - EM.x0, d: EM.y1 - EM.y0, r: 0.8 };
   box("electrometer", [EM.x0, EM.y0, Z.deck], [EM.x1, EM.y1, EM.z1], { tone: "mid" }, { r: 0.8, bevel: 0.4, inner: sideSeam(plan, Z.deck + 3), extra: screws(k.corners(plan, 3).map(([x, y]) => [x, y, EM.z1])) + Ln(Array.from({ length: 5 }, (_, i) => k.planOutline({ x: EM.x0 + 6 + i * 5, y: EM.y0 + 7, w: 2.4, d: 18, r: 1 }, EM.z1, P, 3)).join(""), { tone: "lo" }) });
-  box("signal.post", [29, 69, Z.deck], [31, 71, 195.45], { tone: "lo" }, { extra: screws([[30, 71, Z.deck + 3]], 0.3) });
-  line("signal.fid", [[FLAME.x + 6, 100, FID.z1 + 5], [FLAME.x + 6, 100, 196], [FLAME.x + 6, 70, 196], [70, 70, 196], [70, 84, 196], [70, 84, EM.z1]], 0.55, { tone: "lo", bend: 4, shells: [false, true], touch: ["signal.post"] });
+  line("signal.fid", [[FLAME.x + 6, 100, FID.z1 + 5], [FLAME.x + 6, 100, 194], [EM.x0 + 8, 100, 194], [EM.x0 + 8, 100, EM.z1]], 0.45, { tone: "mid", bend: 4, shells: [false, true] });
   line("signal.ecd", [[ECD.x + 14, ECD.y + 2, Z.deck + 22], [ECD.x + 20, ECD.y + 2, Z.deck + 22], [ECD.x + 20, 92, Z.deck + 8], [EM.x0, 92, Z.deck + 8]], 0.55, { tone: "lo", bend: 3, shells: [false, true] });
 }
 
 // ---------- the chart recorder on the bench, in front of the case ----------
-const TILT = { yBot: 248, zBot: 6, yTop: 208, zTop: 46 };
+// The face's slope is chosen so its up direction projects at right angles to the time axis:
+// peaks stand upright on the page instead of shearing (dy/dz = 0.552 at this camera).
+const TILT = { yBot: 241.6, zBot: 6, yTop: 214, zTop: 56 };
 const REC_X = { x0: -146, x1: 146 };
 const eu = G.unit3([0, TILT.yTop - TILT.yBot, TILT.zTop - TILT.zBot]);
 const nv = G.unit3([0, TILT.zTop - TILT.zBot, TILT.yBot - TILT.yTop]);
@@ -551,12 +559,12 @@ const OF = [0, TILT.yBot, TILT.zBot];
 const onFace = (x, v, n = 0) => G.add3(G.add3([x, TILT.yBot, TILT.zBot], G.mul3(eu, v)), G.mul3(nv, n));
 const CF = G.frameOf([0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]);
 {
-  const section = [[TILT.yTop, 0], [TILT.yBot + 3, 0], [TILT.yBot + 3, TILT.zBot], [TILT.yBot, TILT.zBot], [TILT.yTop, TILT.zTop]];
+  const section = [[TILT.yTop - 6, 0], [TILT.yBot + 3, 0], [TILT.yBot + 3, TILT.zBot], [TILT.yBot, TILT.zBot], [TILT.yTop, TILT.zTop], [TILT.yTop - 6, TILT.zTop]];
   const shape = record(A.prism(CF, section, REC_X.x0, REC_X.x1, { name: "recorder.case", ground: true }));
-  put("recorder.case", [0, 215, 8], S(G.prismOf(CF, section, REC_X.x0, REC_X.x1, P), { tone: "hi" }) + screws([[-146, TILT.yBot + 1.5, TILT.zBot], [146, TILT.yBot + 1.5, TILT.zBot]]), [shape]);
+  put("recorder.case", [0, 225, 8], S(G.prismOf(CF, section, REC_X.x0, REC_X.x1, P), { tone: "hi" }) + screws([[-146, TILT.yBot + 1.5, TILT.zBot], [146, TILT.yBot + 1.5, TILT.zBot]]), [shape]);
 }
 const PAPER = { x0: REC_X.x0 + 16, x1: REC_X.x1 - 16, v0: 3, v1: LEN - 3 };
-const PLOT = { x0: PAPER.x0 + 4, x1: PAPER.x1 - 4, z0: PAPER.v0 + 6, z1: PAPER.v1 - 3 };
+const PLOT = { x0: PAPER.x0 + 4, x1: PAPER.x1 - 4, z0: PAPER.v0 + 8, z1: PAPER.v1 - 2 };
 const plotU = (id, t) => PLOT.x0 + (t / M.METHODS[id].end) * (PLOT.x1 - PLOT.x0);
 const plotV = (s) => -(PLOT.z0 + s * (PLOT.z1 - PLOT.z0));
 const paperM = planeMatrix(OF, [1, 0, 0], G.mul3(eu, -1));
@@ -635,9 +643,9 @@ function sheet(id) {
     }
     for (const { p, x } of list) {
       const u = plotU(id, p.t);
-      const top = plotV(p.h + 0.03);
-      const low = y1 + 11;
-      printed.push(`<g class="gc-label" data-label="${p.id}"><path class="gc-leader" d="M${f2(x)} ${f2(low)}L${f2(u)} ${f2(Math.max(low + 1.5, top))}"/><text class="gc-code" transform="translate(${f2(x + 1)} ${f2(low - 0.6)}) rotate(-90)">${p.code}</text></g>`);
+      const top = plotV(p.h + 0.02);
+      const low = top - 2.4;
+      printed.push(`<g class="gc-label" data-label="${p.id}" data-on=""><path class="gc-leader" d="M${f2(x)} ${f2(low)}L${f2(u)} ${f2(top)}"/><text class="gc-code" transform="translate(${f2(x + 1)} ${f2(low - 0.5)}) rotate(-90)">${p.code}</text></g>`);
     }
   }
   const hump = id === "dro" ? `<path class="gc-hump" d="${humpFill()}" clip-path="url(#gc-clip-${id})"/>` : "";
@@ -663,7 +671,7 @@ function sheet(id) {
     disc("recorder.roller", F, 0, LEN - 2, 2, { tone: "hi" }, { steps: 14, bias: 3.2, extra: Faded(G.ribsOf(F, 0, LEN - 2, 2, 10, P, { fade: [0.15, 0.6] }), { tone: "lo" }) });
   }
   const railN = 5;
-  const vRails = [LEN - 4, 4];
+  const vRails = [LEN - 2.4, 1.4];
   for (const v of vRails) {
     const F = G.frameOf(f(REC_X.x0 + 5, v, railN), [1, 0, 0], eu, nv);
     disc("recorder.rail", F, 0, REC_X.x1 - REC_X.x0 - 10, 0.8, { tone: "mid" }, { steps: 10, bias: 3.3 });
@@ -685,7 +693,9 @@ function sheet(id) {
   put("pen.tip", f(u0, PLOT.z0, 2), Ln(path3([f(u0, PLOT.z0, penN), f(u0, PLOT.z0, 0)]), { tone: "lit" }) + Dots([at(f(u0, PLOT.z0, 0))], { size: 1, tone: "hi" }), [record(A.tube([f(u0, PLOT.z0, 0.2), f(u0, PLOT.z0, penN)], 0.3, { name: "pen.tip", owner: "pen.slider" }))], { bias: 3.65 });
 }
 // The signal cable from the electrometer, down the right side, into the recorder's back.
-line("signal.chart", [[EM.x1, 90, 148], [SIDE_X + 6, 90, 148], [SIDE_X + 6, 90, 14], [SIDE_X + 6, TILT.yTop - 8, 14], [120, TILT.yTop - 8, 14], [120, TILT.yTop, 14]], 0.7, { tone: "lo", bend: 5, shells: [true, true] });
+// Clipped to the right face at two heights, it enters the recorder's back through a gland.
+line("signal.chart", [[EM.x1, 96, 148], [CASE.x1 + 5, 96, 148], [CASE.x1 + 5, 96, 14], [CASE.x1 + 5, TILT.yTop - 18, 14], [120, TILT.yTop - 18, 14], [120, TILT.yTop - 6, 14]], 0.9, { tone: "hi", bend: 5, gaps: [] , touch: ["chart.clip"] });
+for (const z of [60, 110]) box("chart.clip", [CASE.x1, 94, z], [CASE.x1 + 4.1, 98, z + 3], { tone: "lo" }, { extra: screws([[CASE.x1 + 4.1, 94.8, z + 1.5]], 0.3) });
 
 // ---------- control panel ----------
 const PANEL = { y: CASE.y1 };
@@ -755,15 +765,18 @@ if (process.argv.includes("--dropped")) console.log(R.settled.solved.dropped.map
 const liftOf = (item) => (item.move ? G.dot3(item.move, V) : 0);
 const groups = R.items.map((item, i) => `<g class="it" data-name="${item.name}" data-k="${item.key.toFixed(2)}"${item.attrs ?? ""}>${item.svg}</g>`).join("");
 const LABEL_TEXT = "A benchtop gas chromatograph, one boxy case with its front top corner cut away over the oven. An autosampler tower stands on top with a syringe over a split/splitless inlet with a knurled septum nut. A stem runs from the inlet through the roof to a wound capillary column on a thin wire cage hanging from a rail, in front of a guarded fan. The outlet pigtail rises to a stem under the flame ionization detector or the electron capture cell, which carries a Ni-63 radiation plate. Labelled gas bulkheads feed the deck. The unused column waits unseen in a cold bay behind the case front. A dial and method selector are on the front panel, and a chart recorder on the bench draws the chromatogram.";
-const svg = k.figureSvg({ width: W, height: H, label: LABEL_TEXT, className: "gc-svg", body: [...back, `<g class="gc-items">${groups}</g>`] });
+const svg = k.figureSvg({ width: W, height: H, label: LABEL_TEXT, className: "gc-svg", body: [...back, `<g class="gc-items">${groups}</g>`, `<g class="gc-packets" data-part="packets"></g>`] });
 const corners = [[WIN.x0 - 3, WIN.y1, WIN.z0 - 3], [WIN.x1 + 3, WIN.y1, WIN.z0 - 3], [WIN.x1 + 3, WIN.y1, WIN.z1 + 3], [WIN.x0 - 3, WIN.y1, WIN.z1 + 3], [FLAME.x - 12, FLAME.y, WIN.z0], [FLAME.x + 12, FLAME.y, WIN.z1]].map(at);
 const bx0 = Math.floor(Math.min(...corners.map((c) => c[0])));
 const by0 = Math.floor(Math.min(...corners.map((c) => c[1])));
 const bx1 = Math.ceil(Math.max(...corners.map((c) => c[0])));
 const by1 = Math.ceil(Math.max(...corners.map((c) => c[1])));
 const camera = glCamera(P);
+// Where a compound travels after it leaves the coil: outlet pigtail, stem through the roof, into the detector.
+const flowOf = (name, shift, x, end) => [...R.routes.find((r) => r.name === name).points.map((p) => [p[0] + shift, p[1], p[2]]), [x, STUB.y, Z.gate], [x, STUB.y, Z.deck], end].map((p) => at(p).map(f2));
+const FLOWS = { dro: flowOf("tail0.out", 0, STUB.fid, [FLAME.x, FLAME.y, FLAME.jetTop]), haa: flowOf("tail1.out", BAY, STUB.ecd, [ECD.x, ECD.y, Z.deck + 24]) };
 const DATA = {
-  P, MOVES,
+  P, MOVES, FLOWS,
   G: { PLOT, KNOB, ky: PANEL.y, knobR: KNOB.r, u0: plotU("dro", 0), eu, TRAY: 10, PLUNGER: 6.5, TRAVEL: -MOVES.sampler[2] },
   gl: { box: [bx0, by0, bx1 - bx0, by1 - by0], camera: { ...camera, origin: [camera.origin[0] - bx0, camera.origin[1] - by0] }, flame: FLAME, win: WIN },
 };
@@ -771,8 +784,9 @@ const CSS = readFileSync(join(HERE, "gc.css"), "utf8");
 const modelSource = readFileSync(join(HERE, "gc-model.mjs"), "utf8").replace(/^export /gm, "").replace(/if \(typeof process[\s\S]*$/, "");
 const LIVE = readFileSync(join(HERE, "live.js"), "utf8").replace("__DATA__", JSON.stringify(DATA));
 const zoom = `<svg class="gc-zoom" viewBox="${PLOT.x0 - 3} ${f2(plotV(1) - 2)} ${PLOT.x1 - PLOT.x0 + 6} ${f2(plotV(0) - plotV(1) + 8)}" aria-hidden="true"><use class="gc-zu" data-z="dro" href="#gc-print-dro"/><use class="gc-zu" data-z="haa" href="#gc-print-haa"/><use href="#gc-tag"/></svg>`;
+const OVERLAY = "";
 const stageHtml = `<div class="iso-stage gc-stage" data-gc tabindex="0" role="group" aria-label="Gas chromatograph. Press I, or Inject, to run the selected method. Press M to swap the column and detector for the other method. Left and right arrows step through the peaks on the chart.">${svg}<canvas class="gc-flame" aria-hidden="true" style="left:${f2((bx0 / W) * 100)}%;top:${f2((by0 / H) * 100)}%;width:${f2(((bx1 - bx0) / W) * 100)}%;height:${f2(((by1 - by0) / H) * 100)}%"></canvas><span class="gc-sr" role="status" aria-live="polite" data-status></span></div>${zoom}<div class="gc-controls"><div class="gc-seg" role="group" aria-label="Method"><button type="button" data-method="dro" aria-pressed="true">8015-style · FID</button><button type="button" data-method="haa" aria-pressed="false">552.3 · ECD</button></div><div class="gc-steps"><button type="button" data-step="-1" aria-label="Previous peak">‹ peak</button><button type="button" data-step="1" aria-label="Next peak">peak ›</button></div><button type="button" class="gc-inject" data-inject>Inject</button></div><p class="gc-name" data-gc-name></p>`;
-const CAPTION = "A computed figure, not instrument data. A lab would normally run these two methods on separate instruments, because a 400 °C program exceeds the limit typical for the 552.3 column's phase. They share one chassis here for comparison: the selector racks the chosen column into the oven and the other waits behind a gate in an unheated bay. The left trace is composite, not one injection: an n-alkane ladder from C10 to C40, a diesel hump and an oil hump, with o-terphenyl as surrogate. Its conditions are a vendor's, from a published DRO/ORO standard (40 to 400 °C at 19.6 °C/min, hydrogen carrier, 50:1 split), not EPA 8015D's own 45 to 275 °C program. EPA 8015D defines DRO as C10 to C28. Other carbon windows vary by regulator and lab; this figure shows C28 to C40 as one lab report does. C10 to C18 are that standard's tabulated times. C40 is read off its plot, and other times come from a fitted retention model, so they read \"about\". Hump shapes and these heights are illustrative. The 552.3 trace uses EPA's Table 1 times and oven program for its primary column, with heights read from its Figure 1. It shows ten analyte esters (nine haloacetic acids and dalapon), with 2-bromobutanoic acid as surrogate and 1,2,3-trichloropropane as internal standard; samples are extracted into MTBE and heated in acidic methanol. Unlabelled peaks are omitted. Runs play at 1.5 run-minutes per second.";
+const CAPTION = "A computed figure, not instrument data. A lab would normally run these two methods on separate instruments, because a 400 °C program exceeds the limit typical for the 552.3 column's phase. They share one chassis here for comparison: the selector racks the chosen column into the oven and the other waits behind a gate in an unheated bay. The left trace is composite, not one injection: an n-alkane ladder from C10 to C40, a diesel hump and an oil hump, with o-terphenyl as surrogate. Its conditions are a vendor's, from a published DRO/ORO standard (40 to 400 °C at 19.6 °C/min, hydrogen carrier, 50:1 split), not EPA 8015D's own 45 to 275 °C program. EPA 8015D defines DRO as C10 to C28. Other carbon windows vary by regulator and lab; this figure shows C28 to C40 as one lab report does. C10 to C18 are that standard's tabulated times. C40 is read off its plot, and other times come from a fitted retention model, so they read \"about\". Hump shapes and these heights are illustrative. The 552.3 trace uses EPA's Table 1 times, oven program and helium carrier for its primary column, with heights read from its Figure 1. It shows ten analyte esters (nine haloacetic acids and dalapon), with 2-bromobutanoic acid as surrogate and 1,2,3-trichloropropane as internal standard; samples are extracted into MTBE and heated in acidic methanol. Unlabelled peaks are omitted. Runs play at 1.5 run-minutes per second.";
 function write(theme) {
   const body = `<style>${CSS}</style><div class="gc-root" data-gc-root>` + k.plateHtml({
     fig: "Fig 5",

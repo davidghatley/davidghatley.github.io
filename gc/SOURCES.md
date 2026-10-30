@@ -15,6 +15,7 @@ URL: https://www.nemi.gov/methods/method_pdf/7229 (text extracted from the PDF a
 | Elution order and times: MCAA 9.29, MBAA 14.19, dalapon 14.69, DCAA 15.07, TCAA 18.89, IS 20.69, BCAA 21.22, SUR 21.63, BDCAA 23.60, DBAA 24.01, CDBAA 25.55, TBAA 26.88 min | Table 1, primary column (DB-1701, 14% cyanopropylphenyl-methylpolysiloxane, 30 m x 0.25 mm, 0.25 µm), MTBE |
 | Oven: 40 °C for 10 min, 2.5 °C/min to 65, 10 °C/min to 85, 20 °C/min to 205, hold 7 min | Table 1 |
 | 1 µL injection | Table 1 |
+| Helium carrier on the 552.3 run | Table 1 ("Helium (UHP)"). The bulkhead is labelled CARRIER with no gas named, because the 8015-style run uses hydrogen. |
 | Relative peak heights, tallest scaled to 70% of the sheet | Read by eye from Figure 1, counts above baseline. Approximate. Figure 1's unlabelled peaks and bromoform are omitted (caption says so). |
 
 Peak names as methyl esters (for example "methyl chloroacetate" for MCAA) follow from the derivatization. The internal standard is not derivatized. The name of each ester is my naming from the parent acid; the method lists the acids.
@@ -33,7 +34,7 @@ URL: https://19january2021snapshot.epa.gov/sites/static/files/2015-12/documents/
 | Unresolved complex mixture, "hump" | Sec. 11.11 |
 | Horizontal baseline between C10 and C28 (the shaded area on the strip) | Sec. 11.11.1 |
 
-Note: 8015D's own DRO program (45 °C to 275 °C at 12 °C/min, hold 12 min, Sec. 11.2.4) stops too cool to be the program for a C40 marker, so the figure does not use it. It uses the vendor program below, and labels it "8015-style, vendor conditions", never EPA 8015.
+Note: 8015D's own DRO program (45 °C to 275 °C at 12 °C/min, hold 12 min, Sec. 11.2.4) is one I judged too cool to carry a C40 marker (my judgement, not a statement in the method), so the figure does not use it. It uses the vendor program below, and labels it "8015-style, vendor conditions", never EPA 8015.
 
 ## The 8015-style channel: program and anchor times
 URL: https://ez.restek.com/images/cgram/gc_ev1380.pdf ("DRO/ORO Calibration Standard", GC_EV1380, text and plot read directly)
@@ -59,14 +60,18 @@ The trace is a composite, not one injection, and the caption says so.
 - Elution position: retention indices 1886 (HP-5MS) and 1903 (DB-5) from the NIST WebBook, https://webbook.nist.gov/cgi/cbook.cgi?ID=C84151&Units=SI&Mask=2000 . The model places it at carbon number 18.9. Modelled, shown as "about".
 
 ## Why one column at a time
-Upper temperature limit typical for this phase, about 280/300 °C (isothermal/programmed): vendor catalog listing for a 0.25/0.32 mm column, https://chromtech.com/123-0732e-5cg-db-1701-30m-032mm-025um (the exact 30 m x 0.25 mm x 0.25 µm part was not checked). A 400 °C program would exceed it, so the figure never heats both columns: the selector racks one into the oven and the other waits in an unheated bay behind the case front. The caption says a lab would normally run these on separate instruments, and that the shared chassis is for comparison. The rack, shuttle, gates and bays are invented for the figure, not a real instrument feature.
+Upper temperature limit typical for this phase, about 280/300 °C (isothermal/programmed): vendor catalog listings. Search results show -20 to 280/300 °C for https://chromtech.com/122-0731-db-1701-30m-025mm-015um (30 m x 0.25 mm, 0.15 µm film) and the 0.32 mm entries. The pages refused direct fetches, so this rests on the search result text, and the exact 0.25 µm part was not checked. A 400 °C program would exceed it, so the figure never heats both columns: the selector racks one into the oven and the other waits in an unheated bay behind the case front. The caption says a lab would normally run these on separate instruments, and that the shared chassis is for comparison. The rack, shuttle, gates and bays are invented for the figure, not a real instrument feature.
 
 ## Illustrative, with no source
 - Diesel and oil hump shapes and the small unresolved peaks (seeded pseudo-random, placed by carbon number).
-- 8015-style peak heights and all peak widths.
+- 8015-style peak heights and all peak widths (drawn narrow, but wider than a real capillary peak so they show at this scale).
 - Oven cooldown rate after a run.
 - The swap mechanism, the autosampler's motion and the number of drawn windings.
-- Ni-63 plate on the ECD: a cue. EPA 552.3 names a micro ECD but not an isotope.
+- Ni-63 plate on the ECD: a cue only, not a sourced statement. EPA 552.3 names a micro ECD but not an isotope. Grey until the ECD is selected.
+- "A lab would normally run these on separate instruments": my reasoning from the column limit, not a sourced statement.
+- Peak heights on the 552.3 sheet and the C40 mark on the vendor plot are by-eye readings.
+- The packet that travels from coil to detector, and its timing lead of 0.95 run-minutes, is a drawing device, not a modelled transfer time.
+- The 60 °C threshold before a column swap is a figure rule, not a sourced value.
 - Gas line layout. FID makeup is drawn through a tee shared with the ECD; the actual makeup gas differs by method (nitrogen in the vendor note, 95% Ar/5% CH4 in EPA 552.3 Table 1) and the figure does not label it.
 
 ## Not on the figure
