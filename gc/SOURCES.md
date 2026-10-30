@@ -60,7 +60,7 @@ The trace is a composite, not one injection, and the caption says so.
 - Elution position: retention indices 1886 (HP-5MS) and 1903 (DB-5) from the NIST WebBook, https://webbook.nist.gov/cgi/cbook.cgi?ID=C84151&Units=SI&Mask=2000 . The model places it at carbon number 18.9. Modelled, shown as "about".
 
 ## Why one column at a time
-Upper temperature limit typical for this phase, about 280/300 °C (isothermal/programmed): vendor catalog listings. Search results show -20 to 280/300 °C for https://chromtech.com/122-0731-db-1701-30m-025mm-015um (30 m x 0.25 mm, 0.15 µm film) and the 0.32 mm entries. The pages refused direct fetches, so this rests on the search result text, and the exact 0.25 µm part was not checked. A 400 °C program would exceed it, so the figure never heats both columns: the selector racks one into the oven and the other waits in an unheated bay behind the case front. The caption says a lab would normally run these on separate instruments, and that the shared chassis is for comparison. The rack, shuttle, gates and bays are invented for the figure, not a real instrument feature.
+Upper temperature limit typical for this phase, about 280/300 °C (isothermal/programmed): vendor catalog listings. Search results show -20 to 280/300 °C for https://chromtech.com/122-0731-db-1701-30m-025mm-015um (30 m x 0.25 mm, 0.15 µm film) and the 0.32 mm entries. The pages refused direct fetches, so this rests on the search result text, and the exact 0.25 µm part was not checked. A 400 °C program would exceed it, so the figure never heats both columns: the selector racks one into the oven and the other waits in an unheated bay behind the case front. The caption says the methods are shown on one chassis for comparison. The rack, shuttle, gates and bays are invented for the figure, not a real instrument feature.
 
 ## Illustrative, with no source
 - Diesel and oil hump shapes and the small unresolved peaks (seeded pseudo-random, placed by carbon number).
@@ -69,7 +69,7 @@ Upper temperature limit typical for this phase, about 280/300 °C (isothermal/pr
 - The column bleed rise above about 290 °C on the 8015-style trace.
 - The swap mechanism, the autosampler's motion and the number of drawn windings.
 - Ni-63 plate on the ECD: a cue only, not a sourced statement. EPA 552.3 names a micro ECD but not an isotope. Grey until the ECD is selected.
-- "A lab would normally run these on separate instruments": my reasoning from the column limit, not a sourced statement.
+- "Shown on one chassis for comparison": the shared chassis is a drawing choice; the separate-instrument point is my understanding, not sourced, and is no longer stated in the caption.
 - Peak heights on the 552.3 sheet and the C40 mark on the vendor plot are by-eye readings.
 - The packet that travels from coil to detector, and its timing lead of 0.95 run-minutes, is a drawing device, not a modelled transfer time.
 - The 60 °C threshold before a column swap is a figure rule, not a sourced value.

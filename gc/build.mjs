@@ -307,9 +307,9 @@ for (const coil of COILS) {
   for (const deg of [30, 150, 270]) {
     const a = (deg * Math.PI) / 180;
     const u = [Math.cos(a), 0, Math.sin(a)];
-    disc(`cage${coil.ch}.spoke`, G.frameAlong(G.add3([coil.x, sy, COIL.z], G.mul3(u, 1.4)), u), 0, COIL.rOut - 1.4, 0.25, { tone: "mid" }, { owner: own, piece, steps: 6 });
+    disc(`cage${coil.ch}.spoke`, G.frameAlong(G.add3([coil.x, sy, COIL.z], G.mul3(u, 1.4)), u), 0, COIL.rOut - 1.4, 0.45, { tone: "hi" }, { owner: own, piece, steps: 10 });
   }
-  for (const a of [Math.PI * 0.5 + 2.2, Math.PI * 0.5 - 2.2, -Math.PI / 2]) {
+  for (const a of [(65 * Math.PI) / 180, (190 * Math.PI) / 180, (320 * Math.PI) / 180]) {
     const o = [coil.x + (COIL.rOut + 1.1) * Math.cos(a), COIL.y, COIL.z + (COIL.rOut + 1.1) * Math.sin(a)];
     disc(`cage${coil.ch}.wire`, G.frameAlong(o, [0, 1, 0]), -COIL.half - 0.5, COIL.half + 0.5, 0.3, { tone: "mid" }, { owner: own, piece, steps: 6 });
   }
@@ -348,7 +348,8 @@ for (const [name, x] of [["inlet", STUB.inlet], ["fid", STUB.fid], ["ecd", STUB.
   const F = G.frameOf([inlet.x, inlet.y, Z.deck], [0, 0, 1], [1, 0, 0], [0, 1, 0]);
   const fy = inlet.y + 12;
   const plan = { x: inlet.x - 12, y: inlet.y - 12, w: 24, d: 24, r: 0.8 };
-  const liner = `<g transform="${yFace(inlet.x, fy, Z.deck + 9)}"><rect class="gc-liner-win" x="-5" y="-6" width="10" height="12" rx=".6"/><rect class="gc-liner" x="-1.6" y="-6" width="3.2" height="12"/><circle data-part="vapour" class="gc-vapour" r="1.2" opacity="0"/></g>`;
+  // A sight window on the glass liner: the vapour cloud shows here at injection.
+  const liner = `<g transform="${yFace(inlet.x, fy, Z.deck + 9)}"><rect class="gc-liner-win" x="-5" y="-6" width="10" height="9" rx=".6"/><rect class="gc-liner" x="-1.8" y="-6" width="3.6" height="9"/><rect class="gc-wool" x="-1.8" y="-1.6" width="3.6" height="1.8"/><circle data-part="vapour" class="gc-vapour" r="1.2" opacity="0"/><text class="gc-engrave gc-small" y="6" text-anchor="middle">LINER</text></g>`;
   box("inlet.block", [plan.x, plan.y, Z.deck], [plan.x + 24, plan.y + 24, Z.deck + 16], { tone: "mid" }, { r: 0.8, bevel: 0.4, extra: liner + Dots([[-10, -10], [10, -10], [-10, 10], [10, 10]].map(([dx, dy]) => at([inlet.x + dx, inlet.y + dy, Z.deck + 16])), { size: 0.5, tone: "hi" }) });
   disc("inlet.body", F, 16, 26, 8.4, { tone: "hi" }, { steps: 40, inner: Ln(G.arcOf(F, 18.5, 8.4, P) + G.arcOf(F, 21, 8.4, P) + G.arcOf(F, 23.5, 8.4, P), { tone: "faint" }) });
   disc("inlet.shoulder", F, 26, 28, 5.6, { tone: "mid" }, { steps: 28 });
@@ -450,11 +451,11 @@ const SY = INLET.y;
     + Ln(opening, { tone: "mid" })
     + screws([[f.x0 + 2, y1, Z.deck + 2], [f.x1 - 2, y1, Z.deck + 2], [f.x0 + 2, y1, f.z1 - 2], [f.x1 - 2, y1, f.z1 - 2]]);
   put("fid", [FLAME.x, 100, 160], svg, [record(A.slab(plan, Z.deck, f.z1 - Z.deck, { name: "fid" }, 2))]);
-  const CH = G.frameOf([FLAME.x - 4, 94, f.z1], [0, 0, 1], [1, 0, 0], [0, 1, 0]);
+  const CH = G.frameOf([FLAME.x - 7, 94, f.z1], [0, 0, 1], [1, 0, 0], [0, 1, 0]);
   disc("fid.chimney", CH, 0, 12, 3, { tone: "hi" }, { steps: 24, inner: Ln(G.arcOf(CH, 4, 3, P), { tone: "faint" }) });
   disc("fid.chimneycap", CH, 12, 14, 4.2, { tone: "mid" }, { steps: 24 });
-  const PLG = G.frameOf([FLAME.x + 6, 100, f.z1], [0, 0, 1], [1, 0, 0], [0, 1, 0]);
-  disc("fid.insulator", PLG, 0, 5, 2.4, { tone: "hi" }, { steps: 20, inner: Ln(G.arcOf(PLG, 2.5, 2.4, P), { tone: "lo" }) });
+  const PLG = G.frameOf([FLAME.x + 6, 104, f.z1], [0, 0, 1], [1, 0, 0], [0, 1, 0]);
+  disc("fid.insulator", PLG, 0, 3, 2.4, { tone: "hi" }, { steps: 20, inner: Ln(G.arcOf(PLG, 1.5, 2.4, P), { tone: "lo" }) });
 }
 {
   const e = ECD;
@@ -481,10 +482,10 @@ const SY = INLET.y;
 // ---------- gas: a labelled bulkhead bar at the back of the deck ----------
 const BAR = { x0: -104, x1: 60, y0: 4, y1: 26, z1: Z.deck + 18 };
 const GAS = Z.deck + 8;
-const PORTS = { carrier: -92, h2: -18, air: -10, makeup: -2 };
+const PORTS = { carrier: -92, h2: -9, air: -3, makeup: 3 };
 {
   const plan = { x: BAR.x0, y: BAR.y0, w: BAR.x1 - BAR.x0, d: BAR.y1 - BAR.y0, r: 0.8 };
-  const labels = [["CARRIER", PORTS.carrier + 6, 0], ["H2", PORTS.h2, 0], ["AIR", PORTS.air, 0], ["MAKEUP", PORTS.makeup + 12, 0]];
+  const labels = [["CARRIER", PORTS.carrier + 6, 0], ["H2", PORTS.h2 - 2, 0], ["AIR", PORTS.air + 1, 0], ["MAKEUP", PORTS.makeup + 12, 0]];
   const text = labels.map(([t, x]) => `<text class="gc-engrave gc-port" x="${x}" y="${-(GAS + 5.6)}" text-anchor="middle">${t}</text>`).join("");
   box("bar", [BAR.x0, BAR.y0, Z.deck], [BAR.x1, BAR.y1, BAR.z1], { tone: "mid" }, {
     r: 0.8, bevel: 0.5, inner: sideSeam(plan, Z.deck + 3),
@@ -511,10 +512,13 @@ for (const z of CLAMP_Z) {
   box("clamp.arm", [CASE.x1, 13, z], [SIDE_X - 1.6, 17, z + 3], { tone: "lo" });
 }
 // Carrier to the inlet, split vent to the trap, hydrogen and air into the FID, makeup through a tee to both detectors.
-line("carrier", [[PORTS.carrier, BAR.y1, GAS], [PORTS.carrier, 92, GAS], [INLET.x - 12, 92, GAS]], 0.9, { bend: 5, tone: "hi" });
-line("vent", [[INLET.x - 12, 108, GAS], [TRAP.x + 12, 108, GAS]], 0.7, { bend: 3, tone: "mid" });
-line("fid.h2", [[PORTS.h2, BAR.y1, GAS], [PORTS.h2, FID.y0, GAS]], 0.9);
-line("fid.air", [[PORTS.air, BAR.y1, GAS], [PORTS.air, FID.y0, GAS]], 0.9);
+line("carrier", [[PORTS.carrier, BAR.y1, GAS], [PORTS.carrier, 92, GAS], [INLET.x - 13.6, 92, GAS]], 0.9, { bend: 5, tone: "hi" });
+for (const y of [92, 108]) disc("inlet.port", G.frameAlong([INLET.x - 12, y, GAS], [-1, 0, 0]), 0, 1.6, 2.4, { tone: "mid" }, { steps: 16 });
+line("vent", [[INLET.x - 13.6, 108, GAS], [TRAP.x + 12, 108, GAS]], 0.7, { bend: 3, tone: "mid" });
+// Hydrogen and air rise and enter a manifold on the FID's roof, in plain sight above the ECD.
+const MAN = { x0: -12, x1: 0, y0: FID.y0, y1: FID.y0 + 8, z0: FID.z1, z1: FID.z1 + 8 };
+box("fid.manifold", [MAN.x0, MAN.y0, MAN.z0], [MAN.x1, MAN.y1, MAN.z1], { tone: "mid" }, { bevel: 0.3, extra: screws([[MAN.x0 + 1.4, MAN.y0 + 4, MAN.z1], [MAN.x1 - 1.4, MAN.y0 + 4, MAN.z1]], 0.35) });
+for (const [name, x] of [["fid.h2", PORTS.h2], ["fid.air", PORTS.air]]) line(name, [[x, BAR.y1, GAS], [x, 66, GAS], [x, 66, FID.z1 + 4], [x, MAN.y0, FID.z1 + 4]], 0.8, { bend: 5 });
 const TEE = [PORTS.makeup, 72, GAS];
 {
   const r = 2.2;
@@ -522,7 +526,9 @@ const TEE = [PORTS.makeup, 72, GAS];
   put("tee", TEE, S(G.sphereOf(TEE, r, P, { steps: 20 }), { tone: "hi" }), [record(A.ball(TEE, r, { name: "tee" }))]);
   const rim = Math.sqrt(r * r - 0.81);
   line("makeup", [[TEE[0], BAR.y1, GAS], [TEE[0], TEE[1] - rim, GAS]], 0.9, { shells: [true, false], ends: [true, false], touch: ["tee"] });
-  line("makeup.fid", [[TEE[0], TEE[1] + rim, GAS], [TEE[0], FID.y0, GAS]], 0.9, { shells: [false, true], ends: [false, true], touch: ["tee"] });
+  // Makeup goes through the gap to a port at the jet base, on the FID's front below the window.
+  box("fid.port", [PORTS.makeup - 7.4, FID.y1, Z.deck + 2], [PORTS.makeup - 3.6, FID.y1 + 0.8, Z.deck + 5.4], { tone: "mid" });
+  line("makeup.fid", [[TEE[0], TEE[1] + rim, GAS], [TEE[0], FID.y1 + 6, GAS], [TEE[0], FID.y1 + 6, Z.deck + 3.7], [PORTS.makeup - 5.5, FID.y1 + 6, Z.deck + 3.7], [PORTS.makeup - 5.5, FID.y1 + 0.8, Z.deck + 3.7]], 0.5, { shells: [false, true], ends: [false, true], touch: ["tee", "fid", "ecd.block"], bend: 1.6 });
   line("makeup.ecd", [[TEE[0] + rim, TEE[1], GAS], [ECD.x, TEE[1], GAS], [ECD.x, ECD.y - 12, GAS]], 0.9, { shells: [false, true], ends: [false, true], touch: ["tee"], bend: 4 });
 }
 // Right side: rating plate and mains inlet with a cable gland.
@@ -540,7 +546,7 @@ const EM = { x0: 48, x1: 84, y0: 74, y1: 106, z1: Z.deck + 12 };
 {
   const plan = { x: EM.x0, y: EM.y0, w: EM.x1 - EM.x0, d: EM.y1 - EM.y0, r: 0.8 };
   box("electrometer", [EM.x0, EM.y0, Z.deck], [EM.x1, EM.y1, EM.z1], { tone: "mid" }, { r: 0.8, bevel: 0.4, inner: sideSeam(plan, Z.deck + 3), extra: screws(k.corners(plan, 3).map(([x, y]) => [x, y, EM.z1])) + Ln(Array.from({ length: 5 }, (_, i) => k.planOutline({ x: EM.x0 + 6 + i * 5, y: EM.y0 + 7, w: 2.4, d: 18, r: 1 }, EM.z1, P, 3)).join(""), { tone: "lo" }) });
-  line("signal.fid", [[FLAME.x + 6, 100, FID.z1 + 5], [FLAME.x + 6, 100, 194], [EM.x0 + 8, 100, 194], [EM.x0 + 8, 100, EM.z1]], 0.45, { tone: "mid", bend: 4, shells: [false, true] });
+  line("signal.fid", [[FLAME.x + 6, 104, FID.z1 + 3], [FLAME.x + 6, 104, 190], [EM.x0 + 8, 104, 190], [EM.x0 + 8, 104, EM.z1]], 0.3, { tone: "lo", bend: 2, shells: [false, false] });
   line("signal.ecd", [[ECD.x + 14, ECD.y + 2, Z.deck + 22], [ECD.x + 20, ECD.y + 2, Z.deck + 22], [ECD.x + 20, 92, Z.deck + 8], [EM.x0, 92, Z.deck + 8]], 0.55, { tone: "lo", bend: 3, shells: [false, true] });
 }
 
@@ -669,7 +675,7 @@ function sheet(id) {
   const RF = (x, n) => G.frameOf(f(x, 1, n), eu, [1, 0, 0], nv);
   for (const x of [PAPER.x0 - 4, PAPER.x1 + 4]) {
     const F = RF(x, 2.6);
-    disc("recorder.roller", F, 0, LEN - 2, 2, { tone: "hi" }, { steps: 14, bias: 3.2, extra: Faded(G.ribsOf(F, 0, LEN - 2, 2, 10, P, { fade: [0.15, 0.6] }), { tone: "lo" }) });
+    disc("recorder.roller", F, 2, LEN - 6, 2, { tone: "hi" }, { steps: 14, bias: 3.2, extra: Faded(G.ribsOf(F, 4, LEN - 9, 2, 10, P, { fade: [0.15, 0.6], seams: true }), { tone: "lo" }) });
   }
   const railN = 5;
   const vRails = [LEN - 2.4, 1.4];
@@ -766,7 +772,9 @@ if (process.argv.includes("--dropped")) console.log(R.settled.solved.dropped.map
 const liftOf = (item) => (item.move ? G.dot3(item.move, V) : 0);
 const groups = R.items.map((item, i) => `<g class="it" data-name="${item.name}" data-k="${item.key.toFixed(2)}"${item.attrs ?? ""}>${item.svg}</g>`).join("");
 const LABEL_TEXT = "A benchtop gas chromatograph, one boxy case with its front top corner cut away over the oven. An autosampler tower stands on top with a syringe over a split/splitless inlet with a knurled septum nut. A stem runs from the inlet through the roof to a wound capillary column on a thin wire cage hanging from a rail, in front of a guarded fan. The outlet pigtail rises to a stem under the flame ionization detector or the electron capture cell, which carries a Ni-63 radiation plate. Labelled gas bulkheads feed the deck. The unused column waits unseen in a cold bay behind the case front. A dial and method selector are on the front panel, and a chart recorder on the bench draws the chromatogram.";
-const svg = k.figureSvg({ width: W, height: H, label: LABEL_TEXT, className: "gc-svg", body: [...back, `<g class="gc-items">${groups}</g>`, `<g class="gc-packets" data-part="packets"></g>`] });
+// Arrival rings lie in the plane they belong to: the FID's window, clipped to it, and the ECD cell's front.
+const RINGS = `<clipPath id="gc-ring-clip"><path d="${path3([[WIN.x0, WIN.y1, WIN.z0], [WIN.x1, WIN.y1, WIN.z0], [WIN.x1, WIN.y1, WIN.z1], [WIN.x0, WIN.y1, WIN.z1]], true)}"/></clipPath><g clip-path="url(#gc-ring-clip)" class="gc-packets"><g transform="${yFace(FLAME.x, FLAME.y, FLAME.jetTop + 3)}"><circle data-ring="dro" class="gc-ring" opacity="0"/></g></g><g class="gc-packets" transform="${yFace(ECD.x, ECD.y + 9, Z.deck + 22)}"><circle data-ring="haa" class="gc-ring" opacity="0"/></g>`;
+const svg = k.figureSvg({ width: W, height: H, label: LABEL_TEXT, className: "gc-svg", body: [...back, `<g class="gc-items">${groups}</g>`, `<g class="gc-packets" data-part="packets"></g>`, RINGS] });
 const corners = [[WIN.x0 - 3, WIN.y1, WIN.z0 - 3], [WIN.x1 + 3, WIN.y1, WIN.z0 - 3], [WIN.x1 + 3, WIN.y1, WIN.z1 + 3], [WIN.x0 - 3, WIN.y1, WIN.z1 + 3], [FLAME.x - 12, FLAME.y, WIN.z0], [FLAME.x + 12, FLAME.y, WIN.z1]].map(at);
 const bx0 = Math.floor(Math.min(...corners.map((c) => c[0])));
 const by0 = Math.floor(Math.min(...corners.map((c) => c[1])));
@@ -787,7 +795,7 @@ const LIVE = readFileSync(join(HERE, "live.js"), "utf8").replace("__DATA__", JSO
 const zoom = `<svg class="gc-zoom" viewBox="${PLOT.x0 - 3} ${f2(plotV(1) - 2)} ${PLOT.x1 - PLOT.x0 + 6} ${f2(plotV(0) - plotV(1) + 8)}" aria-hidden="true"><use class="gc-zu" data-z="dro" href="#gc-print-dro"/><use class="gc-zu" data-z="haa" href="#gc-print-haa"/><use href="#gc-tag"/></svg>`;
 const OVERLAY = "";
 const stageHtml = `<div class="iso-stage gc-stage" data-gc tabindex="0" role="group" aria-label="Gas chromatograph. Press I, or Inject, to run the selected method. Press M to swap the column and detector for the other method. Left and right arrows step through the peaks on the chart.">${svg}<canvas class="gc-flame" aria-hidden="true" style="left:${f2((bx0 / W) * 100)}%;top:${f2((by0 / H) * 100)}%;width:${f2(((bx1 - bx0) / W) * 100)}%;height:${f2(((by1 - by0) / H) * 100)}%"></canvas><span class="gc-sr" role="status" aria-live="polite" data-status></span></div>${zoom}<div class="gc-controls"><div class="gc-seg" role="group" aria-label="Method"><button type="button" data-method="dro" aria-pressed="true">8015-style · FID</button><button type="button" data-method="haa" aria-pressed="false">552.3 · ECD</button></div><div class="gc-steps"><button type="button" data-step="-1" aria-label="Previous peak">‹ peak</button><button type="button" data-step="1" aria-label="Next peak">peak ›</button></div><button type="button" class="gc-inject" data-inject>Inject</button></div><p class="gc-name" data-gc-name></p>`;
-const CAPTION = "A computed figure, not instrument data. A lab would normally run these two methods on separate instruments, because a 400 °C program exceeds the limit typical for the 552.3 column's phase. They share one chassis here for comparison: the selector racks the chosen column into the oven and the other waits behind a gate in an unheated bay. The left trace is composite, not one injection: an n-alkane ladder from C10 to C40, a diesel hump and an oil hump, with o-terphenyl as surrogate. Its conditions are a vendor's, from a published DRO/ORO standard (40 to 400 °C at 19.6 °C/min, hydrogen carrier, 50:1 split), not EPA 8015D's own 45 to 275 °C program. EPA 8015D defines DRO as C10 to C28. Other carbon windows vary by regulator and lab; this figure shows C28 to C40 as one lab report does. C10 to C18 are that standard's tabulated times. C40 is read off its plot, and other times come from a fitted retention model, so they read \"about\". Hump shapes and these heights are illustrative. The 552.3 trace uses EPA's Table 1 times, oven program and helium carrier for its primary column, with heights read from its Figure 1. It shows ten analyte esters (nine haloacetic acids and dalapon), with 2-bromobutanoic acid as surrogate and 1,2,3-trichloropropane as internal standard; samples are extracted into MTBE and heated in acidic methanol. Unlabelled peaks are omitted. Runs play at 1.5 run-minutes per second. Fine print: the Ni-63 plate is a cue, not a stated fact of the method; o-terphenyl comes from EPA's 8015B summary, not 8015D; the column limit rests on catalog listings; the rise after C40 is an illustrative column bleed.";
+const CAPTION = "A computed figure, not instrument data. Two methods shown on one chassis for comparison. A 400 °C program exceeds the limit catalog listings give for the 552.3 column's phase, so the selector racks the chosen column into the oven and the other waits behind a gate in an unheated bay. The left trace is composite, not one injection: an n-alkane ladder from C10 to C40, a diesel hump and an oil hump, with o-terphenyl as surrogate. Its conditions are a vendor's, from a published DRO/ORO standard (40 to 400 °C at 19.6 °C/min, hydrogen carrier, 50:1 split), not EPA 8015D's own 45 to 275 °C program. EPA 8015D defines DRO as C10 to C28. Other carbon windows vary by regulator and lab; this figure shows C28 to C40 as one lab report does. C10 to C18 are that standard's tabulated times. C40 is read off its plot, and other times come from a fitted retention model, so they read \"about\". Hump shapes and these heights are illustrative. The 552.3 trace uses EPA's Table 1 times, oven program and helium carrier for its primary column, with heights read by eye from its Figure 1. It shows ten analyte esters (nine haloacetic acids and dalapon), with 2-bromobutanoic acid as surrogate and 1,2,3-trichloropropane as internal standard; samples are extracted into MTBE and heated in acidic methanol. Unlabelled peaks are omitted. Runs play at 1.5 run-minutes per second. Fine print: the Ni-63 plate is a cue, not a stated fact of the method; o-terphenyl comes from EPA's 8015B summary, not 8015D; the column limit rests on catalog listings; the rise after C40 is an illustrative column bleed.";
 function write(theme) {
   const body = `<style>${CSS}</style><div class="gc-root" data-gc-root>` + k.plateHtml({
     fig: "Fig 5",

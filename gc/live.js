@@ -94,10 +94,7 @@ const PACKETS = Array.from({ length: 9 }, () => {
   packetLayer.appendChild(c);
   return c;
 });
-const RING = document.createElementNS(SVGNS, "circle");
-RING.setAttribute("class", "gc-ring");
-RING.setAttribute("opacity", "0");
-packetLayer.appendChild(RING);
+const RINGS = { dro: $('[data-ring="dro"]'), haa: $('[data-ring="haa"]') };
 const FLOW = Object.fromEntries(Object.entries(D.FLOWS).map(([id, pts]) => {
   const at = [0];
   for (let i = 1; i < pts.length; i++) at.push(at[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
@@ -336,13 +333,15 @@ function drawStatusText() {
   }
   const T = `${Math.round(s.T)} °C`;
   if (s.next) say(`cooling, then swap · ${T}`);
+  else if (s.swap !== CHANNEL[s.m]) say(`${m.short} · racking column`);
+  else if (s.phase === "done") say(`${m.short} · run complete · ${m.peaks.filter((p) => p.kind !== "solvent").length} peaks on paper`);
   else if (s.phase === "stroke") say(`${m.short} · ${strokeWord(s.stroke ?? 0)} · 1 µL`);
   else if (s.phase === "run") say(`${m.short} · ${s.t.toFixed(2)} min · ${T}${holdAt(s.m, s.t) ? " hold" : ""}${s.arrived ? ` · ${s.arrived.code} at detector` : ""}`);
   else if (s.phase === "cool") say(`${m.short} · cooling · ${T}`);
   else say(`${m.short} · ${m.detector} · ready · ${T}`);
 }
 function drawLamps() {
-  setOn(el.lamp.ready, s.phase === "ready");
+  setOn(el.lamp.ready, s.phase === "ready" || s.phase === "done");
   setOn(el.lamp.run, s.phase === "run" || s.phase === "stroke");
   setOn(el.lamp.fid, s.m === "dro");
   setOn(el.lamp.ecd, s.m === "haa");
@@ -411,7 +410,7 @@ function inject() {
     s.t = null;
     s.stroke = null;
     s.T = METHODS[id].temp(0);
-    s.phase = "ready";
+    s.phase = "done";
     s.cool = null;
     announce(`${METHODS[id].label} run complete.`);
     drawAll();
@@ -562,11 +561,9 @@ function tick(now) {
   }
   for (let i = 0; i < PACKETS.length; i++) if (i >= inFlight && PACKETS[i].getAttribute("r") !== "0") PACKETS[i].setAttribute("r", "0");
   s.arrived = arrived;
-  const endPt = route[route.length - 1];
-  RING.setAttribute("cx", endPt[0]);
-  RING.setAttribute("cy", endPt[1]);
-  RING.setAttribute("r", (3 + 14 * (1 - flash)).toFixed(1));
-  RING.setAttribute("opacity", (flash * 0.9).toFixed(2));
+  RINGS[id].setAttribute("r", (1.5 + 6 * (1 - flash)).toFixed(2));
+  RINGS[id].setAttribute("opacity", (flash * 0.9).toFixed(2));
+  RINGS[id === "dro" ? "haa" : "dro"].setAttribute("opacity", "0");
   const eluting = s.t !== null && m.peaks.some((p) => p.kind !== "solvent" && s.t > p.t - FLOW_LEAD * 0.45 && s.t < p.t + 0.1);
   const flapOpen = s.cool ? 1 : 0;
   s.flap += (flapOpen - s.flap) * (calm ? 1 : 1 - Math.exp(-dt / 0.2));

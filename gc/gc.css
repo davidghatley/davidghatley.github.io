@@ -101,7 +101,8 @@
 .iso[data-theme="dark"] .gc-root{--gc-tail:#8c8c8c}
 
 .gc-liner-win{fill:#2a2a2c;stroke:var(--anatomy-mid);stroke-width:.5px;vector-effect:non-scaling-stroke}
-.gc-liner{fill:#6e6e70}
+.gc-liner{fill:#c9d2d8}
+.gc-wool{fill:#efefe9}
 .gc-vapour{fill:#ffb14a}
 .gc-rad-plate{fill:var(--anatomy-shade-2);stroke:var(--anatomy-lo);stroke-width:.5px;vector-effect:non-scaling-stroke}
 .gc-rad{fill:var(--anatomy-mid)}
