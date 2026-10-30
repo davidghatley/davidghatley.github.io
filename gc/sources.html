@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gas chromatograph sources · David Hatley</title>
+<meta name="description" content="Where every fact on the gas chromatograph figure comes from.">
+<base href="../"><link rel="stylesheet" href="bundle.css">
+<style>body{padding:24px 16px}main{max-width:72ch;margin:0 auto}table{border-collapse:collapse;width:100%;font:400 13px/20px var(--font-mono)}td,th{border-top:1px solid var(--rule);padding:4px 8px 4px 0;text-align:left;vertical-align:top;overflow-wrap:anywhere}a{color:inherit}p{overflow-wrap:anywhere}</style>
+</head><body><main><p><a href="index.html#background">Back to the site</a></p>
+<h1>Sources for the GC figure</h1>
+<p>Every fact on the figure, and where it comes from. "Model" means computed in <code>gc-model.mjs</code>.</p>
+<h2>EPA Method 552.3 (Rev. 1.0, July 2003, EPA 815-B-03-002)</h2>
+<p>URL: <a href="https://www.nemi.gov/methods/method_pdf/7229">https://www.nemi.gov/methods/method_pdf/7229</a> (text extracted from the PDF and read directly)</p>
+<table>
+<tr><th>On the figure</th><th>Where in the method</th></tr>
+<tr><td>ECD detector</td><td>Title; Sec. 2; Table 1</td></tr>
+<tr><td>MTBE liquid-liquid microextraction; acidic methanol to methyl esters, heated 2 h (50 °C for MTBE)</td><td>Sec. 2; Sec. 7.1.12 (10% sulfuric acid in methanol); Sec. 11.2.3</td></tr>
+<tr><td>Ten analytes: nine HAAs (MCAA, MBAA, DCAA, TCAA, BCAA, BDCAA, DBAA, CDBAA, TBAA) and dalapon</td><td>Sec. 1.1 analyte table</td></tr>
+<tr><td>Surrogate 2-bromobutanoic acid</td><td>Sec. 7.2.3</td></tr>
+<tr><td>Internal standard 1,2,3-trichloropropane</td><td>Sec. 7.2.2</td></tr>
+<tr><td>Elution order and times: MCAA 9.29, MBAA 14.19, dalapon 14.69, DCAA 15.07, TCAA 18.89, IS 20.69, BCAA 21.22, SUR 21.63, BDCAA 23.60, DBAA 24.01, CDBAA 25.55, TBAA 26.88 min</td><td>Table 1, primary column (DB-1701, 14% cyanopropylphenyl-methylpolysiloxane, 30 m x 0.25 mm, 0.25 µm), MTBE</td></tr>
+<tr><td>Oven: 40 °C for 10 min, 2.5 °C/min to 65, 10 °C/min to 85, 20 °C/min to 205, hold 7 min</td><td>Table 1</td></tr>
+<tr><td>1 µL injection</td><td>Table 1</td></tr>
+<tr><td>Helium carrier on the 552.3 run</td><td>Table 1 ("Helium (UHP)"). The bulkhead is labelled CARRIER with no gas named, because the 8015-style run uses hydrogen.</td></tr>
+<tr><td>Relative peak heights, tallest scaled to about 86% of the plot</td><td>Read by eye from Figure 1, counts above baseline. Approximate. Figure 1&#x27;s unlabelled peaks and bromoform are omitted (caption says so).</td></tr>
+</table>
+<p>Peak names as methyl esters (for example "methyl chloroacetate" for MCAA) follow from the derivatization. The internal standard is not derivatized. The name of each ester is my naming from the parent acid; the method lists the acids.</p>
+<p>Model: each ester&#x27;s position on the coil comes from a retention integral with one assumed enthalpy, solved so the band reaches the column end at the Table 1 time. Only the bands on the coil depend on the assumption; the peak times do not.</p>
+<h2>EPA Method 8015D (Rev. 4, June 2003)</h2>
+<p>URL: <a href="https://19january2021snapshot.epa.gov/sites/static/files/2015-12/documents/8015d_r4.pdf">https://19january2021snapshot.epa.gov/sites/static/files/2015-12/documents/8015d_r4.pdf</a> (text extracted and read directly)</p>
+<table>
+<tr><th>On the figure</th><th>Where in the method</th></tr>
+<tr><td>FID</td><td>Sec. 2.7, Sec. 6.3</td></tr>
+<tr><td>DRO = C10 to C28 alkanes, about 170 to 430 °C boiling range</td><td>Sec. 1.2.2</td></tr>
+<tr><td>Retention range set from the C10 and C28 alkanes</td><td>Sec. 11.4.3</td></tr>
+<tr><td>Homologous n-alkane standard to set retention times</td><td>Sec. 7.5</td></tr>
+<tr><td>Unresolved complex mixture, "hump"</td><td>Sec. 11.11</td></tr>
+<tr><td>Horizontal baseline between C10 and C28 (the shaded area on the strip)</td><td>Sec. 11.11.1</td></tr>
+</table>
+<p>Note: 8015D&#x27;s own DRO program (45 °C to 275 °C at 12 °C/min, hold 12 min, Sec. 11.2.4) is one I judged too cool to carry a C40 marker (my judgement, not a statement in the method), so the figure does not use it. It uses the vendor program below, and labels it "8015-style, vendor conditions", never EPA 8015.</p>
+<h2>The 8015-style channel: program and anchor times</h2>
+<p>URL: <a href="https://ez.restek.com/images/cgram/gc_ev1380.pdf">https://ez.restek.com/images/cgram/gc_ev1380.pdf</a> ("DRO/ORO Calibration Standard", GC_EV1380, text and plot read directly)</p>
+<p>Oven 40 °C (hold 0.1 min) to 400 °C at 19.6 °C/min (hold 1.53 min). 15 m x 0.25 mm x 0.10 µm thin-film column. 1 µL, split 50:1, hydrogen carrier. FID. The caption states the carrier and split, and calls the conditions a vendor&#x27;s.</p>
+<p>Tabulated times, shown to two decimals: C10 124.3 s, C12 203.5 s, C14 279.8 s, C16 348.9 s, C18 411.5 s.</p>
+<p>"C40 elution area" mark on the plot, read as about 860 s. Shown as "about 14.3".</p>
+<p>Why this program and not 8015D&#x27;s: 8015D&#x27;s 45 to 275 °C gives no published times, and I judged it too cool to place a C40 marker. The figure stays true by naming the conditions as a vendor&#x27;s.</p>
+<p>Model: n-alkane times are the retention integral with <code>ln k = a0 + a1 n + (b0 + b1 n)/T</code>, fitted to those six points; <code>node gc/gc-model.mjs --check</code> prints the comparison. C20 to C38 and o-terphenyl are modelled and shown as "about", to one decimal, with the note "Modelled time".</p>
+<p>Illustrative: the solvent peak&#x27;s time and height. Its name comes from the standard&#x27;s Diluent line.</p>
+<p>The trace is a composite, not one injection, and the caption says so.</p>
+<h2>DRO/ORO windows vary by regulator</h2>
+<p>DRO C10 to C28: EPA 8015D above.</p>
+<p>ORO C28 to C40, the window the figure shows: not in 8015D. Reported as "Oil Range Organics (C28-C40)" under method 8015D in a laboratory report filed with NY DEC. Opened and confirmed in the PDF text: <a href="https://extapps.dec.ny.gov/data/DecDocs/734043/Report.HW.734043.2014-07-15.MH3%20Oil%20Source%20Inv_Appendix%20B_Lab%20Rpt.pdf">https://extapps.dec.ny.gov/data/DecDocs/734043/Report.HW.734043.2014-07-15.MH3%20Oil%20Source%20Inv_Appendix%20B_Lab%20Rpt.pdf</a> . Cited only for the window&#x27;s name; none of its results are used.</p>
+<p>Other labs differ. ALS "Petroleum Hydrocarbon Ranges" lists DRO C10-C28, ORO C20-C35 and RRO C25-C36 as typical, and notes "Carbon range may differ from state to state": <a href="https://www.alsglobal.com/-/media/ALSGlobal/Resources-Grid/Petroleum-Hydrocarbon-Ranges.pdf">https://www.alsglobal.com/-/media/ALSGlobal/Resources-Grid/Petroleum-Hydrocarbon-Ranges.pdf</a></p>
+<h2>Surrogate for the 8015-style channel</h2>
+<p>o-Terphenyl: named with hexacosane as the DRO surrogate in EPA&#x27;s 8015B summary table: <a href="https://19january2017snapshot.epa.gov/sites/production/files/2015-06/documents/8015.pdf">https://19january2017snapshot.epa.gov/sites/production/files/2015-06/documents/8015.pdf</a> . 8015D itself only requires "one or two surrogate compounds" (Sec. 7.10).</p>
+<p>Elution position: retention indices 1886 (HP-5MS) and 1903 (DB-5) from the NIST WebBook, <a href="https://webbook.nist.gov/cgi/cbook.cgi?ID=C84151&amp;Units=SI&amp;Mask=2000">https://webbook.nist.gov/cgi/cbook.cgi?ID=C84151&amp;Units=SI&amp;Mask=2000</a> . The model places it at carbon number 18.9. Modelled, shown as "about".</p>
+<h2>Why one column at a time</h2>
+<p>Upper temperature limit typical for this phase, about 280/300 °C (isothermal/programmed): vendor catalog listings. Search results show -20 to 280/300 °C for <a href="https://chromtech.com/122-0731-db-1701-30m-025mm-015um">https://chromtech.com/122-0731-db-1701-30m-025mm-015um</a> (30 m x 0.25 mm, 0.15 µm film) and the 0.32 mm entries. The pages refused direct fetches, so this rests on the search result text, and the exact 0.25 µm part was not checked. A 400 °C program would exceed it, so the figure never heats both columns: the selector racks one into the oven and the other waits in an unheated bay behind the case front. The caption says the methods are shown on one chassis for comparison. The rack, shuttle, gates and bays are invented for the figure, not a real instrument feature.</p>
+<h2>Illustrative, with no source</h2>
+<p>Diesel and oil hump shapes and the small unresolved peaks (seeded pseudo-random, placed by carbon number).</p>
+<p>8015-style peak heights and all peak widths (drawn narrow, but wider than a real capillary peak so they show at this scale).</p>
+<p>Oven cooldown rate after a run.</p>
+<p>The column bleed rise above about 290 °C on the 8015-style trace.</p>
+<p>The swap mechanism, the autosampler&#x27;s motion and the number of drawn windings.</p>
+<p>Ni-63 plate on the ECD: a cue only, not a sourced statement. EPA 552.3 names a micro ECD but not an isotope. Grey until the ECD is selected.</p>
+<p>"Shown on one chassis for comparison": the shared chassis is a drawing choice; the separate-instrument point is my understanding, not sourced, and is no longer stated in the caption.</p>
+<p>Peak heights on the 552.3 sheet and the C40 mark on the vendor plot are by-eye readings.</p>
+<p>The packet that travels from coil to detector, and its timing lead of 0.95 run-minutes, is a drawing device, not a modelled transfer time.</p>
+<p>The 60 °C threshold before a column swap is a figure rule, not a sourced value.</p>
+<p>Gas line layout. FID makeup is drawn through a tee shared with the ECD; the actual makeup gas differs by method (nitrogen in the vendor note, 95% Ar/5% CH4 in EPA 552.3 Table 1) and the figure does not label it.</p>
+<h2>Not on the figure</h2>
+<p>No instrument brand or model, no laboratory, client or sample data. Column trade names appear only here, as citations.</p>
+</main></body></html>

@@ -24,13 +24,13 @@
   "spec": [
    {
     "label": "runs logged",
-    "value": "1,808",
-    "source": "run log, read 2026-10-28: Oct 12 to 26, 2026; 1,664 succeeded, 144 failed to submit"
+    "value": "1,822",
+    "source": "run log, read 2026-10-30: Oct 12 to 30, 2026; 1,678 succeeded, 144 failed to submit"
    },
    {
     "label": "GPU hours",
-    "value": "37.9",
-    "source": "run log, read 2026-10-28: summed run time, Oct 12 to 26, 2026"
+    "value": "38.1",
+    "source": "run log, read 2026-10-30: summed run time, Oct 12 to 30, 2026"
    },
    {
     "label": "median peak VRAM",
@@ -40,7 +40,7 @@
    {
     "label": "CUDA out-of-memory errors",
     "value": "0",
-    "source": "run log, read 2026-10-28: all 1,808 rows, Oct 12 to 26, 2026"
+    "source": "run log, read 2026-10-30: all 1,822 rows, Oct 12 to 30, 2026"
    }
   ],
   "links": [],
@@ -57,7 +57,7 @@
     "caption": "The previz (left) fixes the bikes, blades and trails; the video model paints over it (right)."
    }
   ],
-  "result": "Every frame of meguri and shuto, on one 12 GB GPU: 1,808 runs logged by Oct 26, 2026, none out of memory.",
+  "result": "Every frame of meguri and shuto, on one 12 GB GPU: 1,822 runs logged by Oct 30, 2026, none out of memory.",
   "decisions": {
    "items": [
     "Depth passes steer the video model, never line art: line art made it draw edges as new objects.",

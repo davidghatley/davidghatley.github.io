@@ -40,7 +40,7 @@
   }
   function replay(g) { g.classList.add('is-armed'); void g.getBoundingClientRect(); g.classList.remove('is-armed'); g.querySelectorAll('rect').forEach(function (r) { r.style.animation = 'none'; void r.getBoundingClientRect(); r.style.animation = ''; }); }
   var mk = document.getElementById('mk');
-  if (mk && G.mark) G.mark.forEach(function (r, y) { for (var x = 0; x < 7; x++) if (r[x] === 'X') { var q = document.createElementNS(NS, 'rect'); q.setAttribute('x', x); q.setAttribute('y', y); q.setAttribute('width', 1); q.setAttribute('height', 1); mk.appendChild(q); } });
+  if (mk && !mk.firstChild && G.mark) G.mark.forEach(function (r, y) { for (var x = 0; x < 7; x++) if (r[x] === 'X') { var q = document.createElementNS(NS, 'rect'); q.setAttribute('x', x); q.setAttribute('y', y); q.setAttribute('width', 1); q.setAttribute('height', 1); mk.appendChild(q); } });
 
   // zoom (pinch, drag, double-tap, close button)
   var zoom = document.getElementById('zoom'), zimg = zoom.querySelector('img');
@@ -423,10 +423,8 @@
     var wanted = false, api = {
       play: function () {
         wanted = true; if (!awake) { wake(function () { if (wanted) api.play(); }); hintLater(); return; }
-        if (!v) { v = document.createElement('video'); v.className = 'cmp-v'; v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
-          v.setAttribute('aria-hidden', 'true'); v.src = fr.dataset.src; fr.appendChild(v);
-          v.addEventListener('playing', function () { if (cv) return; cv = document.createElement('canvas'); cv.width = 1152; cv.height = 658;
-            cv.setAttribute('aria-hidden', 'true'); cx = cv.getContext('2d'); fr.insertBefore(cv, fr.querySelector('.cmp-h')); draw(); }); }
+        if (!v) { v = fr.querySelector('.cmp-v'); v.muted = true; v.preload = 'auto'; v.hidden = false; v.src = fr.dataset.src;
+          v.addEventListener('playing', function () { if (cx) return; cv = fr.querySelector('.cmp-c'); cv.hidden = false; cx = cv.getContext('2d'); draw(); }); }
         var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
         cancelAnimationFrame(raf); (function f() { draw(); raf = requestAnimationFrame(f); })();
         hintLater();
@@ -440,7 +438,34 @@
   // Two small pixel instruments, one canvas pixel per cell. A Fourier series adds odd harmonics to a square wave;
   // single photons land one at a time on a detector and the counts build two-slit fringes. They run only while
   // on screen; under reduced motion each draws its finished state once.
+  // The gas chromatograph: 870 KB of figure, so it arrives only when the visitor gets near it. Until then, without
+  // JS, and while Drawing mode holds the page still, its poster stands in the same space.
+  function benchGC() {
+    var slot = document.querySelector('[data-gc-mount]'); if (!slot) return;
+    var dk = window.matchMedia('(prefers-color-scheme: dark)'), h = null, started = false, near = false;
+    function theme() { return document.documentElement.getAttribute('data-theme') || (dk.matches ? 'dark' : 'light'); }
+    function sync() { if (h) slot.dataset.theme = theme(); }
+    function mount() {
+      if (started || !near || document.documentElement.hasAttribute('data-drawing')) return;
+      started = true;
+      import('./gc/gc-embed.mjs').then(function (m) {
+        slot.style.setProperty('--gc-h', slot.getBoundingClientRect().height + 'px');
+        slot.classList.add('is-live');
+        h = m.mountGC(slot, { theme: theme() });
+        // the figure's long disclosure folds under its caption, in the visitor's reach but out of the bench's way
+        var lg = slot.querySelector('.iso-legend'), cap = slot.parentNode.querySelector(':scope > figcaption');
+        if (lg && cap) { var dt = el('details', 'bg__gc-note', '<summary>How this figure is computed</summary>'); var body = el('div', 'iso-legend'); body.innerHTML = lg.innerHTML; lg.remove(); dt.appendChild(body); cap.parentNode.appendChild(dt); }
+      }).catch(function () { started = false; slot.classList.remove('is-live'); });
+    }
+    dk.addEventListener('change', sync);
+    new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    document.addEventListener('visibilitychange', mount);
+    if (!('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { near = true; io.disconnect(); mount(); } }, { rootMargin: '600px 0px' });
+    io.observe(slot);
+  }
   function background() {
+    benchGC();
     var figs = [].slice.call(document.querySelectorAll('.bg__fig')); if (!figs.length) return;
     function ink(c, v) { return getComputedStyle(c).getPropertyValue(v).trim() || '#16181d'; }
     var VIZ = {
@@ -747,7 +772,7 @@
   // Drawing mode: a switch in the header and the D key. drawing.js and drawing.css load on first use, not before.
   (function () {
     var head = document.querySelector('.site-head'); if (!head) return;
-    var b = el('button', 'draw-t', '<span class="draw-t__tease">see how this page is built</span><span class="draw-t__tease2">see specs</span><span class="draw-t__b"><span>Drawing</span><i aria-hidden="true"></i><kbd>D</kbd></span>'); b.type = 'button'; b.id = 'draw-toggle'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-keyshortcuts', 'd'); b.setAttribute('aria-label', 'Drawing mode: redraws this page as a dimensioned engineering sheet'); b.title = 'Drawing mode (D)';
+    var b = el('button', 'draw-t', '<span class="draw-t__tease">see how this page is built</span><span class="draw-t__tease2">see specs</span><span class="draw-t__b"><span>Drawing</span><i aria-hidden="true"></i><kbd>D</kbd></span><span class="sr-only"> mode: redraws this page as a dimensioned engineering sheet</span>'); b.type = 'button'; b.id = 'draw-toggle'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-keyshortcuts', 'd'); b.title = 'Drawing mode (D)';
     head.appendChild(b);
     // the switch says so once a session: one ink pulse (CSS, none under reduced motion)
     try { if (!sessionStorage.getItem('dwg-seen')) { sessionStorage.setItem('dwg-seen', '1'); b.classList.add('draw-t--pulse'); } } catch (e) {}

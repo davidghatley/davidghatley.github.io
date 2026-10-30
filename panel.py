@@ -146,18 +146,27 @@ def res(t):
 ARROWS = '<svg viewBox="0 0 11 5" shape-rendering="crispEdges" fill="currentColor"><rect x="0" y="2" width="1" height="1"/><rect x="1" y="1" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="1" y="3" width="1" height="1"/><rect x="2" y="0" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="8" y="0" width="1" height="1"/><rect x="8" y="1" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="9" y="1" width="1" height="1"/><rect x="9" y="2" width="1" height="1"/><rect x="9" y="3" width="1" height="1"/><rect x="10" y="2" width="1" height="1"/></svg>'   # pixel double arrow on the wipe handle
 
 
+SIZES = '(max-width: 639px) calc(100vw - 32px), (max-width: 1023px) calc(100vw - 56px), 548px'
+
+
+def srcset(jpg):
+    b = jpg.rsplit('.', 1)[0]
+    return esc('%s-720.webp 720w, %s-1152.webp 1152w' % (b, b))
+
+
 def compare(c):
     """Previz over final with a wipe the visitor drags. Without JS the two stills split at --x; site.js swaps in the
     looping clip (one stacked file, drawn to a canvas) once the tile is on screen."""
     return (
         '<figure class="an-vid"><div class="an-frame cmp" data-src="%s" style="--x:%d%%">'
-        '<img class="cmp-a" src="%s" width="1152" height="658" alt="%s" fetchpriority="high" decoding="async">'
-        '<div class="cmp-b"><img src="%s" width="1152" height="658" alt="%s" decoding="async"></div>'
+        '<img class="cmp-a" src="%s" srcset="%s" sizes="%s" width="1152" height="658" alt="%s" fetchpriority="high">'
+        '<div class="cmp-b"><img src="%s" srcset="%s" sizes="%s" width="1152" height="658" alt="%s" decoding="async" fetchpriority="low"></div>'
+        '<video class="cmp-v" muted loop playsinline preload="none" hidden aria-hidden="true"></video><canvas class="cmp-c" width="1152" height="658" hidden aria-hidden="true"></canvas>'
         '<span class="cmp-h" aria-hidden="true"><i>' + ARROWS + '</i></span>'
         '<span class="cmp-l cmp-l--b" aria-hidden="true">previz</span><span class="cmp-l cmp-l--a" aria-hidden="true">final</span>'
         '<input class="cmp-r" type="range" min="0" max="100" value="%d" step="1" aria-label="Wipe between the previz and the finished shot" aria-valuetext="%d%% previz, %d%% final">'
         '</div>'
-    ) % (esc(c['video']), c['x'], esc(c['final']), esc(c['alt_final']), esc(c['previz']), esc(c['alt_previz']), c['x'], c['x'], 100 - c['x'])
+    ) % (esc(c['video']), c['x'], esc(c['final']), srcset(c['final']), SIZES, esc(c['alt_final']), esc(c['previz']), srcset(c['previz']), SIZES, esc(c['alt_previz']), c['x'], c['x'], 100 - c['x'])
 
 
 def anime_body(t, R):
@@ -255,10 +264,10 @@ def vaasf_body(t):
     boxes = ''.join('<i style="left:%s%%;top:%s%%;width:%s%%;height:%s%%;--i:%d"></i>' % (r['box'][0], r['box'][1], r['box'][2], r['box'][3], k) for k, r in enumerate(t['rows']))
     return (
         '<div class="t-body va">'
-        '<img class="va-cover" src="public/media/vaasf/hero.jpg" width="850" height="1100" loading="lazy" decoding="async" alt="Cover of the 2026 VAASF program, Canciones Españolas.">'
+        '<img class="va-cover" src="public/media/vaasf/hero-340.webp" width="850" height="1100" loading="lazy" decoding="async" alt="Cover of the 2026 VAASF program, Canciones Españolas.">'
         '<div class="va-flow"><p class="ro-k"><span>16 pages from data</span><span>schedule → page 2</span></p>'
         '<div class="va-map"><ol class="va-rows">%s</ol>%s'
-        '<div class="va-page"><img src="public/media/vaasf/schedule.jpg" width="680" height="880" loading="lazy" decoding="async" alt="Program page 2: the schedule of events for all three festival days.">%s</div></div></div>'
+        '<div class="va-page"><img src="public/media/vaasf/schedule-340.webp" width="680" height="880" loading="lazy" decoding="async" alt="Program page 2: the schedule of events for all three festival days.">%s</div></div></div>'
         '</div>'
     ) % (rows, parrow(), boxes)
 

@@ -276,9 +276,116 @@ def lab_page(ps):
     write(idx, between(idx.read_text(), 'lab', '\n'.join(o)))
 
 
+CSS_FACES = '''@font-face{font-family:"IBM Plex Mono";src:url(public/fonts/plex/IBMPlexMono-400.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"IBM Plex Mono";src:url(public/fonts/plex/IBMPlexMono-500.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"IBM Plex Mono";src:url(public/fonts/plex/IBMPlexMono-600.woff2) format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Newsreader";src:url(public/fonts/Newsreader-Italic-400.woff2) format("woff2");font-style:italic;font-weight:400;font-display:swap}
+@font-face{font-family:"Stem 7";src:url(fonts/files/Stem7-Regular.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Hoop";src:url(fonts/files/Hoop-Regular.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Hoop";src:url(fonts/files/Hoop-Bold.woff2) format("woff2");font-weight:700;font-display:swap}
+'''
+
+
+def css_rules(css):
+    """Split CSS into top-level (prelude, body) pairs; body None for statements."""
+    out, i, n = [], 0, len(css)
+    while i < n:
+        j = i
+        while j < n and css[j] not in '{;':
+            j += 1
+        if j >= n:
+            break
+        if css[j] == ';':
+            out.append((css[i:j].strip(), None)); i = j + 1; continue
+        d, k = 1, j + 1
+        while k < n and d:
+            d += {'{': 1, '}': -1}.get(css[k], 0); k += 1
+        out.append((css[i:j].strip(), css[j + 1:k - 1])); i = k
+    return out
+
+
+def css_prune(css, words):
+    """Keep what the site can use: drop @font-face (CSS_FACES and fonts.css own those) and selectors naming a class
+    that no source file mentions."""
+    out = []
+    for pre, body in css_rules(css):
+        if body is None:
+            out.append(pre + ';')
+        elif pre.startswith('@font-face'):
+            continue
+        elif pre.startswith(('@media', '@supports', '@layer', '@container')):
+            inner = css_prune(body, words)
+            if inner:
+                out.append(pre + '{' + inner + '}')
+        elif pre.startswith('@'):
+            out.append(pre + '{' + body + '}')
+        else:
+            keep = [p for p in re.split(r',(?![^()]*\))', pre) if all(c in words for c in re.findall(r'\.(-?[_a-zA-Z][\w-]*)', p))]
+            if keep:
+                out.append(','.join(keep) + '{' + body + '}')
+    return ''.join(out)
+
+
+def css_min(s):
+    s = re.sub(r'/\*.*?\*/', '', s, flags=re.S)
+    s = re.sub(r'\s+', ' ', s)
+    return re.sub(r'\s*([{};,>])\s*', r'\1', s).replace(';}', '}')
+
+
+def css_bundle():
+    """bundle.css: tokens, the components the site uses and site.css, as one file. The sources stay as they are."""
+    corpus = ''
+    for pat in ('*.js', '*.py', '*.html', 'lab/*', 'previews/**/*.js', 'content/*.json', 'gc/live.js'):
+        for f in ROOT.glob(pat):
+            if f.is_file() and f.name != 'bundle.css':
+                corpus += f.read_text(errors='ignore')
+    words = set(re.findall(r'[-_a-zA-Z][\w-]*', corpus))
+    parts = [css_min((ROOT / 'public' / n).read_text()) for n in ('tokens.css', 'components.css')] + [css_min((ROOT / 'site.css').read_text())]
+    write(ROOT / 'bundle.css', CSS_FACES + ''.join(css_prune(p, words) for p in parts) + '\n')
+
+
+def gc_sources():
+    """gc/SOURCES.md as a plain page in the site's type, so the figure's Sources link opens in the browser."""
+    inline = lambda t: re.sub(r'(https?://[^\s)|]+)', r'<a href="\1">\1</a>', re.sub(r'`([^`]+)`', r'<code>\1</code>', esc(t).replace('&quot;', '"')))
+    out, table = [], False
+    for ln in (ROOT / 'gc' / 'SOURCES.md').read_text().splitlines():
+        if ln.startswith('|'):
+            if re.match(r'^\|[-| ]+\|$', ln):
+                continue
+            tag = 'td' if table else 'th'
+            if not table:
+                out.append('<table>'); table = True
+            out.append('<tr>' + ''.join('<%s>%s</%s>' % (tag, inline(c.strip()), tag) for c in ln.strip('|').split('|')) + '</tr>')
+            continue
+        if table:
+            out.append('</table>'); table = False
+        m = re.match(r'(#+) (.*)', ln)
+        if m:
+            k = min(len(m.group(1)), 2); out.append('<h%d>%s</h%d>' % (k, inline(m.group(2)), k))
+        elif ln.startswith('- '):
+            out.append('<p>%s</p>' % inline(ln[2:]))
+        elif ln.strip():
+            out.append('<p>%s</p>' % inline(ln))
+    if table:
+        out.append('</table>')
+    write(ROOT / 'gc' / 'sources.html', '''<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gas chromatograph sources · David Hatley</title>
+<meta name="description" content="Where every fact on the gas chromatograph figure comes from.">
+<base href="../"><link rel="stylesheet" href="bundle.css">
+<style>body{padding:24px 16px}main{max-width:72ch;margin:0 auto}table{border-collapse:collapse;width:100%%;font:400 13px/20px var(--font-mono)}td,th{border-top:1px solid var(--rule);padding:4px 8px 4px 0;text-align:left;vertical-align:top;overflow-wrap:anywhere}a{color:inherit}p{overflow-wrap:anywhere}</style>
+</head><body><main><p><a href="index.html#background">Back to the site</a></p>
+%s
+</main></body></html>
+''' % '\n'.join(out))
+
+
 def main():
+    import panel
     write(ROOT / 'content' / 'runlog.json', panel.runlog_json(RUNLOG, ROOT / 'content' / 'runlog.json'))
     sync_runlog()
+    css_bundle()
+    gc_sources()
     sjs = ROOT / 'site.js'
     site_js = sjs.read_text()
     ps, cats, cat = projects(site_js)   # cats and cat order the case pages (prev/next)

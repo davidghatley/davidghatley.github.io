@@ -4,7 +4,7 @@
    adapted from dimensional-drawing by Enes Ozturk (MIT): https://github.com/enesozturk/dimensional-drawing.
    Copyright (c) 2026 Enes Ozturk. The measuring engine and the site's inks are this site's own. */
 (function () {
-  var REV = 'ed4b14a'; // build.py: git rev
+  var REV = '9ee139e'; // build.py: git rev
   var NS = 'http://www.w3.org/2000/svg', root = document.documentElement;
   var LABEL_H = 12, CH = 6.6, PW = 1512, PH = 1046, PANEL = 640, PAD = 76, S2 = 738 / (944 + 152);
   var S = { on: false, dims: [], lazy: [], extras: [], held: [], vids: [] };
@@ -118,7 +118,7 @@
     var r = e.getBoundingClientRect(); if (r.width < 1 || r.height < 1) return false;
     var st = cs(e); return st.visibility !== 'hidden' && st.display !== 'none' && st.display !== 'inline';
   }
-  var SKIP = '.sr-only,.ch,.tt,.t-link,.case-bar,.dwg-probes,script,style,defs,[hidden],input,.cmp-b,.cmp-l,.cmp-h,.seg,.ibtn,.parrow,.static,#draw-toggle';
+  var SKIP = '.gc-root,.sr-only,.ch,.tt,.t-link,.case-bar,.dwg-probes,script,style,defs,[hidden],input,.cmp-b,.cmp-l,.cmp-h,.seg,.ibtn,.parrow,.static,#draw-toggle';
   var FIXEDH = '.site-head,.t-head,.lc__head,.cat__head';
   function spanOf(b) { // k if this box is exactly k columns wide and starts on a column line
     var G = S.G, k = Math.round((b.w + G.g) / (G.col + G.g));
@@ -281,8 +281,8 @@
   function slots() {
     var g = group('dwg-d dwg-s', 420), seen = {}, n = 0;
     all('main .cmp').forEach(function (fr) { if (visible(fr)) wipeSlot(fr, g, seen); });
-    all('main img,main video,main canvas,main picture').forEach(function (e) {
-      if (n > 80 || e.closest('.case-bar')) return;
+    all('main img,main video,main canvas,main picture,main .gc-stage').forEach(function (e) {
+      if (n > 80 || e.closest('.case-bar') || (e.tagName === 'CANVAS' && e.closest('.gc-stage'))) return;
       var st = cs(e); if (st.display === 'none') return;
       var b = box(e); if (b.w < 16 || b.h < 16) return;
       var key = [b.l, b.t, b.w, b.h].map(Math.round).join(); if (seen[key]) return; seen[key] = 1; n++;
@@ -291,12 +291,12 @@
       line(g, x, y, x + w, y + hh, 'dwg-sx'); line(g, x + w, y, x, y + hh, 'dwg-sx');
       S.slots.push(b); occ.obj.push(b);
       if (w > 110 && hh > 50) {
-        var txt = (e.tagName === 'CANVAS' ? 'INSTRUMENT' : e.tagName === 'VIDEO' ? 'VIDEO' : 'IMAGE') + ' ' + Math.round(b.w) + '×' + Math.round(b.h);
+        var txt = (e.tagName === 'CANVAS' || e.classList.contains('gc-stage') ? 'INSTRUMENT' : e.tagName === 'VIDEO' ? 'VIDEO' : 'IMAGE') + ' ' + Math.round(b.w) + '×' + Math.round(b.h);
         var tw = txt.length * 5.6 + 8, cx = b.l + b.w / 2, cy = b.t + b.h / 2;
         var cap = h('span', 'dwg-l dwg-l--slot', esc(txt), labels); cap.style.cssText = 'left:' + (cx - tw / 2) + 'px;top:' + (cy - 6) + 'px;width:' + tw + 'px;--d:680ms';
       }
     });
-    all('main svg,.ss-lockup__mark,main .lm-bar,main .lc__track,main .ty-strip,main .va-page,.ibtn,.tag,#draw-toggle').forEach(function (e) { if (visible(e) || e.tagName === 'svg') { var q = box(e); if (q.w > 0 && q.h > 0) occ.obj.push(q); } });
+    all('main svg:not(.gc-svg),.ss-lockup__mark,main .lm-bar,main .lc__track,main .ty-strip,main .va-page,.ibtn,.tag,#draw-toggle').forEach(function (e) { if (visible(e) || e.tagName === 'svg') { var q = box(e); if (q.w > 0 && q.h > 0) occ.obj.push(q); } });
   }
   function frame(fh) {
     var g = group('dwg-d dwg-f', 0);
