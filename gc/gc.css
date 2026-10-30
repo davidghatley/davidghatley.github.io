@@ -92,7 +92,10 @@
 .gc-seg{display:flex;box-shadow:0 0 0 1px var(--anatomy-mid)}
 .gc-root button{appearance:none;background:transparent;border:0;color:var(--anatomy-text);font:500 11.5px/1 var(--anatomy-mono);padding:9px 11px;cursor:pointer;min-height:36px}
 .gc-seg button[aria-pressed="true"]{background:var(--anatomy-strong);color:var(--anatomy-card)}
-.gc-inject{box-shadow:0 0 0 1px var(--anatomy-strong);color:var(--anatomy-strong)!important}
+.gc-inject{box-shadow:0 0 0 1px var(--anatomy-strong);color:var(--anatomy-strong)!important;min-width:64px}
+.gc-inject[data-running]{background:var(--anatomy-strong);color:var(--anatomy-card)!important}
+.gc-inject[data-running]::before{content:"";display:inline-block;width:7px;height:7px;margin-right:6px;background:var(--gc-band);animation:gc-run 1s steps(2,jump-none) infinite}
+@keyframes gc-run{to{opacity:.25}}
 .gc-root button:focus-visible{outline:2px solid var(--anatomy-strong);outline-offset:2px}
 .gc-name{margin:8px 0 0;font:11.5px/1.45 var(--anatomy-mono);color:var(--anatomy-strong);min-height:3em}
 @media (max-width:560px){.gc-root button{padding:9px 8px;font-size:11px}}

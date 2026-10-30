@@ -546,8 +546,18 @@ const EM = { x0: 48, x1: 84, y0: 74, y1: 106, z1: Z.deck + 12 };
 {
   const plan = { x: EM.x0, y: EM.y0, w: EM.x1 - EM.x0, d: EM.y1 - EM.y0, r: 0.8 };
   box("electrometer", [EM.x0, EM.y0, Z.deck], [EM.x1, EM.y1, EM.z1], { tone: "mid" }, { r: 0.8, bevel: 0.4, inner: sideSeam(plan, Z.deck + 3), extra: screws(k.corners(plan, 3).map(([x, y]) => [x, y, EM.z1])) + Ln(Array.from({ length: 5 }, (_, i) => k.planOutline({ x: EM.x0 + 6 + i * 5, y: EM.y0 + 7, w: 2.4, d: 18, r: 1 }, EM.z1, P, 3)).join(""), { tone: "lo" }) });
-  line("signal.fid", [[FLAME.x + 6, 104, FID.z1 + 3], [FLAME.x + 6, 104, 190], [EM.x0 + 8, 104, 190], [EM.x0 + 8, 104, EM.z1]], 0.3, { tone: "lo", bend: 2, shells: [false, false] });
-  line("signal.ecd", [[ECD.x + 14, ECD.y + 2, Z.deck + 22], [ECD.x + 20, ECD.y + 2, Z.deck + 22], [ECD.x + 20, 92, Z.deck + 8], [EM.x0, 92, Z.deck + 8]], 0.55, { tone: "lo", bend: 3, shells: [false, true] });
+  // Both signal leads: one weight, and each lands in a cable gland on the electrometer.
+  const LEAD = 0.4;
+  const gland = (name, o, a) => {
+    const F = G.frameAlong(o, a);
+    disc(`${name}.gland`, F, 0, 1, 2, { tone: "mid" }, { steps: 6, owner: "electrometer" });
+    disc(`${name}.nose`, F, 1, 2.4, 1.2, { tone: "hi" }, { steps: 12, owner: `${name}.gland` });
+    return G.add3(o, G.mul3(a, 2.4));
+  };
+  const fidEnd = gland("signal.fid", [EM.x0 + 8, 104, EM.z1], [0, 0, 1]);
+  const ecdEnd = gland("signal.ecd", [EM.x0 + 10, EM.y0 + 3.5, EM.z1], [0, 0, 1]);
+  line("signal.fid", [[FLAME.x + 6, 104, FID.z1 + 3], [FLAME.x + 6, 104, 190], [EM.x0 + 8, 104, 190], fidEnd], LEAD, { tone: "lo", bend: 2, shells: [false, false], ends: [false, false], touch: ["signal.fid.nose"] });
+  line("signal.ecd", [[ECD.x + 14, ECD.y + 2, Z.deck + 22], [ECD.x + 20, ECD.y + 2, Z.deck + 22], [ECD.x + 20, EM.y0 + 3.5, Z.deck + 22], [EM.x0 + 10, EM.y0 + 3.5, Z.deck + 22], ecdEnd], LEAD, { tone: "lo", bend: 3, shells: [false, false], ends: [false, false], touch: ["signal.ecd.nose"] });
 }
 
 // ---------- the chart recorder on the bench, in front of the case ----------

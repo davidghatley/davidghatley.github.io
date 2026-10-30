@@ -244,7 +244,12 @@ function drawKnob() {
   drawKnurl(s.knob);
 }
 function drawMechanism() {
-  const st = s.stroke === null ? { tray: 0, drop: 0, plunger: 0 } : strokeAt(s.stroke);
+  let st = s.stroke === null ? { tray: 0, drop: 0, plunger: 0 } : strokeAt(s.stroke);
+  if (s.retract) {
+    const k = 1 - Math.min(1, s.retract.age / 0.6);
+    const e = k * k * (3 - 2 * k);
+    st = { tray: s.retract.from.tray * e, drop: s.retract.from.drop * e, plunger: s.retract.from.plunger * e };
+  }
   const w = swapAt(s.swap);
   shares.tray = st.tray;
   shares.sampler = st.drop;
@@ -357,6 +362,7 @@ function requestMethod(id, user) {
     if (s.t !== null) s.drawn[s.m] = s.t;
     s.stroke = null;
     s.t = null;
+    drawRunButton();
   }
   if (id === s.m) {
     s.next = null;
@@ -423,7 +429,51 @@ function inject() {
   s.inkFade = 1;
   s.pendingClear = true;
   announce(`${METHODS[id].label}: injecting.`);
+  drawRunButton();
   run();
+}
+// Stop: the pen lifts where it is, the needle withdraws, the oven cools. What was drawn stays on the paper.
+function stopRun() {
+  if (s.stroke === null) return;
+  const id = s.m;
+  const m = METHODS[id];
+  const st = strokeAt(s.stroke);
+  if (st.tray || st.drop || st.plunger) s.retract = { from: st, age: 0 };
+  if (s.t !== null) s.drawn[id] = s.t;
+  if (s.pendingClear) {
+    s.pendingClear = false;
+    s.inkFade = 1;
+    el.ink[id].style.opacity = "";
+  }
+  s.penT = s.drawn[id];
+  s.stroke = null;
+  s.t = null;
+  s.arrived = null;
+  const hot = s.T > m.temp(0) + 0.3;
+  s.cool = hot ? { from: s.T, age: 0 } : null;
+  s.phase = hot ? "cool" : "ready";
+  tour.on = false;
+  tour.queued = false;
+  clearTimeout(tour.timer);
+  announce(`${m.label}: run stopped.`);
+  drawRunButton();
+  drawStatusText();
+  run();
+}
+function toggleRun() {
+  if (s.stroke !== null) stopRun();
+  else {
+    hold();
+    inject();
+  }
+}
+let runShown = false;
+function drawRunButton() {
+  const on = s.stroke !== null;
+  if (on === runShown) return;
+  runShown = on;
+  injectBtn.textContent = on ? "Stop" : "Inject";
+  injectBtn.toggleAttribute("data-running", on);
 }
 function pick(p) {
   if (p && p.t > s.drawn[s.m]) p = null; // only peaks on the paper can be named
@@ -522,6 +572,11 @@ function tick(now) {
   s.knob = knobMoving ? follow(s.knob, knobTarget, dt, 0.14, calm) : knobTarget;
   if (s.fanOn !== false) s.fan = (s.fan + dt * 720) % 360;
   el.fan.setAttribute("transform", `rotate(${s.fan.toFixed(1)})`);
+  if (s.retract) {
+    s.retract.age += dt;
+    if (s.retract.age >= 0.6) s.retract = null;
+  }
+  drawRunButton();
   drawKnob();
   drawMechanism();
   const sig = drawPen();
@@ -585,7 +640,7 @@ function tick(now) {
   settle(s.sig, liveSig, dt, 0.05, calm);
   stage.style.setProperty("--gc-lit", s.lit.x.toFixed(3));
   if (flame) flame.draw({ uLit: s.lit.x, uSig: s.sig.x }, calm ? 0.8 : s.clock);
-  const keepGoing = !calm && (tour.on || s.stroke !== null || s.cool || s.next || knobMoving || swapping || movingLit || s.lit.x > 0.002);
+  const keepGoing = !calm && (tour.on || s.stroke !== null || s.retract || s.cool || s.next || knobMoving || swapping || movingLit || s.lit.x > 0.002);
   frame = visible && keepGoing ? requestAnimationFrame(tick) : 0;
 }
 function run() {
@@ -624,8 +679,7 @@ stage.addEventListener("keydown", (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   const key = e.key.toLowerCase();
   if (key === "i" || ((key === " " || key === "enter") && e.target === stage)) {
-    hold();
-    inject();
+    toggleRun();
   } else if (key === "m") {
     hold();
     requestMethod((s.next?.id ?? s.m) === "dro" ? "haa" : "dro", true);
@@ -673,14 +727,10 @@ stage.addEventListener("click", (e) => {
     hold();
     requestMethod((s.next?.id ?? s.m) === "dro" ? "haa" : "dro", true);
   } else if (name.startsWith("button")) {
-    hold();
-    inject();
+    toggleRun();
   }
 });
-injectBtn.addEventListener("click", () => {
-  hold();
-  inject();
-});
+injectBtn.addEventListener("click", toggleRun);
 methodBtns.forEach((b) => b.addEventListener("click", () => {
   hold();
   requestMethod(b.dataset.method, true);
