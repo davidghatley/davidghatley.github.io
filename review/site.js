@@ -471,6 +471,56 @@
           step: function () { var k = total < 200 ? 1 : total < 1200 ? 4 : 12; for (var q = 0; q < k; q++) hit();
             if (total > 4200) { cnt.fill(0); total = 0; } draw(); }
         };
+      },
+      taper: function (f) {
+        // A tapered fiber whose waist is coated in carbon nanotubes, a saturable absorber: weak light is soaked up,
+        // intense light bleaches the nanotubes and passes. Noisy light in on the left, clean pulses out on the right.
+        var c = f.querySelector('canvas'), x = c.getContext('2d'), out = f.querySelector('b'), W = c.width, H = c.height, cy = 32;
+        var I = new Float32Array(W), seed = 11, tick = 0, pulses = 0, A = 58, B = 102;
+        function rnd() { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; }
+        function w(i) { if (i < A - 22 || i > B + 22) return 12; if (i >= A && i <= B) return 3; var u = i < A ? (A - i) / 22 : (i - B) / 22; return 3 + 9 * (1 - Math.cos(u * Math.PI)) / 2; }
+        var cnt = []; for (var i = A - 4; i <= B + 4; i++) for (var k = 0; k < 2; k++) if (rnd() < .55) cnt.push([i, rnd() < .5 ? -1 : 1, 5 + Math.floor(rnd() * 2)]);
+        function adv() { tick++;
+          for (var i = W - 1; i > 0; i--) I[i] = I[i - 1];
+          I[0] = .12 + .2 * rnd() + (tick % 30 < 2 ? .85 : 0);
+          for (var i = A; i <= B; i++) I[i] *= I[i] / (I[i] + .008);
+          if (I[W - 1] > .35 && I[W - 2] <= .35) pulses++; }
+        function draw() { var lo = ink(c, '--rule'), mu = ink(c, '--ink-muted'), hi = ink(c, '--cobalt-text');
+          x.clearRect(0, 0, W, H); x.fillStyle = lo;
+          for (var i = 0; i < W; i++) { var h = Math.round(w(i)); x.fillRect(i, cy - h - 1, 1, 1); x.fillRect(i, cy + h + 1, 1, 1); }
+          x.fillStyle = mu; cnt.forEach(function (q) { x.fillRect(q[0], cy + q[1] * q[2], 1, 1); });
+          x.fillStyle = hi;
+          for (var i = 0; i < W; i++) { var v = Math.min(1, I[i]); if (v < .04) continue; var h = Math.max(0, Math.round(v * w(i)));
+            x.globalAlpha = .25 + .75 * v; x.fillRect(i, cy - h, 1, 2 * h + 1);
+            if (i >= A && i <= B && v > .3) { x.globalAlpha = .5 * v; x.fillRect(i, cy - 4, 1, 1); x.fillRect(i, cy + 4, 1, 1); } }
+          x.globalAlpha = 1; out.textContent = pulses.toLocaleString('en-US'); }
+        return {
+          still: function () { for (var i = 0; i < W * 2; i++) adv(); draw(); },
+          step: function () { adv(); adv(); draw(); }
+        };
+      },
+      modelock: function (f) {
+        // Twelve longitudinal modes of a laser cavity. With random phases their sum is noise; as the phases lock,
+        // the same modes add up to a train of short pulses (the Fourier series again, run backwards).
+        var c = f.querySelector('canvas'), x = c.getContext('2d'), out = f.querySelector('b'), W = c.width, H = c.height, N = 12;
+        var ph = [], seed = 5, lam = 0, t = 0, hold = 0;
+        function rnd() { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; }
+        function shuffle() { for (var n = 0; n < N; n++) ph[n] = rnd() * 2 * Math.PI; }
+        shuffle();
+        function draw() { var lo = ink(c, '--rule'), hi = ink(c, '--cobalt-text');
+          x.clearRect(0, 0, W, H); x.fillStyle = lo; for (var i = 0; i < W; i += 2) x.fillRect(i, H - 2, 1, 1);
+          x.fillStyle = hi;
+          for (var i = 0; i < W; i++) { var re = 0, im = 0, q = (i - t) / 53 * 2 * Math.PI;
+            for (var n = 0; n < N; n++) { var a = n * q + ph[n] * (1 - lam); re += Math.cos(a); im += Math.sin(a); }
+            var v = (re * re + im * im) / (N * N), h = Math.round(v * (H - 6));
+            if (h > 0) x.fillRect(i, H - 2 - h, 1, h); }
+          out.textContent = Math.round(lam * 100) + '%'; }
+        return {
+          still: function () { lam = 1; draw(); },
+          step: function () { t += 1.5;
+            if (lam < 1) lam = Math.min(1, lam + .004); else if (++hold > 150) { hold = 0; lam = 0; shuffle(); }
+            draw(); }
+        };
       }
     };
     figs.forEach(function (f) {
