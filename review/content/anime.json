@@ -13,7 +13,7 @@
    "XXXXX"
   ],
   "oneliner": "The machine behind meguri and shuto: Blender previz, eight open models and one 12 GB GPU, with every run logged.",
-  "when": "2026-10-11 to 2026-10-22",
+  "when": "2026-10-11 to 2026-10-30",
   "role": "I designed and run the pipeline: the Blender world and previz tools, the ComfyUI workflows, the review gates, the GPU lock and the run log.",
   "status_note": "In use. It makes every frame of meguri and shuto; the repo stays private.",
   "hero": {

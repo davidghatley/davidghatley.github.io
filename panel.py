@@ -217,7 +217,7 @@ def lmr_body(t):
         '<p class="lm-q">“%s”</p>'
         '<div class="lm-pack"><span class="lm-nofit">next ~280 tok: no fit</span><div class="lm-bar">%s</div>'
         '<p class="lm-scale"><span>0</span><span>%s used, %d left</span><span>%s tokens</span></p></div>'
-        '<div class="lm-stats"><p><b>70 / 73</b><span>needed paragraphs search found</span></p><p><b>54 / 73</b><span>reach the model</span></p></div>'
+        '<div class="lm-stats"><p><b>70 / 73</b><span>needed paragraphs search found</span></p><p><b>54 / 73</b><span>reach the model</span></p><p data-draft="true"><b>65 / 73</b><span>reach it after reranking</span></p></div>'
         '</div>'
     ) % (esc(t['question']), ''.join(segs), n(used), B - used, n(B))
 
@@ -277,8 +277,6 @@ def render(root, ps):
     R = json.loads((root / 'content' / 'runlog.json').read_text())
     songs = json.loads((root / 'public' / 'media' / 'tasty_tunez' / 'songs.json').read_text())
     fams = json.loads((root / 'fonts' / 'files' / 'families.json').read_text())
-    for f in fams:
-        if 'dive' in (f.get('sample') or '').lower(): f['sample'] = f['name']   # the library's old sample line
     by = {p['slug']: p for p in ps}
     meta = lambda s: json.loads((root / 'previews' / s / 'meta.json').read_text()) if (root / 'previews' / s / 'meta.json').exists() else {}
     faces = [f['name'] for f in fams if not f.get('grid')] or None

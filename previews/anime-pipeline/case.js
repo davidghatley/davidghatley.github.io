@@ -55,7 +55,7 @@ const CSS = `
 }
 `;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const TALLY = [['37.9', 'GPU hours'], ['66', 'video clips'], ['1,384', 'stills'], ['18', 'hand-built workflows'], ['8', 'model families run'], ['37', 'commits']];
+const TALLY = [['38.1', 'GPU hours'], ['66', 'video clips'], ['1,384', 'stills'], ['18', 'hand-built workflows'], ['8', 'model families run'], ['37', 'commits']];
 // §1
 const STAGES = [
   ['1', 'Story + lint', 'story bible and a prompt linter', 'no named shows, studios or artists in prompts', 'CPU, minutes'],
@@ -120,6 +120,7 @@ export default async function renderCase(root, { project: p, base, meta }) {
   const tag = k => `<span class="tag${NOPE.test(k) ? '' : ' on'}">${esc(k)}</span>`;
   el.innerHTML = `<div class="hero"></div>
     <div class="tally">${TALLY.map(t => `<div><div class="v">${t[0]}</div><div class="l">${t[1]}</div></div>`).join('')}</div>
+    <p class="tally-n" data-draft="true" style="margin:8px 0 0;font:400 12px/16px var(--font-mono);color:var(--ink-muted)">GPU hours from the run log as it stands. Clips, stills, workflows and commits counted Oct 22, 2026.</p>
 
     <section><h2><span>01</span>The pipeline</h2>
     <p>The CPU stages make the decisions and the GPU stages only paint. Story, storyboard, world and previz are scripted and checked before a model runs; two gates stop bad work early, and the video model only ever gets a camera and a layout it has to follow.</p>
@@ -128,7 +129,7 @@ export default async function renderCase(root, { project: p, base, meta }) {
     ${STAGES.map(r => `<tr><td class="m">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td class="m">${r[3]}</td><td class="m">${r[4]}</td></tr>`).join('')}</tbody></table></div>
     <p style="margin-top:16px">The pipeline that won, from round 2 on: a Blender previz depth video drives H3 ref2va with Fun ControlNet and a Krea reference key, under a structured brief, then frames 0–1 are trimmed and the clip is upscaled. In the later recipe the camera comes from the previz, layout and look from a key painted over the set's first frame, and identity from a flat grey character sheet.</p></section>
 
-    <section><h2><span>02</span>The models</h2>
+    <section><details class="cs-more"><summary><h2><span>02</span>The models</h2></summary>
     <p>Everything runs locally on one card. Eight model families made it into the run log; more were installed, tried by hand or downloaded and never run.</p>
     <div class="cols">
       <div><h3><i>Adopted</i></h3><ul>
@@ -156,9 +157,9 @@ export default async function renderCase(root, { project: p, base, meta }) {
     <h3>Failed or rejected settings</h3>
     <ul><li>Lineart ControlNet. H3 at 864×480. ref2va at 4 steps.</li>
       <li>Prompted print texture ("print block": no effect). Prop sheets when the start frame already holds the prop.</li>
-      <li>Krea cannot stage head-on clashes (6/6 fail) or thrown riders (6/6), so those come from previz. A high drone view became a low rear view in every look.</li></ul></section>
+      <li>Krea cannot stage head-on clashes (6/6 fail) or thrown riders (6/6), so those come from previz. A high drone view became a low rear view in every look.</li></ul></details></section>
 
-    <section><h2><span>03</span>Techniques</h2>
+    <section><details class="cs-more"><summary><h2><span>03</span>Techniques</h2></summary>
     <p>Most of the work is technique, not models: getting a video model to follow a camera, a layout and a costume it did not invent. "Mine" means a rule or tool I wrote for this pipeline; "standard, applied" means a known technique I adopted.</p>
     <div class="tw"><table><thead><tr><th>Technique</th><th>Whose</th><th>Result</th></tr></thead><tbody>
     ${TECH.map(r => `<tr><td><b>${r[0]}</b></td><td class="k">${r[1].startsWith('mine') ? `<span class="tag on">${r[1]}</span>` : `<span class="tag">${r[1]}</span>`}</td><td>${r[2]}</td></tr>`).join('')}</tbody></table></div>
@@ -169,23 +170,23 @@ export default async function renderCase(root, { project: p, base, meta }) {
     <div class="pair tall">
       <figure>${img('costume-before.jpg', 'Back view of a girl in a yellow raincoat walking down a lane, with the sailor collar and red front scarf drawn on her back.')}<figcaption><b>Fig. 3a</b>Back view, one brief for every view: the front garment lands on the back, 7 of 18.</figcaption></figure>
       <figure>${img('costume-after.jpg', 'The same back view with a view-aware costume brief: the back of the raincoat and uniform, no front details.')}<figcaption><b>Fig. 3b</b>View-aware costume brief: 0 of 18.</figcaption></figure>
-    </div></section>
+    </div></details></section>
 
-    <section><h2><span>04</span>Hardware</h2>
+    <section><details class="cs-more"><summary><h2><span>04</span>Hardware</h2></summary>
     <div class="spec"><div><b>RTX 3060</b><span>12,288 MiB VRAM, Ampere (sm_86)</span></div><div><b>64 GB DDR5</b><span>RAM; i5-12500 CPU</span></div><div><b>12 + ~48 GB</b><span>budget: 12 GB VRAM plus ~48 GB RAM offload, ~16 GB left for the OS and Blender</span></div></div>
-    <p style="margin-top:16px">The animated meters at the top step through what I tried. The finding held across all 1,644 successful runs: VRAM ran near full and never failed. RAM and time set the limits. No logged run hit a CUDA out-of-memory error; the only memory kills were Blender RAM. A typical H3 clip peaks at 26.1 GiB of machine RAM, the worst at 58.7 GiB, and one 5 s clip takes 8.4–48 minutes, which is why there are 66 clips and 1,384 stills.</p>
-    <figure>${plate('plate-memory', 'Plate 9.1: peak RAM per job and median peak VRAM per model family, with the 20 GB cap, the 12 GB memory cap and the 16 GB reserve marked, and GPU hours by family.')}<figcaption><b>Fig. 4</b>Plate 9.1, memory and time per model family. The plate counts 49 H3 clips and 18.1 h because it files the round-2 clips under "other"; I count all 66 as H3 (23.0 h). The plate was drawn from the log as read on Oct 22 (37.5 GPU hours); the full log to Oct 26 sums to 37.9.</figcaption></figure>
+    <p style="margin-top:16px">The animated meters at the top step through what I tried. The finding held across all 1,678 successful runs: VRAM ran near full and never failed. RAM and time set the limits. No logged run hit a CUDA out-of-memory error; the only memory kills were Blender RAM. A typical H3 clip peaks at 26.1 GiB of machine RAM, the worst at 58.7 GiB, and one 5 s clip takes 8.4–48 minutes, which is why there were 66 clips and 1,384 stills by Oct 22.</p>
+    <figure>${plate('plate-memory', 'Plate 9.1: peak RAM per job and median peak VRAM per model family, with the 20 GB cap, the 12 GB memory cap and the 16 GB reserve marked, and GPU hours by family.')}<figcaption><b>Fig. 4</b>Plate 9.1, memory and time per model family. The plate counts 49 H3 clips and 18.1 h because it files the round-2 clips under "other"; I count all 66 as H3 (23.0 h). The plate was drawn from the log as read on Oct 22 (37.5 GPU hours); the full log to Oct 30 sums to 38.1</figcaption></figure>
     <div class="tw"><table><thead><tr><th>Method</th><th>What</th><th>Before → after</th><th>Kept?</th></tr></thead><tbody>
     ${HW.map(r => `<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class="m">${r[2]}</td><td class="k">${tag(r[3])}</td></tr>`).join('')}</tbody></table></div>
-    <div class="note"><p>How memory was measured: peak VRAM is the whole GPU from nvidia-smi, including 0.4–1 GB of desktop; peak RAM is machine-wide, so other sessions and Blender are included. Both are sampled every 0.25 s.</p></div></section>
+    <div class="note"><p>How memory was measured: peak VRAM is the whole GPU from nvidia-smi, including 0.4–1 GB of desktop; peak RAM is machine-wide, so other sessions and Blender are included. Both are sampled every 0.25 s.</p></div></details></section>
 
-    <section class="carry"><h2><span>05</span>What carried over</h2>
+    <section class="carry"><details class="cs-more"><summary><h2><span>05</span>What carried over</h2></summary>
     <ul>
       <li>The GPU lock became the machine-wide rule. ${CARRY.map(c => `<a href="case.html?p=${c[0]}">${c[1]}</a>`).join(', ')} all run GPU jobs only through it, and carry the same house rules: ask before downloads over 10 GB, never the system Python.</li>
       <li>Another project now frees VRAM through ComfyUI instead of killing it, and waits while ComfyUI has a job, after it hit an OOM when ComfyUI reloaded ~9.6 GB mid-run.</li>
       <li>playdough blocks the non-commercial models in code, the same list this pipeline keeps.</li>
       <li>The illustrated technical-manual style of this pipeline's manual is the one the other projects point to.</li>
-    </ul></section>`;
+    </ul></details></section>`;
   // plates follow the page theme: an explicit data-theme beats the OS preference
   const syncPlates = () => {
     const t = document.documentElement.dataset.theme;

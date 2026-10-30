@@ -48,8 +48,12 @@ def sync_runlog():
                lambda m: '"value": "%s",%s%s: summed run time, %s' % (R['gpu_hours'], m.group(1), R['last'], span), s)
     s = re.sub(r'run log, read [\d-]+: all [\d,]+ rows, Oct 12 to \d+, \d+', 'run log, read %s: all %s rows, %s' % (R['last'], n(R['runs']), span), s)
     s = re.sub(r'[\d,]+ runs logged by Oct \d+, \d+', '%s runs logged by Oct %d, %d' % (n(R['runs']), last.day, last.year), s)
+    s = re.sub(r'"when": "2026-10-11 to [\d-]+"', '"when": "2026-10-11 to %s"' % R['last'], s)
     write(f, s)
     f = ROOT / 'previews' / 'anime-pipeline' / 'case.js'; s = f.read_text()
+    s = re.sub(r"\['[\d.]+', 'GPU hours'\]", "['%s', 'GPU hours']" % R['gpu_hours'], s)
+    s = re.sub(r'held across all [\d,]+ successful runs', 'held across all %s successful runs' % n(R['succeeded']), s)
+    s = re.sub(r'the full log to Oct \d+ sums to [\d.]+', 'the full log to Oct %d sums to %s' % (last.day, R['gpu_hours']), s)
     s = re.sub(r"'[\d,]+ rows, Oct 12 to \d+ \(read Oct \d+\): 0 CUDA out-of-memory errors, [\d.]+ GPU hours'",
                "'%s rows, Oct 12 to %d (read Oct %d): %d CUDA out-of-memory errors, %s GPU hours'" % (n(R['runs']), last.day, last.day, R['cuda_oom'], R['gpu_hours']), s)
     write(f, s)
@@ -344,6 +348,23 @@ def css_bundle():
     write(ROOT / 'bundle.css', CSS_FACES + ''.join(css_prune(p, words) for p in parts) + '\n')
 
 
+FONT_SAMPLES = {'Stem 7 Wide': 'STEM 7 WIDE'}   # site-side sample lines; the library's generator still carries its old one
+
+
+def fonts_samples():
+    """fonts/ is generated in secret-sauce. Re-apply the site's sample lines after any regeneration, and say so when
+    the event name is back in the library's own pages, instead of letting it arrive unnoticed."""
+    f = ROOT / 'fonts' / 'files' / 'families.json'; fams = json.loads(f.read_text()); changed = False
+    for x in fams:
+        if x.get('name') in FONT_SAMPLES and x.get('sample') != FONT_SAMPLES[x['name']]:
+            x['sample'] = FONT_SAMPLES[x['name']]; changed = True
+    if changed:
+        write(f, json.dumps(fams, indent=2, ensure_ascii=False) + '\n')
+    left = [str(p.relative_to(ROOT)) for p in (ROOT / 'fonts').glob('**/index.html') if 'DIVE CLUB' in p.read_text()]
+    if left:
+        print('note: library pages still set the old sample line:', ', '.join(left))
+
+
 def gc_sources():
     """gc/SOURCES.md as a plain page in the site's type, so the figure's Sources link opens in the browser."""
     inline = lambda t: re.sub(r'(https?://[^\s)|]+)', r'<a href="\1">\1</a>', re.sub(r'`([^`]+)`', r'<code>\1</code>', esc(t).replace('&quot;', '"')))
@@ -388,6 +409,7 @@ def main():
     sync_runlog()
     css_bundle()
     gc_sources()
+    fonts_samples()
     sjs = ROOT / 'site.js'
     site_js = sjs.read_text()
     ps, cats, cat = projects(site_js)   # cats and cat order the case pages (prev/next)
@@ -431,6 +453,7 @@ def main():
     write(ROOT / 'robots.txt', 'User-agent: *\nDisallow: /review/\nDisallow: /dive/\n\nSitemap: %ssitemap.xml\n' % SITE)
 
     fonts_og()
+
 
     # drawing.js: REV is the last commit that changed the source. Generated copies and the stamp commits themselves don't count, so
     # committing a build leaves the tree clean and building again writes nothing.

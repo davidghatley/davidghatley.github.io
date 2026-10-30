@@ -401,18 +401,21 @@
 
   // the previz wipe: drag (or arrow keys on the hidden range) to move --x. Previz is left of the line, final right.
   // The clip is one file with previz stacked over final, drawn to a canvas each frame, so the halves stay in sync.
-  // The clip is 1.7 MB, so it waits for the first sign of a person (pointer, touch, key or scroll); the stills and the
-  // wipe's sweep carry the tile until then.
+  // The clip starts loading about 2 s after the page has loaded, when the browser is idle, or at the first sign of a
+  // person if that comes sooner. Save-Data waits for a person. Reduced motion never gets here (home() returns first).
   var awake = false, wakers = [];
   function wake(f) { if (wakers.push(f) > 1) return;
     var evs = ['pointermove', 'pointerdown', 'touchstart', 'keydown', 'scroll'];
     function go() { awake = true; evs.forEach(function (n) { window.removeEventListener(n, go, true); }); wakers.forEach(function (w) { w(); }); wakers = []; }
-    evs.forEach(function (n) { window.addEventListener(n, go, { capture: true, passive: true }); }); }
+    evs.forEach(function (n) { window.addEventListener(n, go, { capture: true, passive: true }); });
+    var c = navigator.connection; if (c && c.saveData) return;
+    function idle() { setTimeout(function () { if (awake) return; if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 1000 }); else go(); }, 2000); }
+    if (document.readyState === 'complete') idle(); else window.addEventListener('load', idle, { once: true }); }
   function wipe(fr, still) {
     var r = fr.querySelector('.cmp-r'), x = +r.value, x0 = x, v = null, cv = null, cx = null, raf = 0, drag = false, touched = false, hinted = still;
-    function draw() { if (!cx || v.readyState < 2) return; var W = cv.width, H = cv.height, s = Math.round(W * x / 100);
-      cx.drawImage(v, 0, H, W, H, 0, 0, W, H);
-      if (s > 0) cx.drawImage(v, 0, 0, s, H, 0, 0, s, H); }
+    function draw() { if (!cx || v.readyState < 2) return; var W = cv.width, H = cv.height, s = Math.round(W * x / 100), k = v.videoWidth / W;   // the phone clip is smaller than the canvas
+      cx.drawImage(v, 0, H * k, W * k, H * k, 0, 0, W, H);
+      if (s > 0) cx.drawImage(v, 0, 0, s * k, H * k, 0, 0, s, H); }
     function set(n, user) { x = Math.max(0, Math.min(100, n)); if (user) touched = true;
       fr.style.setProperty('--x', x + '%'); r.value = Math.round(x);
       r.setAttribute('aria-valuetext', Math.round(x) + '% previz, ' + (100 - Math.round(x)) + '% final'); if (v && v.paused) draw(); }
@@ -428,7 +431,7 @@
     var wanted = false, api = {
       play: function () {
         wanted = true; if (!awake) { wake(function () { if (wanted) api.play(); }); hintLater(); return; }
-        if (!v) { v = fr.querySelector('.cmp-v'); v.muted = true; v.preload = 'auto'; v.hidden = false; v.src = fr.dataset.src;
+        if (!v) { v = fr.querySelector('.cmp-v'); v.muted = true; v.preload = 'auto'; v.hidden = false; v.src = window.innerWidth < 640 ? fr.dataset.src.replace('.mp4', '-720.mp4') : fr.dataset.src;
           v.addEventListener('playing', function () { if (cx) return; cv = fr.querySelector('.cmp-c'); cv.hidden = false; cx = cv.getContext('2d'); draw(); }); }
         var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
         cancelAnimationFrame(raf); (function f() { draw(); raf = requestAnimationFrame(f); })();
@@ -443,33 +446,38 @@
   // Two small pixel instruments, one canvas pixel per cell. A Fourier series adds odd harmonics to a square wave;
   // single photons land one at a time on a detector and the counts build two-slit fringes. They run only while
   // on screen; under reduced motion each draws its finished state once.
-  // The gas chromatograph: 870 KB of figure, so it arrives only when the visitor gets near it. Until then, without
-  // JS, and while Drawing mode holds the page still, its poster stands in the same space.
+  // The gas chromatograph sits on the bench as a poster, tile-sized. Expand opens the working figure in a modal
+  // dialog (native: Esc closes, focus returns); its 870 KB loads then, not before.
   function benchGC() {
-    var slot = document.querySelector('[data-gc-mount]'); if (!slot) return;
-    var dk = window.matchMedia('(prefers-color-scheme: dark)'), h = null, started = false, near = false;
+    var open = document.querySelector('.bg__gc-open'); if (!open || !window.HTMLDialogElement) return;
+    var dk = window.matchMedia('(prefers-color-scheme: dark)'), dlg = null, live = null, h = null;
     function theme() { return document.documentElement.getAttribute('data-theme') || (dk.matches ? 'dark' : 'light'); }
-    function sync() { if (h) slot.dataset.theme = theme(); }
-    function mount() {
-      if (started || !near || document.documentElement.hasAttribute('data-drawing')) return;
-      started = true;
+    function sync() { if (live && live.classList.contains('iso')) live.dataset.theme = theme(); }
+    function build() {
+      dlg = el('dialog', 'gc-dlg'); dlg.setAttribute('aria-labelledby', 'gc-dlg-t');
+      dlg.innerHTML = '<div class="gc-dlg__head"><h2 id="gc-dlg-t">Gas chromatograph</h2><button type="button" class="gc-dlg__x">Close</button></div><div class="gc-dlg__body"><div class="gc-live"></div></div>';
+      document.body.appendChild(dlg); live = dlg.querySelector('.gc-live');
+      dlg.querySelector('.gc-dlg__x').addEventListener('click', function () { dlg.close(); });
+      dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+      dlg.addEventListener('close', function () { document.documentElement.style.overflow = ''; open.focus(); });
+      // the figure keeps its own keys; Esc always closes the dialog
+      dlg.addEventListener('keydown', function (e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); dlg.close(); } }, true);
       import('./gc/gc-embed.mjs').then(function (m) {
-        slot.style.setProperty('--gc-h', slot.getBoundingClientRect().height + 'px');
-        slot.classList.add('is-live');
-        h = m.mountGC(slot, { theme: theme() });
-        // the figure's long disclosure folds under its caption, in the visitor's reach but out of the bench's way
-        var lg = slot.querySelector('.iso-legend'), cap = slot.parentNode.querySelector(':scope > figcaption');
-        if (lg && cap) { var dt = el('details', 'bg__gc-note', '<summary>How this figure is computed</summary>'); var body = el('div', 'iso-legend'); body.innerHTML = lg.innerHTML; lg.remove(); dt.appendChild(body); cap.parentNode.appendChild(dt); }
-      }).catch(function () { started = false; slot.classList.remove('is-live'); });
+        h = m.mountGC(live, { theme: theme() });
+        var sv = live.querySelector('svg.gc-svg'); if (sv) sv.setAttribute('role', 'group');   // it holds focusable peaks, so it can't be one image
+        // the figure's long disclosure folds under it
+        var lg = live.querySelector('.iso-legend');
+        if (lg) { var dt = el('details', 'bg__gc-note', '<summary>How this figure is computed</summary>'), body = el('div', 'iso-legend'); body.innerHTML = lg.innerHTML; lg.remove(); dt.appendChild(body); live.parentNode.appendChild(dt); }
+      }).catch(function () { live.textContent = 'The figure did not load. Please try again.'; dlg.addEventListener('close', function () { dlg.remove(); dlg = null; }, { once: true }); });
     }
+    open.hidden = false;
+    open.addEventListener('click', function () {
+      if (document.documentElement.hasAttribute('data-drawing')) { var t = document.getElementById('draw-toggle'); if (t) t.click(); }
+      if (!dlg) build();
+      document.documentElement.style.overflow = 'hidden'; dlg.showModal();
+    });
     dk.addEventListener('change', sync);
-    // a keyboard visitor heading down the page gets the figure before focus reaches it
-    document.addEventListener('focusin', function kb(e) { if (e.target.closest && e.target.closest('.lab-line,#about')) { document.removeEventListener('focusin', kb); near = true; mount(); } });
     new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    document.addEventListener('visibilitychange', mount);
-    if (!('IntersectionObserver' in window)) return;
-    var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { near = true; io.disconnect(); mount(); } }, { rootMargin: '600px 0px' });
-    io.observe(slot);
   }
   function background() {
     benchGC();
@@ -803,7 +811,7 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && want && document.getElementById('zoom').hidden) { toggle(); return; }
       if ((e.key !== 'd' && e.key !== 'D') || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
-      var t = e.target; if (t && t.closest && t.closest('input,textarea,select,[contenteditable],[role=textbox]')) return;
+      var t = e.target; if (t && t.closest && t.closest('input,textarea,select,dialog,[contenteditable],[role=textbox]')) return;
       toggle();
     });
   })();

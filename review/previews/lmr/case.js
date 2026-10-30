@@ -58,8 +58,8 @@ export default async function renderCase(root, { project: p, base }) {
 
     <h2><span class="n">4</span>Limitations</h2>
     <p>Every measurement is a desktop measurement. There is no Android build. The 1.5B generator rarely cites and can add facts that are not in its evidence, and the corpus is a fixed 297 articles.</p>
-    <p>${esc(b[3])}</p>
-    <p>${esc(b[5])}</p>
+    <p data-draft="true">${esc(b[3])}</p>
+    <p data-draft="true">${esc(b[5])}</p>
 
     <h2><span class="n">5</span>The manual</h2>
     <p>The full story, with figures drawn from benchmark JSON, is a 19-page technical manual. Three of its pages:</p>
