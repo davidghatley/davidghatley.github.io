@@ -14,13 +14,8 @@ const still = matchMedia("(prefers-reduced-motion: reduce)");
 const g = D.G;
 
 const el = {
-  tower: $$('[data-g="tower"]'),
-  sampler: $$('[data-g="sampler"]'),
-  plunger: $$('[data-g="plunger"]'),
-  tray: $$('[data-g="tray"]'),
-  button: $$('[data-g="button"]'),
-  carriage: $$('[data-g="carriage"]'),
-  pen: $$('[data-g="pen"]'),
+  items: $$(".gc-items > .it").map((node, index) => ({ node, index, k: Number(node.dataset.k), piece: node.dataset.p ?? null, inner: "inner" in node.dataset })),
+  layer: $(".gc-items"),
   needleMove: $('[data-part="needle-move"]'),
   rodMove: $('[data-part="rod-move"]'),
   fan: $('[data-part="fan"]'),
@@ -30,28 +25,69 @@ const el = {
   lcdT: $('[data-part="lcd-t"]'),
   lcdM: $('[data-part="lcd-m"]'),
   tag: $('[data-part="tag"]'),
-  tagLine: $('[data-part="tag-line"]'),
+  tagPeak: $('[data-part="tag-peak"]'),
+  tagBack: $('[data-part="tag-back"]'),
   tagText: $('[data-part="tag-text"]'),
   clip: { dro: $('[data-clip="dro"]'), haa: $('[data-clip="haa"]') },
   sheet: { dro: $('[data-sheet="dro"]'), haa: $('[data-sheet="haa"]') },
   ink: { dro: $('[data-sheet="dro"] .gc-ink'), haa: $('[data-sheet="haa"] .gc-ink') },
-  hump: $('.gc-hump'),
   bug: { dro: $('[data-bug="dro"]'), haa: $('[data-bug="haa"]') },
   turns: [$$('[data-ch="0"]'), $$('[data-ch="1"]')],
+  tails: [$$('[data-tail="0"]'), $$('[data-tail="1"]')],
+  nut: $('[data-part="nut"]'),
+  carriage: $$('[data-name="pen.bush"],[data-name="pen.post"]'),
+  pen: $$('[data-name="pen.slider"],[data-name="pen.tip"]'),
   detector: { dro: $$('[data-name^="fid"]'), haa: $$('[data-name^="ecd"]') },
-  lamp: Object.fromEntries(["ready", "run", "fid", "ecd"].map((n) => [n, $$(`[data-g="lamp-${n}"]`)])),
+  coil: [$$('[data-name="coil0"]'), $$('[data-name="coil1"]')],
+  lamp: Object.fromEntries(["ready", "run", "fid", "ecd"].map((n) => [n, $$(`[data-lamp="${n}"]`)])),
   labels: $$("[data-for]"),
+  zoom: root.querySelector(".gc-zoom"),
+  zu: { dro: root.querySelector('[data-z="dro"]'), haa: root.querySelector('[data-z="haa"]') },
 };
+const VIEW = (() => {
+  const a = ((P.azimuth ?? 45) * Math.PI) / 180;
+  const e = ((P.elevation ?? 30) * Math.PI) / 180;
+  return [Math.cos(a) * Math.cos(e), Math.sin(a) * Math.cos(e), Math.sin(e)];
+})();
+const LIFT = Object.fromEntries(Object.entries(D.MOVES).map(([name, v]) => [name, v[0] * VIEW[0] + v[1] * VIEW[1] + v[2] * VIEW[2]]));
+const shares = { sampler: 0, plunger: 0, tray: 0, swap: 0, gate: 0 };
+let order = el.items.slice();
+function placePieces() {
+  const tr = {};
+  for (const name in shares) {
+    const m = D.MOVES[name];
+    const v = shares[name];
+    tr[name] = translateAlong(P, [m[0] * v, m[1] * v, m[2] * v]);
+  }
+  for (const item of el.items) {
+    if (!item.piece) continue;
+    if (item.inner) continue;
+    item.node.setAttribute("transform", tr[item.piece]);
+  }
+  el.needleMove.setAttribute("transform", tr.sampler);
+  const relative = D.MOVES.plunger[2] * (shares.plunger - shares.sampler);
+  el.rodMove.setAttribute("transform", translateAlong(P, [0, 0, relative]));
+  const next = el.items.slice().sort((a, b) => a.k + (a.piece ? LIFT[a.piece] * shares[a.piece] : 0) - (b.k + (b.piece ? LIFT[b.piece] * shares[b.piece] : 0)) || a.index - b.index);
+  let same = true;
+  for (let i = 0; i < next.length; i++) if (next[i] !== order[i]) { same = false; break; }
+  if (!same) {
+    const frag = document.createDocumentFragment();
+    next.forEach((item) => frag.appendChild(item.node));
+    el.layer.appendChild(frag);
+    order = next;
+  }
+}
 
 const plotW = g.PLOT.x1 - g.PLOT.x0;
 const uOf = (id, t) => g.PLOT.x0 + (t / METHODS[id].end) * plotW;
 const clipX = g.PLOT.x0 - 3;
 const KNOB_ANGLE = { dro: -45, haa: 45 };
 const CHANNEL = { dro: 0, haa: 1 };
+const eu = g.eu;
 
 const s = {
   m: "dro",
-  tower: 0,
+  swap: 0,
   knob: -45,
   stroke: null, // seconds since Inject
   t: null, // run minutes, null when no run
@@ -79,11 +115,12 @@ const follow = (x, target, dt, tau, calm) => (calm ? target : x + (target - x) *
 function methodLine(id) {
   const m = METHODS[id];
   return id === "dro"
-    ? `EPA 8015 on FID. n-Alkane ladder, DRO window C10 to C28, oil window C28 to C40, diesel hump, o-terphenyl surrogate. Oven ${programText(id)}.`
-    : `EPA 552.3 on ECD. Nine haloacetic acid methyl esters, surrogate and internal standard. Oven ${programText(id)}.`;
+    ? `8015-style DRO/ORO on FID, vendor conditions. Composite: n-alkane ladder, diesel and oil humps, o-terphenyl surrogate. Oven ${programText(id)}.`
+    : `EPA 552.3 on ECD. Ten analyte esters (nine haloacetic acids and dalapon), surrogate and internal standard. Oven ${programText(id)}.`;
 }
 function pickText(id, p) {
-  return `${p.code}: ${p.name}. Elutes at ${p.t.toFixed(2)} min, oven ${Math.round(METHODS[id].temp(p.t))} °C.`;
+  const temp = Math.round(METHODS[id].temp(p.t));
+  return `${p.code}: ${p.name}. Elutes at ${timeText(p)} min, oven ${p.approx ? "about " : ""}${temp} °C.${p.approx ? " Modelled time." : ""}`;
 }
 
 function say(text) {
@@ -94,28 +131,23 @@ function announce(text) {
 }
 
 // ---------- knurl, rebuilt while the knob turns ----------
-const VIEW = (() => {
-  const a = ((P.azimuth ?? 45) * Math.PI) / 180;
-  const e = ((P.elevation ?? 30) * Math.PI) / 180;
-  return [Math.cos(a) * Math.cos(e), Math.sin(a) * Math.cos(e), Math.sin(e)];
-})();
 let lastKnurl = null;
 function drawKnurl(deg) {
-  const phase = (((deg % 8.1818) + 8.1818) % 8.1818) * (Math.PI / 180);
+  const phase = (((deg % 9) + 9) % 9) * (Math.PI / 180);
   if (lastKnurl !== null && Math.abs(phase - lastKnurl) < 1e-3) return;
   lastKnurl = phase;
   const buckets = new Map();
   const { x, z } = g.KNOB;
   const y = g.ky;
-  for (let i = 0; i < 44; i++) {
-    const a = (i / 44) * Math.PI * 2 + phase;
+  for (let i = 0; i < 40; i++) {
+    const a = (i / 40) * Math.PI * 2 + phase;
     const nx = Math.cos(a);
     const nz = Math.sin(a);
     const f = nx * VIEW[0] + nz * VIEW[2];
     const al = smooth(0.08, 0.5, f);
     if (al < 0.02) continue;
     const p0 = iso([x + g.knobR * nx, y + 1.8, z + g.knobR * nz], P);
-    const p1 = iso([x + g.knobR * nx, y + 8.6, z + g.knobR * nz], P);
+    const p1 = iso([x + g.knobR * nx, y + 7.6, z + g.knobR * nz], P);
     const key = Math.round(al * 20) / 20;
     buckets.set(key, (buckets.get(key) ?? "") + `M${p0[0].toFixed(1)} ${p0[1].toFixed(1)}L${p1[0].toFixed(1)} ${p1[1].toFixed(1)}`);
   }
@@ -177,30 +209,34 @@ function drawKnob() {
   el.pointer.setAttribute("transform", `rotate(${s.knob.toFixed(2)})`);
   drawKnurl(s.knob);
 }
-function drawTower() {
-  const x = s.tower * g.TOWER_DX;
+function drawMechanism() {
   const st = s.stroke === null ? { tray: 0, drop: 0, plunger: 0 } : strokeAt(s.stroke);
-  const dz = -st.drop * g.NEEDLE_TRAVEL;
-  const pz = st.plunger * g.PLUNGER;
-  move(el.tower, [x, 0, 0]);
-  move(el.sampler, [x, 0, dz]);
-  move(el.plunger, [x, 0, dz + pz]);
-  move(el.tray, [x + st.tray * g.TRAY, 0, 0]);
-  el.needleMove.setAttribute("transform", translateAlong(P, [0, 0, dz]));
-  el.rodMove.setAttribute("transform", translateAlong(P, [0, 0, pz]));
-  return st;
+  const w = swapAt(s.swap);
+  shares.tray = st.tray;
+  shares.sampler = st.drop;
+  shares.plunger = st.drop - (st.plunger * g.PLUNGER) / g.TRAVEL;
+  shares.swap = w.shuttle;
+  shares.gate = w.gate;
+  placePieces();
 }
 function drawPen() {
   const id = s.m;
   const t = s.penT;
   const u = uOf(id, t);
   const sig = signalAt(id, Math.min(t, METHODS[id].end));
-  const z = sig * (g.PLOT.z1 - g.PLOT.z0);
+  const v = sig * (g.PLOT.z1 - g.PLOT.z0);
   move(el.carriage, [u - g.u0, 0, 0]);
-  move(el.pen, [u - g.u0, 0, z]);
+  move(el.pen, [u - g.u0 + eu[0] * v, eu[1] * v, eu[2] * v]);
   el.clip[id].setAttribute("width", Math.max(0, uOf(id, s.drawn[id]) - clipX).toFixed(2));
+  // Printed labels show once their own peak has been drawn; pre-run the sheet stays dim, markers only.
+  el.sheet[id].toggleAttribute("data-dim", s.drawn[id] <= 0.02);
+  for (const p of METHODS[id].peaks) {
+    const label = LABELS[id][p.id];
+    if (label) label.toggleAttribute("data-on", p.t <= s.drawn[id]);
+  }
   return sig;
 }
+const LABELS = { dro: {}, haa: Object.fromEntries($$('[data-sheet="haa"] [data-label]').map((n) => [n.dataset.label, n])) };
 const lit = [new Set(), new Set()];
 function drawBands() {
   const ch = CHANNEL[s.m];
@@ -228,23 +264,34 @@ function drawPick() {
     nameLine.textContent = methodLine(id);
     return;
   }
-  const u = uOf(id, p.t);
-  const y0 = -g.PLOT.z0;
-  const y = -(g.PLOT.z0 + signalAt(id, p.t) * (g.PLOT.z1 - g.PLOT.z0));
   el.tag.removeAttribute("data-off");
-  el.tagLine.setAttribute("d", `M${u.toFixed(2)} ${y0}V${(y - 1).toFixed(2)}`);
-  const left = u > 46;
-  el.tagText.setAttribute("x", (u + (left ? -1.4 : 1.4)).toFixed(2));
-  el.tagText.setAttribute("y", (-g.PLOT.z1 + 1).toFixed(2));
-  el.tagText.setAttribute("text-anchor", left ? "end" : "start");
-  el.tagText.textContent = `${p.code} ${p.t.toFixed(2)} min`;
+  // The true shape of this peak, sampled from the model, drawn over the trace.
+  const pts = [];
+  const span = p.w * 3.2;
+  for (let i = 0; i <= 24; i++) {
+    const t = p.t - span + (i / 24) * span * 2;
+    pts.push(`${uOf(id, t).toFixed(2)} ${(-(g.PLOT.z0 + signalAt(id, t) * (g.PLOT.z1 - g.PLOT.z0))).toFixed(2)}`);
+  }
+  el.tagPeak.setAttribute("d", `M${pts.join("L")}`);
+  const text = `${p.code} ${timeText(p)} min`;
+  const width = text.length * 2.2 + 2;
+  const u = uOf(id, p.t);
+  const flip = u + width + 2 > g.PLOT.x1;
+  const x = Math.max(g.PLOT.x0, Math.min(g.PLOT.x1 - width, flip ? u - width - 1 : u + 1));
+  const y = -g.PLOT.z1 + 0.6;
+  el.tagBack.setAttribute("x", x.toFixed(2));
+  el.tagBack.setAttribute("y", y.toFixed(2));
+  el.tagBack.setAttribute("width", width.toFixed(2));
+  el.tagText.setAttribute("x", (x + 1).toFixed(2));
+  el.tagText.setAttribute("y", (y + 4).toFixed(2));
+  el.tagText.textContent = text;
   nameLine.textContent = pickText(id, p);
 }
 function drawStatusText() {
   const m = METHODS[s.m];
   if (s.picked) {
     const p = s.picked;
-    say(`${p.code} · ${p.t.toFixed(2)} min · ${Math.round(m.temp(p.t))} °C`);
+    say(`${p.code} · ${timeText(p)} min`);
     return;
   }
   const T = `${Math.round(s.T)} °C`;
@@ -278,10 +325,14 @@ function selectMethod(id, user) {
   el.sheet.haa.toggleAttribute("data-off", id !== "haa");
   el.bug.dro.toggleAttribute("data-off", id !== "dro");
   el.bug.haa.toggleAttribute("data-off", id !== "haa");
+  el.zu.dro.toggleAttribute("data-off", id !== "dro");
+  el.zu.haa.toggleAttribute("data-off", id !== "haa");
   el.labels.forEach((n) => n.toggleAttribute("data-on", n.dataset.for === id));
   methodBtns.forEach((b) => b.setAttribute("aria-pressed", b.dataset.method === id ? "true" : "false"));
   setOn(el.detector.dro, id === "dro", "data-active");
   setOn(el.detector.haa, id === "haa", "data-active");
+  setOn(el.coil[0], id === "dro", "data-active");
+  setOn(el.coil[1], id === "haa", "data-active");
   const hits = $$(`[data-sheet="${id}"] .gc-hit`);
   $$(".gc-hit").forEach((h) => h.setAttribute("tabindex", "-1"));
   hits[0]?.setAttribute("tabindex", "0");
@@ -340,26 +391,31 @@ function tick(now) {
   s.clock += dt;
   const id = s.m;
   const m = METHODS[id];
-  if (tour.on && s.stroke === null && s.t === null && s.phase === "ready") {
+  const swapTarget = CHANNEL[id];
+  const swapping = s.swap !== swapTarget;
+  if (swapping) {
+    const step = dt / 1.7;
+    s.swap = calm ? swapTarget : s.swap < swapTarget ? Math.min(swapTarget, s.swap + step) : Math.max(swapTarget, s.swap - step);
+  }
+  if (tour.on && !swapping && s.stroke === null && s.t === null && s.phase === "ready") {
     tour.wait -= dt;
     if (tour.wait <= 0) {
       if (tour.queued) {
         tour.queued = false;
-        tour.wait = 0.9;
+        tour.wait = 1.2;
         selectMethod(id === "dro" ? "haa" : "dro", false);
       } else {
         tour.queued = true;
-        tour.wait = 2.2;
+        tour.wait = 6;
         inject();
       }
     }
   }
-  if (s.stroke !== null) {
+  if (s.stroke !== null && !swapping) {
     s.stroke += dt;
     if (s.pendingClear) {
       s.inkFade = Math.max(0, s.inkFade - dt / 0.45);
       el.ink[id].style.opacity = s.inkFade.toFixed(3);
-      if (id === "dro") el.hump.style.opacity = "";
       if (s.inkFade === 0) {
         s.pendingClear = false;
         s.drawn[id] = 0;
@@ -398,17 +454,21 @@ function tick(now) {
       if (s.phase === "cool") s.phase = "ready";
     }
   }
-  const towerTarget = CHANNEL[id];
-  const armed = Math.abs(s.tower - towerTarget) < 0.002;
-  s.tower = armed ? towerTarget : follow(s.tower, towerTarget, dt, 0.28, calm);
   const knobTarget = KNOB_ANGLE[id];
   const knobMoving = Math.abs(s.knob - knobTarget) > 0.05;
   s.knob = knobMoving ? follow(s.knob, knobTarget, dt, 0.14, calm) : knobTarget;
   if (s.fanOn !== false) s.fan = (s.fan + dt * 720) % 360;
   el.fan.setAttribute("transform", `rotate(${s.fan.toFixed(1)})`);
   drawKnob();
-  drawTower();
+  drawMechanism();
   const sig = drawPen();
+  const sinceInject = s.stroke === null ? -1 : s.stroke - INJECT_AT;
+  el.nut?.toggleAttribute?.("data-on", sinceInject > -0.5 && sinceInject < 0.5);
+  el.tails[CHANNEL[id]].forEach((n) => {
+    const out = n.dataset.route?.includes(".out");
+    const on = s.t !== null && (out ? sig > 0.08 : s.t < 1.1);
+    n.toggleAttribute("data-on", on);
+  });
   drawBands();
   drawDial();
   drawLamps();
@@ -419,7 +479,7 @@ function tick(now) {
   settle(s.sig, liveSig, dt, 0.05, calm);
   stage.style.setProperty("--gc-lit", s.lit.x.toFixed(3));
   if (flame) flame.draw({ uLit: s.lit.x, uSig: s.sig.x }, calm ? 0.8 : s.clock);
-  const keepGoing = !calm && (tour.on || s.stroke !== null || s.cool || knobMoving || !armed || movingLit || s.lit.x > 0.002);
+  const keepGoing = !calm && (tour.on || s.stroke !== null || s.cool || knobMoving || swapping || movingLit || s.lit.x > 0.002);
   frame = visible && keepGoing ? requestAnimationFrame(tick) : 0;
 }
 function run() {
@@ -518,13 +578,36 @@ methodBtns.forEach((b) => b.addEventListener("click", () => {
   selectMethod(b.dataset.method, true);
 }));
 stage.addEventListener("pointerenter", () => hold());
+root.querySelectorAll("[data-step]").forEach((b) => b.addEventListener("click", () => {
+  hold();
+  const hits = hitsNow();
+  const i = s.picked ? hits.findIndex((h) => h.dataset.peak === s.picked.id) : -1;
+  const n = Math.max(0, Math.min(hits.length - 1, i + Number(b.dataset.step)));
+  pick(peakOf(hits[n]));
+}));
+// The enlarged crop on a phone: a tap picks the nearest peak, so every band ends at a midpoint.
+el.zoom?.addEventListener("pointerdown", (e) => {
+  hold();
+  const box = el.zoom.getBoundingClientRect();
+  const vb = el.zoom.viewBox.baseVal;
+  const x = vb.x + ((e.clientX - box.left) / box.width) * vb.width;
+  let best = null;
+  for (const p of METHODS[s.m].peaks) {
+    if (p.kind === "solvent") continue;
+    const d = Math.abs(uOf(s.m, p.t) - x);
+    if (!best || d < best.d) best = { p, d };
+  }
+  if (best) pick(best.p);
+});
+el.zu.haa.setAttribute("data-off", "");
 
 // ---------- first paint ----------
 el.labels.forEach((n) => n.toggleAttribute("data-on", n.dataset.for === "dro"));
 setOn(el.detector.dro, true, "data-active");
 $$('[data-sheet="dro"] .gc-hit')[0]?.setAttribute("tabindex", "0");
+setOn(el.coil[0], true, "data-active");
 drawKnob();
-drawTower();
+drawMechanism();
 drawPen();
 drawDial();
 drawLamps();

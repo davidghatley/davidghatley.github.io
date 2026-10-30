@@ -9,7 +9,7 @@
 .gc-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 
 .gc-root [data-c="cavity"],.gc-root .it[data-c="cavity"]{--anatomy-paper:#3f3f40;--anatomy-top:#4a4a4b;--anatomy-shade-0:#373738;--anatomy-shade-1:#3c3c3d;--anatomy-shade-2:#424243;--anatomy-shade-3:#48484a;--anatomy-mid:#6a6a6c;--anatomy-lo:#5b5b5d;--anatomy-faint:#505052;--anatomy-hi:#8c8c8f}
-.iso[data-theme="dark"] .gc-root [data-c="cavity"]{--anatomy-paper:#0e0e0e;--anatomy-top:#121212;--anatomy-shade-0:#0a0a0a;--anatomy-shade-1:#0c0c0c;--anatomy-shade-2:#0e0e0e;--anatomy-shade-3:#101010;--anatomy-mid:#4a4a4a;--anatomy-lo:#333;--anatomy-faint:#232323;--anatomy-hi:#8a8a8a}
+.iso[data-theme="dark"] .gc-root [data-c="cavity"]{--anatomy-paper:#0e0e0e;--anatomy-top:#121212;--anatomy-shade-0:#0a0a0a;--anatomy-shade-1:#0c0c0c;--anatomy-shade-2:#0e0e0e;--anatomy-shade-3:#101010;--anatomy-mid:#6a6a6a;--anatomy-lo:#4c4c4c;--anatomy-faint:#2e2e2e;--anatomy-hi:#b0b0b0}
 .gc-bore{fill:var(--gc-bore)}
 .gc-fan-hole{fill:var(--anatomy-shade-0)}
 .gc-blade{fill:var(--anatomy-shade-3);stroke:var(--anatomy-lo);stroke-width:.4px;vector-effect:non-scaling-stroke}
@@ -23,7 +23,7 @@
 .gc-recess{fill:var(--anatomy-shade-0)}
 .gc-paper{fill:var(--gc-paper,#fffdf6)}
 .iso[data-theme="dark"] .gc-root{--gc-paper:#0c0c0b;--gc-rule:#2c2c2a;--gc-rule2:#454542}
-.gc-root{--gc-bore:#8f8f8c;--gc-paper:#ffffff;--gc-rule:#e2e2de;--gc-rule2:#b8b8b4}
+.gc-root{--gc-tail:#d6d6d2;--gc-bore:#8f8f8c;--gc-paper:#ffffff;--gc-rule:#e2e2de;--gc-rule2:#b8b8b4}
 .iso[data-theme="dark"] .gc-root{--gc-bore:#080808;--gc-paper:#0c0c0b;--gc-rule:#2c2c2a;--gc-rule2:#454542}
 .gc-sheet{transition:opacity .35s var(--anatomy-ease)}
 .gc-sheet[data-off]{opacity:0;pointer-events:none}
@@ -40,24 +40,42 @@
 .gc-code{font-size:2.8px;fill:var(--anatomy-text)}
 .gc-hit{fill:transparent;cursor:pointer;outline:none}
 .gc-tag[data-off]{display:none}
-.gc-tag-line{fill:none;stroke:var(--gc-band);stroke-width:.7px;vector-effect:non-scaling-stroke}
-.gc-tag-text{font-size:3.6px;fill:var(--gc-band);font-weight:600}
+.gc-tag-peak{fill:none;stroke:var(--gc-band);stroke-width:1.4px;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.gc-tag-back{fill:var(--gc-paper);stroke:var(--gc-band);stroke-width:.5px;vector-effect:non-scaling-stroke}
+.gc-tag-text{font-size:3.4px;fill:var(--gc-band);font-weight:600}
+.gc-sheet[data-dim]{opacity:.62}
+.gc-label{opacity:0;transition:opacity .25s}
+.gc-label[data-on]{opacity:1}
+.gc-leader{fill:none;stroke:var(--anatomy-mid);stroke-width:.35px;vector-effect:non-scaling-stroke}
+.it[data-tail][data-on] .tb-body,.it[data-tail][data-on] .tb-shine,.it[data-tail][data-on] .tb-shade{fill:var(--gc-band)}
+.it[data-tail][data-on] .iso-edge,.it[data-tail][data-on] .tb-edge{stroke:var(--gc-band)}
+.it[data-c="coil"][data-active] .iso-edge{stroke:var(--anatomy-hi)}
+.it[data-c="coil"][data-active] .gc-turn{stroke:var(--anatomy-hi)}
+.it[data-c="coil"][data-active] .gc-turn[data-on]{stroke:var(--gc-band)}
+.it[data-part="nut"][data-on] .iso-edge,[data-part="nut"][data-on] .iso-edge{stroke:var(--gc-band)}
+.it[data-c="tail"] .tb-edge,.it[data-c="tail"] path[class*="edge"]{stroke:var(--gc-tail)}
+.it[data-c="tail"] .tb-body,.it[data-c="tail"] .tb-shine,.it[data-c="tail"] .tb-shade{fill:var(--gc-tail)}
+.gc-key{font-size:1.9px;fill:var(--anatomy-text)}
+.gc-zoom{display:none;width:100%;height:auto;margin-top:10px;box-shadow:0 0 0 1px var(--anatomy-mid);background:var(--gc-paper);touch-action:pan-y;cursor:pointer}
+.gc-zu[data-off]{display:none}
+.gc-steps{display:flex;gap:6px}
+.gc-steps button{box-shadow:0 0 0 1px var(--anatomy-mid)}
+@media (max-width:560px){.gc-zoom{display:block}}
 .gc-dial{fill:var(--anatomy-face);stroke:var(--anatomy-mid);stroke-width:.5px;vector-effect:non-scaling-stroke}
 .gc-tick-d{fill:none;stroke:var(--anatomy-lo);stroke-width:.5px;vector-effect:non-scaling-stroke}
 .gc-tick-D{fill:none;stroke:var(--anatomy-hi);stroke-width:.6px;vector-effect:non-scaling-stroke}
-.gc-dial-num{font-size:3.3px;fill:var(--anatomy-strong)}
+.gc-dial-num{font-size:2.8px;fill:var(--anatomy-strong)}
 .gc-dial-unit{font-size:2.3px;fill:var(--anatomy-muted);letter-spacing:.08em}
 .gc-needle{fill:none;stroke:var(--anatomy-lit);stroke-width:1px;stroke-linecap:round;vector-effect:non-scaling-stroke}
 .gc-pointer{fill:none;stroke:var(--anatomy-lit);stroke-width:1.1px;stroke-linecap:round;vector-effect:non-scaling-stroke}
 .gc-hub{fill:var(--anatomy-top);stroke:var(--anatomy-mid);stroke-width:.5px;vector-effect:non-scaling-stroke}
 .gc-bug{fill:var(--gc-heat)}
 .gc-bug[data-off]{display:none}
-.gc-window{fill:none}
-rect.gc-window{fill:var(--anatomy-shade-0);stroke:var(--anatomy-lo);stroke-width:.5px;stroke-dasharray:none;vector-effect:non-scaling-stroke}
-.gc-lcd{font-size:6px;fill:var(--anatomy-strong);font-variant-numeric:tabular-nums}
-.gc-engrave{font-size:2.8px;fill:var(--anatomy-muted);letter-spacing:.06em;transition:fill .3s}
+.gc-lcd-win{fill:var(--anatomy-shade-0);stroke:var(--anatomy-lo);stroke-width:.5px;vector-effect:non-scaling-stroke}
+.gc-lcd{font-size:5.4px;fill:var(--anatomy-strong);font-variant-numeric:tabular-nums}
+.gc-engrave{font-size:2.5px;fill:var(--anatomy-muted);letter-spacing:.06em;transition:fill .3s}
 .gc-engrave[data-on]{fill:var(--anatomy-strong);font-weight:600}
-.gc-small{font-size:2.1px}
+.gc-small{font-size:1.9px}
 .it[data-g^="lamp"][data-on] .iso-top,.it[data-g^="lamp"][data-on] .iso-shade{fill:var(--anatomy-lit)}
 .it[data-g^="lamp"][data-on] .iso-edge{stroke:var(--anatomy-lit)}
 .gc-inside{--anatomy-paper:#3a3a3b;--anatomy-top:#59595a;--anatomy-shade-0:#2f2f30;--anatomy-shade-1:#363637;--anatomy-shade-2:#3f3f40;--anatomy-shade-3:#4a4a4b;--anatomy-mid:#79797b;--anatomy-lo:#555;--anatomy-hi:#a4a4a6;--anatomy-faint:#444}
@@ -79,3 +97,5 @@ rect.gc-window{fill:var(--anatomy-shade-0);stroke:var(--anatomy-lo);stroke-width
 .gc-name{margin:8px 0 0;font:11.5px/1.45 var(--anatomy-mono);color:var(--anatomy-strong);min-height:3em}
 @media (max-width:560px){.gc-root button{padding:9px 8px;font-size:11px}}
 @media (prefers-reduced-motion:reduce){.gc-turn,.gc-sheet,.gc-engrave{transition:none}}
+
+.iso[data-theme="dark"] .gc-root{--gc-tail:#8c8c8c}

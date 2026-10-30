@@ -62,13 +62,15 @@ export function alkaneTime(n) {
   return solveElution(travelTable((T) => lnkAlkane(n, T), DRO_TM, droTemp, 20));
 }
 const droPeaks = [];
-droPeaks.push({ id: "solvent", kind: "solvent", code: "solvent", name: "Methylene chloride, the extract solvent", t: 0.58, h: 1.5, w: 0.05, offScale: true });
+// The solvent front's time and height are illustrative; the standard's diluent is methylene chloride.
+droPeaks.push({ id: "solvent", kind: "solvent", code: "solvent", name: "Methylene chloride, the solvent", t: 0.58, h: 1.5, w: 0.05, offScale: true, approx: true });
 for (let n = 10; n <= 40; n += 2) {
   const window = n === 10 || n === 28 || n === 40;
   const h = n <= 28 ? 0.66 - 0.006 * (n - 10) : 0.552 - 0.024 * (n - 28);
-  droPeaks.push({ id: `C${n}`, kind: window ? "window" : "alkane", code: `C${n}`, name: alkaneNames[n], carbon: n, h, w: n > 30 ? 0.06 : 0.045, lnk: (T) => lnkAlkane(n, T) });
+  const tabulated = ALKANE_ANCHORS.find(([c]) => c === n && c <= 18);
+  droPeaks.push({ id: `C${n}`, kind: window ? "window" : "alkane", code: `C${n}`, name: alkaneNames[n], carbon: n, h, w: n > 30 ? 0.06 : 0.045, lnk: (T) => lnkAlkane(n, T), published: tabulated ? tabulated[1] / 60 : null, approx: !tabulated });
 }
-droPeaks.push({ id: "OTP", kind: "surrogate", code: "SUR", name: "o-Terphenyl, the surrogate", carbon: 18.9, h: 0.72, w: 0.045, lnk: (T) => lnkAlkane(18.9, T) });
+droPeaks.push({ id: "OTP", kind: "surrogate", code: "SUR", name: "o-Terphenyl, the surrogate", carbon: 18.9, h: 0.72, w: 0.045, lnk: (T) => lnkAlkane(18.9, T), approx: true });
 
 // ---------- 552.3: nine haloacetic acid methyl esters on ECD ----------
 // Oven program, retention times and the primary column are EPA 552.3 Table 1 (MTBE).
@@ -77,10 +79,11 @@ const haaProgram = [[0, 40], [10, 40], [20, 65], [22, 85], [28, 205], [35, 205]]
 const haaTemp = makeTemp(haaProgram);
 const HAA_TM = 30 / 0.33 / 60; // 30 m at 33 cm/s
 const FULL = 12500;
-const ester = (id, kind, name, t, counts) => ({ id, kind, code: id, name, t, h: (0.82 * counts) / FULL, w: 0.055 });
+const ester = (id, kind, name, t, counts) => ({ id, kind, code: id, name, t, h: (0.7 * counts) / FULL, published: t, w: 0.055 });
 const haaPeaks = [
   ester("MCAA", "ester", "Methyl chloroacetate, from MCAA", 9.29, 250),
   ester("MBAA", "ester", "Methyl bromoacetate, from MBAA", 14.19, 1300),
+  ester("DAL", "ester", "Methyl 2,2-dichloropropanoate, from dalapon", 14.69, 1300),
   ester("DCAA", "ester", "Methyl dichloroacetate, from DCAA", 15.07, 1800),
   ester("TCAA", "ester", "Methyl trichloroacetate, from TCAA", 18.89, 5400),
   ester("IS", "internal", "1,2,3-Trichloropropane, the internal standard", 20.69, 3000),
@@ -109,8 +112,8 @@ function solveHaa(peak) {
 export const METHODS = {
   dro: {
     id: "dro",
-    short: "8015",
-    label: "8015 DRO/ORO",
+    short: "8015-style",
+    label: "8015-style DRO/ORO, vendor conditions",
     detector: "FID",
     channel: 0,
     end: 20,
@@ -146,6 +149,9 @@ for (const peak of droPeaks) {
 for (const peak of haaPeaks) peak.table = travelTable(solveHaa(peak), HAA_TM, haaTemp, 35);
 droPeaks.sort((a, b) => a.t - b.t);
 
+// What the figure may claim about a time: published values to two decimals, modelled ones as "about".
+export const timeText = (p) => (p.approx ? `about ${p.t.toFixed(1)}` : (p.published ?? p.t).toFixed(2));
+
 // Carbon number at a run time, for the hump: inverts the alkane times.
 const ladder = droPeaks.filter((p) => p.carbon && p.kind !== "surrogate");
 function carbonAt(t) {
@@ -159,6 +165,12 @@ function humpOf(n) {
   if (n <= 8.6 || n >= 27.5) return 0;
   const x = (n - 8.6) / (27.5 - 8.6);
   return 0.335 * Math.pow(x, 1.25) * Math.pow(1 - x, 1.85) * 7.35;
+}
+// The oil hump of the composite: a low broad mound over the ORO window, illustrative in shape.
+function oilOf(n) {
+  if (n <= 25 || n >= 41) return 0;
+  const x = (n - 25) / 16;
+  return 0.2 * Math.pow(x, 1.2) * Math.pow(1 - x, 1.1) * 4.3;
 }
 function seeded(seed) {
   let s = seed >>> 0;
@@ -183,14 +195,17 @@ const gauss = (t, c, w) => {
 
 // Detector signal on the recorder's 0..1 scale.
 export function humpAt(id, t) {
-  return id === "dro" ? humpOf(carbonAt(t)) : 0;
+  if (id !== "dro") return 0;
+  const n = carbonAt(t);
+  return humpOf(n) + oilOf(t > 14.33 ? 40 + (t - 14.33) * 1.6 : n);
 }
 export function signalAt(id, t) {
   const m = METHODS[id];
   let s = 0;
   if (id === "dro") {
-    const hump = humpOf(carbonAt(t));
-    s += hump;
+    const n = carbonAt(t);
+    const hump = humpOf(n);
+    s += hump + oilOf(t > 14.33 ? 40 + (t - 14.33) * 1.6 : n);
     if (hump > 0) for (const g of grass) if (Math.abs(g.t - t) < g.w * 4.2) s += g.h * Math.min(1, hump * 4.2) * gauss(t, g.t, g.w);
     s += 0.012 * Math.max(0, m.temp(t) - 250) / 150; // column bleed rising with the oven
   }
@@ -232,15 +247,15 @@ export const dialAngle = (T) => DIAL.from + (DIAL.sweep * (T - DIAL.min)) / (DIA
 // The autosampler's stroke, as a pure function of seconds since Inject was pressed.
 // Run time zero is the instant the plunger bottoms out.
 export const STROKE = [
-  ["tray", 0.5],
-  ["dip", 0.5],
-  ["draw", 0.45],
-  ["lift", 0.5],
-  ["park", 0.45],
-  ["descend", 0.7],
-  ["depress", 0.22],
-  ["dwell", 0.12],
-  ["retract", 0.7],
+  ["tray", 0.7],
+  ["dip", 0.6],
+  ["draw", 0.5],
+  ["lift", 0.6],
+  ["park", 0.65],
+  ["descend", 0.95],
+  ["depress", 0.4],
+  ["dwell", 0.25],
+  ["retract", 0.8],
 ];
 const ease = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x));
 export const STROKE_END = STROKE.reduce((a, [, d]) => a + d, 0);
@@ -263,6 +278,11 @@ export function strokeAt(s) {
     at += d;
   }
   return { tray, drop, plunger, phase };
+}
+// The selector's swap: pocket gates open, the shuttle moves one bay, the gates close. u is 0 to 1 toward the 552.3 column.
+export function swapAt(u) {
+  const gate = ease(Math.min(1, u / 0.22)) * (1 - ease((u - 0.78) / 0.22));
+  return { gate, shuttle: ease((u - 0.2) / 0.6) };
 }
 export const runOf = (seconds) => seconds * MIN_PER_S;
 // Oven door vents after a run: a plain exponential toward the start temperature, about 4 s of figure time.
