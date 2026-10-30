@@ -72,9 +72,9 @@ ${S} .strip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-to
 ${S} .sg{padding:8px 8px 8px 0;border-right:1px solid var(--rule);min-width:0}
 ${S} .sg+.sg{padding-left:8px}${S} .sg:last-child{border-right:0}
 ${S} .sg b{display:block;font:400 16px/16px var(--font-pixel);-webkit-font-smoothing:none;color:var(--ink-muted)}
-${S} .sg h5{margin:4px 0 2px;font:600 13px/16px var(--font-sans)}
+${S} .sg .h5{margin:4px 0 2px;font:600 13px/16px var(--font-sans)}
 ${S} .sg p{margin:0;font:400 12px/16px var(--font-mono);color:var(--ink-muted);overflow-wrap:anywhere}
-${S} .sg.on b,${S} .sg.on h5{color:var(--acc)}${S} .sg.on{box-shadow:none;border-top:0}
+${S} .sg.on b,${S} .sg.on .h5{color:var(--acc)}${S} .sg.on{box-shadow:none;border-top:0}
 ${S} .sg .mk{height:3px;margin:-8px 0 5px;background:transparent}${S} .sg.on .mk{background:var(--acc)}
 ${S} .body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:24px;align-items:start}
 ${S}.narrow .body{grid-template-columns:1fr}${S}.narrow .strip{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -138,7 +138,7 @@ ${S}.row-narrow ol{display:grid;grid-template-columns:1fr}
   document.head.appendChild(css);
   const el = document.createElement('div'); el.className = 'pv-anime'; root.appendChild(el);
   const cellsHTML = n => Array.from({ length: n }, () => '<i></i>').join('');
-  el.innerHTML = `${hero ? `<div><div class="lab" style="margin-bottom:8px">The pipeline · model per stage</div><div class="strip">${STAGES.map((s, i) => `<div class="sg"><div class="mk"></div><b>${i + 1}</b><h5>${s[0]}</h5><p>${s[1]}</p><p>${s[2]}</p></div>`).join('')}</div></div>` : ''}
+  el.innerHTML = `${hero ? `<div><div class="lab" style="margin-bottom:8px">The pipeline · model per stage</div><div class="strip">${STAGES.map((s, i) => `<div class="sg"><div class="mk"></div><b>${i + 1}</b><div class="h5">${s[0]}</div><p>${s[1]}</p><p>${s[2]}</p></div>`).join('')}</div></div>` : ''}
   <div class="body">
     <div class="card" aria-hidden="true">
       <div class="hd"><span class="t">RTX 3060 · 64 GB</span><span class="lab mname"></span></div>
@@ -155,7 +155,7 @@ ${S}.row-narrow ol{display:grid;grid-template-columns:1fr}
     <div class="side">
       <div class="hd"><span class="lab">Methods I tried · ${M.length - 1}</span><span class="verdict"></span></div>
       <ol>${M.map((m, i) => `<li><button type="button"><span class="nn">${String(i + 1).padStart(2, '0')}</span><span class="nm">${m.n}</span><span class="kk${m.k === 'rejected' ? ' rej' : ''}">${m.k}</span></button></li>`).join('')}</ol>
-      <div class="ctl"><button type="button" class="pv" aria-label="Previous method">&larr; prev</button><button type="button" class="nx" aria-label="Next method">next &rarr;</button><span class="pos"></span></div>
+      <div class="ctl"><button type="button" class="pv" aria-label="prev method">&larr; prev</button><button type="button" class="nx" aria-label="next method">next &rarr;</button><span class="pos"></span></div>
       <p class="say" aria-live="polite"></p>
     </div>
   </div>

@@ -40,7 +40,7 @@
   }
   function replay(g) { g.classList.add('is-armed'); void g.getBoundingClientRect(); g.classList.remove('is-armed'); g.querySelectorAll('rect').forEach(function (r) { r.style.animation = 'none'; void r.getBoundingClientRect(); r.style.animation = ''; }); }
   var mk = document.getElementById('mk');
-  if (mk && G.mark) G.mark.forEach(function (r, y) { for (var x = 0; x < 7; x++) if (r[x] === 'X') { var q = document.createElementNS(NS, 'rect'); q.setAttribute('x', x); q.setAttribute('y', y); q.setAttribute('width', 1); q.setAttribute('height', 1); mk.appendChild(q); } });
+  if (mk && !mk.firstChild && G.mark) G.mark.forEach(function (r, y) { for (var x = 0; x < 7; x++) if (r[x] === 'X') { var q = document.createElementNS(NS, 'rect'); q.setAttribute('x', x); q.setAttribute('y', y); q.setAttribute('width', 1); q.setAttribute('height', 1); mk.appendChild(q); } });
 
   // zoom (pinch, drag, double-tap, close button)
   var zoom = document.getElementById('zoom'), zimg = zoom.querySelector('img');
@@ -331,6 +331,11 @@
       lk.addEventListener('click', function () { if (g) g.style.viewTransitionName = 'glyph-' + t.id; });
     });
     [].forEach.call(document.querySelectorAll('.cmp'), function (fr) { fr._wipe = wipe(fr, still); });
+    // the font library's stylesheet comes with its tile: sixteen specimen faces nobody needs on the first screen
+    var fl = document.querySelector('.t-fonts');
+    function fontlib() { if (document.querySelector('link[data-fontlib]')) return; var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'fonts/files/fonts.css'; l.dataset.fontlib = '1'; document.head.appendChild(l); }
+    if (fl && 'IntersectionObserver' in window) { var fio = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { fio.disconnect(); fontlib(); } }, { rootMargin: '400px 0px' }); fio.observe(fl); }
+    else fontlib();
     if (still) return;
 
     // each instrument: start() when visible, stop() when not
@@ -396,6 +401,13 @@
 
   // the previz wipe: drag (or arrow keys on the hidden range) to move --x. Previz is left of the line, final right.
   // The clip is one file with previz stacked over final, drawn to a canvas each frame, so the halves stay in sync.
+  // The clip is 1.7 MB, so it waits for the first sign of a person (pointer, touch, key or scroll); the stills and the
+  // wipe's sweep carry the tile until then.
+  var awake = false, wakers = [];
+  function wake(f) { if (wakers.push(f) > 1) return;
+    var evs = ['pointermove', 'pointerdown', 'touchstart', 'keydown', 'scroll'];
+    function go() { awake = true; evs.forEach(function (n) { window.removeEventListener(n, go, true); }); wakers.forEach(function (w) { w(); }); wakers = []; }
+    evs.forEach(function (n) { window.addEventListener(n, go, { capture: true, passive: true }); }); }
   function wipe(fr, still) {
     var r = fr.querySelector('.cmp-r'), x = +r.value, x0 = x, v = null, cv = null, cx = null, raf = 0, drag = false, touched = false, hinted = still;
     function draw() { if (!cx || v.readyState < 2) return; var W = cv.width, H = cv.height, s = Math.round(W * x / 100);
@@ -412,25 +424,53 @@
     fr.addEventListener('pointermove', function (e) { if (drag) { fr.classList.add('is-drag'); set(at(e), true); } });
     ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (n) { fr.addEventListener(n, function () { drag = false; fr.classList.remove('is-drag'); }); });
     r.addEventListener('input', function () { set(+r.value, true); });
-    return {
+    function hintLater() { if (!hinted) { hinted = true; setTimeout(function () { requestAnimationFrame(hint); }, 900); } }
+    var wanted = false, api = {
       play: function () {
-        if (!v) { v = document.createElement('video'); v.className = 'cmp-v'; v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
-          v.setAttribute('aria-hidden', 'true'); v.src = fr.dataset.src; fr.appendChild(v);
-          v.addEventListener('playing', function () { if (cv) return; cv = document.createElement('canvas'); cv.width = 1152; cv.height = 658;
-            cv.setAttribute('aria-hidden', 'true'); cx = cv.getContext('2d'); fr.insertBefore(cv, fr.querySelector('.cmp-h')); draw(); }); }
+        wanted = true; if (!awake) { wake(function () { if (wanted) api.play(); }); hintLater(); return; }
+        if (!v) { v = fr.querySelector('.cmp-v'); v.muted = true; v.preload = 'auto'; v.hidden = false; v.src = fr.dataset.src;
+          v.addEventListener('playing', function () { if (cx) return; cv = fr.querySelector('.cmp-c'); cv.hidden = false; cx = cv.getContext('2d'); draw(); }); }
         var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
         cancelAnimationFrame(raf); (function f() { draw(); raf = requestAnimationFrame(f); })();
-        if (!hinted) { hinted = true; setTimeout(function () { requestAnimationFrame(hint); }, 900); }
+        hintLater();
       },
-      pause: function () { if (v) v.pause(); cancelAnimationFrame(raf); raf = 0; }
+      pause: function () { wanted = false; if (v) v.pause(); cancelAnimationFrame(raf); raf = 0; }
     };
+    return api;
   }
 
   // ---------- home: the background strip ----------
   // Two small pixel instruments, one canvas pixel per cell. A Fourier series adds odd harmonics to a square wave;
   // single photons land one at a time on a detector and the counts build two-slit fringes. They run only while
   // on screen; under reduced motion each draws its finished state once.
+  // The gas chromatograph: 870 KB of figure, so it arrives only when the visitor gets near it. Until then, without
+  // JS, and while Drawing mode holds the page still, its poster stands in the same space.
+  function benchGC() {
+    var slot = document.querySelector('[data-gc-mount]'); if (!slot) return;
+    var dk = window.matchMedia('(prefers-color-scheme: dark)'), h = null, started = false, near = false;
+    function theme() { return document.documentElement.getAttribute('data-theme') || (dk.matches ? 'dark' : 'light'); }
+    function sync() { if (h) slot.dataset.theme = theme(); }
+    function mount() {
+      if (started || !near || document.documentElement.hasAttribute('data-drawing')) return;
+      started = true;
+      import('./gc/gc-embed.mjs').then(function (m) {
+        slot.style.setProperty('--gc-h', slot.getBoundingClientRect().height + 'px');
+        slot.classList.add('is-live');
+        h = m.mountGC(slot, { theme: theme() });
+        // the figure's long disclosure folds under its caption, in the visitor's reach but out of the bench's way
+        var lg = slot.querySelector('.iso-legend'), cap = slot.parentNode.querySelector(':scope > figcaption');
+        if (lg && cap) { var dt = el('details', 'bg__gc-note', '<summary>How this figure is computed</summary>'); var body = el('div', 'iso-legend'); body.innerHTML = lg.innerHTML; lg.remove(); dt.appendChild(body); cap.parentNode.appendChild(dt); }
+      }).catch(function () { started = false; slot.classList.remove('is-live'); });
+    }
+    dk.addEventListener('change', sync);
+    new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    document.addEventListener('visibilitychange', mount);
+    if (!('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { near = true; io.disconnect(); mount(); } }, { rootMargin: '600px 0px' });
+    io.observe(slot);
+  }
   function background() {
+    benchGC();
     var figs = [].slice.call(document.querySelectorAll('.bg__fig')); if (!figs.length) return;
     function ink(c, v) { return getComputedStyle(c).getPropertyValue(v).trim() || '#16181d'; }
     var VIZ = {
@@ -546,6 +586,7 @@
   // Left the finished work (content `work`, else the hero), right a compact sheet: title, one-line result,
   // my decisions and the one thing I changed from the AI's output, what it's built with, outputs, status, links.
   // The project's case.js renders below it as the deep dive. Text David hasn't confirmed carries data-draft.
+  var OPENS = { 'anime-pipeline': 1, lmr: 0, tasty_tunez: 0, fonts: 0 };
   function dossier(p, ps, base) {
     var d = el('section', 'dos'); d.setAttribute('aria-label', p.title + ', summary');
     var w = el('div', 'dos__work' + (p.work_row ? ' dos__work--row' : '')); w.style.viewTransitionName = 'hero-' + p.slug;
@@ -554,6 +595,12 @@
       if (it.caption) f.appendChild(el('figcaption', '', esc(it.caption)));
       w.appendChild(f);
     });
+    // the project's working instrument opens the page: first in the column, or second under a moving clip
+    if (OPENS[p.slug] != null) {
+      var inst = el('div', 'dos__inst'), probe = el('div'); inst.appendChild(probe);
+      w.insertBefore(inst, w.children[OPENS[p.slug]] || null);
+      mountPreview(p, probe, 'hero', base).then(function (f) { window.addEventListener('pagehide', f); });
+    }
     var s = el('div', 'dos__sheet');
     var id = el('div', 'dos__id'), g = glyphSvg(p.glyph); g.style.viewTransitionName = 'glyph-' + p.slug; id.appendChild(g);
     var h = el('h1', 'dos__h' + (String(p.title).split(' ').some(function (wd) { return wd.length > 6; }) ? ' dos__h--long' : '') + (String(p.title).split(' ').some(function (wd) { return wd.length > 9; }) ? ' dos__h--xl' : ''));   // a long word steps down to 32 so it never breaks mid-word
@@ -563,7 +610,8 @@
     String(p.title).split(/( )/).forEach(function (wd) {
       if (!wd) return;
       if (wd === ' ') { var sp = el('span', 'ch'); sp.textContent = ' '; tt.appendChild(sp); return; }
-      var wr = el('span', 'w'); Array.from(wd).forEach(function (c) { var q = el('span', 'ch'); q.textContent = c; wr.appendChild(q); }); tt.appendChild(wr);
+      // a snake_case name may break after its underscore instead of running off the column
+      wd.split(/(?<=_)/).forEach(function (pt) { var wr = el('span', 'w'); Array.from(pt).forEach(function (c) { var q = el('span', 'ch'); q.textContent = c; wr.appendChild(q); }); tt.appendChild(wr); });
     });
     h.appendChild(tt); id.appendChild(h); s.appendChild(id);
     var dr = function (n, on) { if (on) n.setAttribute('data-draft', 'true'); return n; };
@@ -657,7 +705,7 @@
       return Promise.all([loadMeta(p), pr ? loadMeta(pr) : 0, nx ? loadMeta(nx) : 0]).then(function () {
         var bar0 = el('div', 'case-bar'); var top0 = el('a', 'back'); top0.appendChild(parrow(true)); top0.appendChild(el('span', '', 'INDEX')); top0.href = 'index.html#work'; bar0.appendChild(top0);
         bar0.appendChild(el('span', 'case-bar__t', esc(p.title)));
-        function ib(q, left, lbl) { var a = el(q ? 'a' : 'span', 'ibtn' + (q ? '' : ' is-off')); a.appendChild(parrow(left)); a.setAttribute('aria-label', lbl + (q ? ': ' + q.title : '')); if (q) a.href = caseUrl(q.slug); return a; }
+        function ib(q, left, lbl) { var a = el(q ? 'a' : 'span', 'ibtn' + (q ? '' : ' is-off')); a.appendChild(parrow(left)); if (q) { a.setAttribute('aria-label', lbl + ': ' + q.title); a.href = caseUrl(q.slug); } else a.setAttribute('aria-hidden', 'true'); return a; }
         bar0.appendChild(ib(pr, true, 'Previous')); bar0.appendChild(ib(nx, false, 'Next'));
         root.appendChild(bar0);
         var sx = 0, sy = 0, st = 0;
@@ -709,7 +757,7 @@
         var deep = m;
         if (p.decisions) { m.appendChild(dossier(p, ps, base)); deep = el('div', 'case-deep'); m.appendChild(deep); }
         if (CASE_JS.indexOf(p.slug) < 0) { template(!!p.decisions); } else import('./' + cu).then(function (mod) {
-          try { var c = mod.default(deep, { project: p, base: base, meta: p.meta }); if (c && typeof c.then === 'function') c.then(function (f) { if (typeof f === 'function') window.addEventListener('pagehide', f); }, function () {}); else if (typeof c === 'function') window.addEventListener('pagehide', c); }
+          try { var c = mod.default(deep, { project: p, base: base, meta: p.meta, opened: OPENS[p.slug] != null }); if (c && typeof c.then === 'function') c.then(function (f) { if (typeof f === 'function') window.addEventListener('pagehide', f); }, function () {}); else if (typeof c === 'function') window.addEventListener('pagehide', c); }
           catch (e) { m.innerHTML = ''; template(); }
         }).catch(function () { m.innerHTML = ''; template(); });
         var pn = el('nav', 'pn'); pn.setAttribute('aria-label', 'More work');
@@ -729,7 +777,7 @@
   // Drawing mode: a switch in the header and the D key. drawing.js and drawing.css load on first use, not before.
   (function () {
     var head = document.querySelector('.site-head'); if (!head) return;
-    var b = el('button', 'draw-t', '<span class="draw-t__tease">see how this page is built</span><span class="draw-t__tease2">see specs</span><span class="draw-t__b"><span>Drawing</span><i aria-hidden="true"></i><kbd>D</kbd></span>'); b.type = 'button'; b.id = 'draw-toggle'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-keyshortcuts', 'd'); b.setAttribute('aria-label', 'Drawing mode: redraws this page as a dimensioned engineering sheet'); b.title = 'Drawing mode (D)';
+    var b = el('button', 'draw-t', '<span class="draw-t__tease">see how this page is built</span><span class="draw-t__tease2">see specs</span><span class="draw-t__b"><span>Drawing</span><i aria-hidden="true"></i><kbd>D</kbd></span><span class="sr-only"> mode: redraws this page as a dimensioned engineering sheet</span>'); b.type = 'button'; b.id = 'draw-toggle'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-keyshortcuts', 'd'); b.title = 'Drawing mode (D)';
     head.appendChild(b);
     // the switch says so once a session: one ink pulse (CSS, none under reduced motion)
     try { if (!sessionStorage.getItem('dwg-seen')) { sessionStorage.setItem('dwg-seen', '1'); b.classList.add('draw-t--pulse'); } } catch (e) {}

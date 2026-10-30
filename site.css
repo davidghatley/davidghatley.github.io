@@ -613,3 +613,6 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
   .row__panel, .row__arrow, .row::before { transition: none; }
 }
+/* the instrument that opens a case page: it has the work column's width, so a preview's side rail stacks under it */
+.dos__inst { min-width: 0; }
+.dos__inst .pv-tasty_tunez { grid-template-columns: minmax(0, 1fr); }

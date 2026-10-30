@@ -34,8 +34,8 @@ const CSS = `
 .cs-anime td b{font-weight:600}
 .cs-anime td.k{white-space:nowrap}
 .cs-anime .cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 32px;margin-top:16px}
-.cs-anime .cols h4{margin:0 0 8px;padding-bottom:4px;border-bottom:1px solid var(--ink);font:500 12px/16px var(--font-mono);letter-spacing:.14em;text-transform:uppercase}
-.cs-anime .cols h4 i{font-style:normal;color:var(--acc)}
+.cs-anime .cols h3{margin:0 0 8px;padding-bottom:4px;border-bottom:1px solid var(--ink);font:500 12px/16px var(--font-mono);letter-spacing:.14em;text-transform:uppercase}
+.cs-anime .cols h3 i{font-style:normal;color:var(--acc)}
 .cs-anime section ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
 .cs-anime section li{font:400 13px/20px var(--font-sans);padding-left:16px;position:relative;max-width:64ch}
 .cs-anime section li::before{content:'';position:absolute;left:0;top:7px;width:6px;height:6px;background:var(--acc)}
@@ -131,24 +131,24 @@ export default async function renderCase(root, { project: p, base, meta }) {
     <section><h2><span>02</span>The models</h2>
     <p>Everything runs locally on one card. Eight model families made it into the run log; more were installed, tried by hand or downloaded and never run.</p>
     <div class="cols">
-      <div><h4><i>Adopted</i></h4><ul>
+      <div><h3><i>Adopted</i></h3><ul>
         <li><b>Krea 2 Turbo</b> int8: default keys, 1,384 stills</li>
         <li><b>Qwen-Image 2.1</b> int8 + Fun ControlNet Union int8: keys that must follow a previz still, 139 runs</li>
         <li><b>MiniMax H3</b> pruned int8 (ref2va, fl2va, i2v) + H3 Fun ControlNet Union and Turbo LoRAs: all 66 clips</li>
         <li><b>Real-ESRGAN</b> animevideov3 for previews, <b>SeedVR2 3B</b> fp8 for finals</li>
         <li><b>Qwen3-TTS 1.7B</b> VoiceDesign (designed voices only), GPT-SoVITS, <b>ACE-Step 1.5</b> turbo for music</li>
         <li><b>Blender 5.2.2 LTS</b> for world and previz, on the CPU</li></ul></div>
-      <div class="no"><h4>Tested, not adopted</h4><ul>
+      <div class="no"><h3>Tested, not adopted</h3><ul>
         <li>SDXL: Animagine XL 4.0, Illustrious XL 2.0. 23 s and 8.9 GB with no offload, but they follow the subject loosely (32 runs)</li>
         <li>10 Krea style LoRAs and 12 more Krea-2 style LoRAs in the SHUTO look lab</li>
         <li>The retroanime LoRA: a purple cast</li>
         <li>An ink-wash / dark-brush LoRA: flipped facing 8/10</li>
         <li>YuE2 music: one test cue. BiRefNet masks: two runs</li></ul></div>
-      <div class="no"><h4>Installed, not used in production</h4><ul>
+      <div class="no"><h3>Installed, not used in production</h3><ul>
         <li><b>Wan 2.2 I2V A14B</b> Q8_0 GGUF with 4-step LoRAs: the fallback, 6.0 min for a 5 s clip at 832×480, no audio, brightness pumping</li>
         <li>TRELLIS.2 and Pixal3D image-to-3D: blocked, the DINOv3 encoder is gated</li>
         <li>The hosted H3 API: never run</li></ul></div>
-      <div class="no"><h4>Downloaded, never run</h4><ul>
+      <div class="no"><h3>Downloaded, never run</h3><ul>
         <li>FastH3 8-step int8 (22 GB)</li>
         <li>LTX-2.3 22B distilled fp8 (29.5 GB)</li>
         <li>SAM 3.1</li></ul></div>

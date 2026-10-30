@@ -121,11 +121,6 @@
     "caption": "The level crossing, previz render."
    },
    {
-    "src": "public/media/meguri/stairs-depth-final.mp4",
-    "alt": "Looping muted clip, landscape: a depth render of a stair climb on the left and the generated riso anime shot of the same climb on the right.",
-    "caption": "The stair climb: a depth render from Blender (left) steers the video model, and the stair stays where I put it (right)."
-   },
-   {
     "src": "public/media/meguri/previz-riso.jpg",
     "alt": "Gray-box mannequin render beside a two-color riso-style version of the same stair frame.",
     "caption": "Same previz frame, different look: the geometry survives, so I can swap the print style without redrawing the scene."

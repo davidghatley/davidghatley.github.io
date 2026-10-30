@@ -24,13 +24,13 @@
   "spec": [
    {
     "label": "runs logged",
-    "value": "1,808",
-    "source": "run log, read 2026-10-28: Oct 12 to 26, 2026; 1,664 succeeded, 144 failed to submit"
+    "value": "1,822",
+    "source": "run log, read 2026-10-30: Oct 12 to 30, 2026; 1,678 succeeded, 144 failed to submit"
    },
    {
     "label": "GPU hours",
-    "value": "37.9",
-    "source": "run log, read 2026-10-28: summed run time, Oct 12 to 26, 2026"
+    "value": "38.1",
+    "source": "run log, read 2026-10-30: summed run time, Oct 12 to 30, 2026"
    },
    {
     "label": "median peak VRAM",
@@ -40,7 +40,7 @@
    {
     "label": "CUDA out-of-memory errors",
     "value": "0",
-    "source": "run log, read 2026-10-28: all 1,808 rows, Oct 12 to 26, 2026"
+    "source": "run log, read 2026-10-30: all 1,822 rows, Oct 12 to 30, 2026"
    }
   ],
   "links": [],
@@ -57,7 +57,7 @@
     "caption": "The previz (left) fixes the bikes, blades and trails; the video model paints over it (right)."
    }
   ],
-  "result": "Every frame of meguri and shuto, on one 12 GB GPU: 1,808 runs logged by Oct 26, 2026, none out of memory.",
+  "result": "Every frame of meguri and shuto, on one 12 GB GPU: 1,822 runs logged by Oct 30, 2026, none out of memory.",
   "decisions": {
    "items": [
     "Depth passes steer the video model, never line art: line art made it draw edges as new objects.",
@@ -119,11 +119,6 @@
     "src": "public/media/meguri/scene-03_level_crossing.jpg",
     "alt": "Gray-box 3D render of the level crossing.",
     "caption": "The level crossing, previz render."
-   },
-   {
-    "src": "public/media/meguri/stairs-depth-final.mp4",
-    "alt": "Looping muted clip, landscape: a depth render of a stair climb on the left and the generated riso anime shot of the same climb on the right.",
-    "caption": "The stair climb: a depth render from Blender (left) steers the video model, and the stair stays where I put it (right)."
    },
    {
     "src": "public/media/meguri/previz-riso.jpg",
@@ -352,12 +347,13 @@
    }
   ],
   "body": [
-   "tasty_tunez turns a written brief into a two-minute song in about 20 seconds on a 12 GB card, using ACE-Step 1.5 (MIT). Every song comes out as an MP3 with its own cover plate and settings embedded, so it can be regenerated or remixed later.",
+   "tasty_tunez turns a written brief into a song on your own GPU, using ACE-Step 1.5 (MIT). Every song comes out as an MP3 with its own cover plate and settings embedded, so it can be regenerated or remixed later.",
    "It started with one slowed phonk track I liked. I measured it (tempo, key, stems, how dark and how bass-heavy) and then tested what moves a model toward that sound. The XL model and briefs written as sentences moved it; a community phonk LoRA moved it the other way. Those measurements became a feature: drop in a reference and the app suggests settings from fixed rules, each with the number behind it.",
    "The model manager shows each model's licence before it downloads. YuE2 and LeVo 2 score well but are non-commercial or academic only, so the app lists them and explains why it doesn't install them.",
    "What I learned: my reference song was about 7 dB louder than anything the model produced. Some of what makes a track hit is mastering, not generation."
   ],
-  "result": "A two-minute song from a written brief in about 20 seconds on a 12 GB card, with its cover plate and settings inside the MP3.",
+  "result": "Songs from a text brief on your own GPU, each with a cover drawn from its notes.",
+  "result_draft": true,
   "decisions": {
    "items": [
     "I measured one reference track first (tempo, key, stems, loudness) and tested what moves the model toward it before designing the app.",

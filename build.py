@@ -335,7 +335,7 @@ def css_min(s):
 def css_bundle():
     """bundle.css: tokens, the components the site uses and site.css, as one file. The sources stay as they are."""
     corpus = ''
-    for pat in ('*.js', '*.py', '*.html', 'lab/*', 'previews/**/*.js', 'content/*.json', 'gc/live.js'):
+    for pat in ('*.js', '*.py', '*.html', 'lab/*', 'previews/**/*.js', 'content/*.json', 'gc/live.js', 'gc/*.mjs'):
         for f in ROOT.glob(pat):
             if f.is_file() and f.name != 'bundle.css':
                 corpus += f.read_text(errors='ignore')
@@ -381,6 +381,8 @@ def gc_sources():
 
 
 def main():
+    import sys
+    sys.path.insert(0, str(ROOT))
     import panel
     write(ROOT / 'content' / 'runlog.json', panel.runlog_json(RUNLOG, ROOT / 'content' / 'runlog.json'))
     sync_runlog()

@@ -331,6 +331,11 @@
       lk.addEventListener('click', function () { if (g) g.style.viewTransitionName = 'glyph-' + t.id; });
     });
     [].forEach.call(document.querySelectorAll('.cmp'), function (fr) { fr._wipe = wipe(fr, still); });
+    // the font library's stylesheet comes with its tile: sixteen specimen faces nobody needs on the first screen
+    var fl = document.querySelector('.t-fonts');
+    function fontlib() { if (document.querySelector('link[data-fontlib]')) return; var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'fonts/files/fonts.css'; l.dataset.fontlib = '1'; document.head.appendChild(l); }
+    if (fl && 'IntersectionObserver' in window) { var fio = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { fio.disconnect(); fontlib(); } }, { rootMargin: '400px 0px' }); fio.observe(fl); }
+    else fontlib();
     if (still) return;
 
     // each instrument: start() when visible, stop() when not

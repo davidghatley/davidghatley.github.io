@@ -39,14 +39,14 @@ html[data-theme=dark] .pv-lmr,.pv-lmr.dk{--a:#8fa9e0}
 .pv-lmr .it .tk{font:400 11px/14px var(--font-mono);color:var(--ink-muted);text-align:right}
 .pv-lmr .it .sw{display:inline-block;width:10px;height:10px;margin-right:6px;background:var(--cc,var(--ink-muted))}
 .pv-lmr .it.o .sw{background:var(--rule)}
-.pv-lmr .it.gone{opacity:.28}
+.pv-lmr .it.idle .nm,.pv-lmr .it.gone .rk,.pv-lmr .it.gone .nm,.pv-lmr .it.gone .tk{color:var(--ink-muted)}.pv-lmr .it.gone .nm{text-decoration:line-through}
 .pv-lmr .bar{position:relative;height:30px;margin-top:42px;border:1px solid var(--ink);background:var(--sheet)}
 .pv-lmr .seg{position:absolute;top:0;bottom:0;background:var(--cc);border-right:2px solid var(--sheet);width:0;transition:width .6s ease-out;overflow:hidden;white-space:nowrap;font:400 16px/28px var(--font-pixel);color:#fff;padding-left:4px}
 .pv-lmr .nofit{position:absolute;top:-30px;height:24px;right:0;width:48%;white-space:nowrap;border:2px dashed var(--vermilion);color:var(--vermilion-text,var(--vermilion));font:500 10px/14px var(--font-mono);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .4s;background:var(--paper)}
 .pv-lmr .bl{display:flex;justify-content:space-between;font:500 11px/16px var(--font-mono);color:var(--ink-muted);margin-top:4px}
 .pv-lmr .stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}
-.pv-lmr .stats div{border-top:1px solid var(--ink);padding-top:6px;opacity:.25;transition:opacity .4s}
-.pv-lmr .stats div.on{opacity:1}
+.pv-lmr .stats div{border-top:1px solid var(--rule);padding-top:6px;color:var(--ink-muted)}
+.pv-lmr .stats div.on{border-top-color:var(--ink);color:var(--ink)}
 .pv-lmr .stats b{display:block;font:400 32px/36px var(--font-pixel)}
 .pv-lmr .stats span{font:500 11px/15px var(--font-mono);color:var(--ink-muted)}
 .pv-lmr .say{font:400 13px/19px var(--font-sans);margin:10px 0 0;min-height:56px;max-width:60ch}
@@ -93,7 +93,7 @@ export default function mount(root, { mode, base }) {
     rows.forEach((r, k) => {
       const it = ITEMS[k], pos = i >= 2 ? it.rr : it.bm;
       r.style.transform = `translateY(${pos * 30}px)`;
-      r.style.opacity = i === 0 ? .15 : '';
+      r.classList.toggle('idle', i === 0);
       r.classList.toggle('gone', i === 3 && it.c < 0);
     });
     // packing: first five (reranked order), the sixth does not fit
