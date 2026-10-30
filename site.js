@@ -463,6 +463,8 @@
       }).catch(function () { started = false; slot.classList.remove('is-live'); });
     }
     dk.addEventListener('change', sync);
+    // a keyboard visitor heading down the page gets the figure before focus reaches it
+    document.addEventListener('focusin', function kb(e) { if (e.target.closest && e.target.closest('.lab-line,#about')) { document.removeEventListener('focusin', kb); near = true; mount(); } });
     new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     document.addEventListener('visibilitychange', mount);
     if (!('IntersectionObserver' in window)) return;
