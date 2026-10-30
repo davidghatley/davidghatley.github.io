@@ -223,7 +223,7 @@ for (const px of [PL, PR]) {
     extra: Ln(Array.from({ length: 9 }, (_, i) => path3([[-136 + i * 6.6, y1, 44], [-132 + i * 6.6, y1, 44], [-132 + i * 6.6, y1, 66], [-136 + i * 6.6, y1, 66]], true)).join(""), { tone: "lo" }) + screws([[-147, y1, 34], [-71, y1, 34], [-147, y1, 126], [-71, y1, 126]]),
   });
   const panelPlan = { x: OPEN.x1, y: y0, w: CASE.x1 - OPEN.x1, d: 4, r: 0.4 };
-  box("panel", [OPEN.x1, y0, Z.shell], [CASE.x1, y1, Z.top], { tone: "hi" }, { inner: sideSeam(panelPlan, Z.shell + 4) + sideSeam(panelPlan, Z.top - 4), bias: -40 });
+  box("panel", [OPEN.x1, y0, Z.shell], [CASE.x1, y1, Z.top], { tone: "hi" }, { inner: sideSeam(panelPlan, Z.shell + 4) + sideSeam(panelPlan, Z.top - 4) });
   // Door handle and hinges on the remaining door.
   for (const z of [84, 118]) disc("door.standoff", G.frameAlong([-80, y1, z], [0, 1, 0]), 0, 3.4, 1.4, { tone: "lo" }, { steps: 12 });
   disc("door.handle", G.frameOf([-80, y1 + 5, 80], [0, 0, 1], [1, 0, 0], [0, 1, 0]), 0, 42, 1.8, { tone: "hi" }, { steps: 16 });
@@ -714,7 +714,7 @@ const LCD = { x0: 59, x1: 99, z0: 72, z1: 84 };
     return `<path data-bug="${id}" class="gc-bug"${id === "dro" ? "" : ' data-off=""'} d="M${f2(r * Math.cos(a))} ${f2(r * Math.sin(a))}L${f2((r + 1.5) * Math.cos(a + 0.06))} ${f2((r + 1.5) * Math.sin(a + 0.06))}L${f2((r + 1.5) * Math.cos(a - 0.06))} ${f2((r + 1.5) * Math.sin(a - 0.06))}Z"/>`;
   };
   put("dial.face", [DIAL.x, y + 2.1, DIAL.z], `<g transform="${yFace(DIAL.x, y + 2.05, DIAL.z)}"><circle class="gc-dial" r="${DIAL.r}"/><path class="gc-tick-d" d="${ticks.join("")}"/><path class="gc-tick-D" d="${major.join("")}"/>${nums.join("")}${bug("dro")}${bug("haa")}<text class="gc-dial-unit" y="9.4" text-anchor="middle">°C OVEN</text><g data-part="needle" transform="rotate(${f2(M.dialAngle(40))})"><path class="gc-needle" d="M0 3.6L0 ${f2(-DIAL.r + 1.6)}"/></g><circle class="gc-hub" r="1.6"/></g>`, [record(A.disc(F, 2, 2.1, DIAL.r, { name: "dial.face" }))], { bias: 0.2 });
-  put("lcd", [(LCD.x0 + LCD.x1) / 2, y, (LCD.z0 + LCD.z1) / 2], `<g transform="${yFace(LCD.x0, y, LCD.z1)}"><rect class="gc-lcd-win" width="${LCD.x1 - LCD.x0}" height="${LCD.z1 - LCD.z0}" rx=".8"/><text class="gc-lcd" data-part="lcd-t" x="1.6" y="8.2">40.0</text><text class="gc-lcd" data-part="lcd-m" x="${LCD.x1 - LCD.x0 - 1.6}" y="8.2" text-anchor="end">0.00</text></g>`, [record(A.box([LCD.x0, y, LCD.z0], [LCD.x1, y + 0.05, LCD.z1], { name: "lcd" }))], { bias: 0.2 });
+  put("lcd", [(LCD.x0 + LCD.x1) / 2, y, (LCD.z0 + LCD.z1) / 2], `<g transform="${yFace(LCD.x0, y, LCD.z1)}"><rect class="gc-lcd-win" width="${LCD.x1 - LCD.x0}" height="${LCD.z1 - LCD.z0}" rx=".8"/><text class="gc-lcd" data-part="lcd-t" x="1.6" y="8.2">40.0</text><text class="gc-lcd" data-part="lcd-m" x="${LCD.x1 - LCD.x0 - 1.6}" y="8.2" text-anchor="end">0.00</text></g>`, [record(A.box([LCD.x0, y, LCD.z0], [LCD.x1, y + 0.4, LCD.z1], { name: "lcd" }))], { bias: 0.2 });
   const KEYS = ["7", "8", "9", "OVEN", "4", "5", "6", "INLET", "1", "2", "3", "DET"];
   KEYS.forEach((key, i) => {
     const x = 59 + (i % 4) * 10.4;
@@ -732,18 +732,18 @@ const LCD = { x0: 59, x1: 99, z0: 72, z1: 84 };
   put("knob.marks", [KNOB.x, y + 1.45, KNOB.z], `<g transform="${yFace(KNOB.x, y + 1.42, KNOB.z)}"><path class="gc-tick-D" d="${det(-45)}${det(45)}"/></g>`, [record(A.disc(KF, 1.4, 1.45, KNOB.r + 4.5, { name: "knob.marks" }))], { bias: 0.1 });
   disc("knob", KF, 1.4, 8, KNOB.r, { tone: "hi" }, { bevel: 0.6, steps: 56, inner: Ln(G.arcOf(KF, 1.8, KNOB.r, P) + G.arcOf(KF, 7.6, KNOB.r, P), { tone: "lo" }), extra: `<g data-part="knurl">${Faded(G.ribsOf(KF, 1.8, 7.6, KNOB.r, 40, P, { fade: [0.08, 0.5] }), { tone: "lo" })}</g>` });
   put("knob.cap", [KNOB.x, y + 8.05, KNOB.z], `<g transform="${yFace(KNOB.x, y + 8, KNOB.z)}"><g data-part="pointer" transform="rotate(-45)"><path class="gc-pointer" d="M0 -2.4L0 ${f2(-KNOB.r + 1)}"/></g><circle class="gc-hub" r="1.4"/></g>`, [record(A.disc(KF, 8, 8.05, KNOB.r - 0.4, { name: "knob.cap" }))], { bias: 0.1 });
-  put("knob.labels", [KNOB.x, y, KNOB.z - 18], `<g transform="${yFace(KNOB.x, y, KNOB.z)}"><text class="gc-engrave" data-for="dro" x="-11" y="-16.6" text-anchor="middle">DRO/ORO</text><text class="gc-engrave" data-for="haa" x="13" y="-16.6" text-anchor="middle">552.3</text><text class="gc-engrave" x="0" y="20" text-anchor="middle">METHOD</text></g>`, [record(A.box([KNOB.x - 18, y, KNOB.z - 21], [KNOB.x + 18, y + 0.05, KNOB.z - 18], { name: "knob.labels" }))], { bias: 0.1 });
+  put("knob.labels", [KNOB.x, y, KNOB.z - 18], `<g transform="${yFace(KNOB.x, y, KNOB.z)}"><text class="gc-engrave" data-for="dro" x="-11" y="-16.6" text-anchor="middle">DRO/ORO</text><text class="gc-engrave" data-for="haa" x="13" y="-16.6" text-anchor="middle">552.3</text><text class="gc-engrave" x="0" y="20" text-anchor="middle">METHOD</text></g>`, [record(A.box([KNOB.x - 18, y, KNOB.z - 21], [KNOB.x + 18, y + 0.4, KNOB.z - 18], { name: "knob.labels" }))], { bias: 0.1 });
   const BF = G.frameOf([BTN.x, y, BTN.z], [0, 1, 0], [1, 0, 0], [0, 0, 1]);
   disc("button.ring", BF, 0, 1.4, BTN.r + 2, { tone: "lo" }, { bevel: 0.3, steps: 32 });
   disc("button", BF, 1.4, 4, BTN.r, { tone: "hi" }, { bevel: 0.5, steps: 32 });
-  put("button.label", [BTN.x, y, BTN.z - 11], `<g transform="${yFace(BTN.x, y, BTN.z)}"><text class="gc-engrave" y="12.4" text-anchor="middle">INJECT</text></g>`, [record(A.box([BTN.x - 8, y, BTN.z - 13], [BTN.x + 8, y + 0.05, BTN.z - 10], { name: "button.label" }))], { bias: 0.1 });
+  put("button.label", [BTN.x, y, BTN.z - 11], `<g transform="${yFace(BTN.x, y, BTN.z)}"><text class="gc-engrave" y="12.4" text-anchor="middle">INJECT</text></g>`, [record(A.box([BTN.x - 8, y, BTN.z - 13], [BTN.x + 8, y + 0.4, BTN.z - 10], { name: "button.label" }))], { bias: 0.1 });
   for (const [i, name] of ["ready", "run", "fid", "ecd"].entries()) {
     const x = 109 + i * 8;
     const LF = G.frameOf([x, y, 45], [0, 1, 0], [1, 0, 0], [0, 0, 1]);
     disc(`lamp.${name}`, LF, 0, 1, 1.8, { tone: "mid" }, { steps: 14, cls: "lamp", attrs: ` data-lamp="${name}"` });
-    put(`lamp.${name}.label`, [x, y, 40], `<g transform="${yFace(x, y, 45)}"><text class="gc-engrave gc-small" y="5.6" text-anchor="middle">${name.toUpperCase()}</text></g>`, [record(A.box([x - 3, y, 38], [x + 3, y + 0.05, 41], { name: `lamp.${name}.label` }))], { bias: 0.1 });
+    put(`lamp.${name}.label`, [x, y, 40], `<g transform="${yFace(x, y, 45)}"><text class="gc-engrave gc-small" y="5.6" text-anchor="middle">${name.toUpperCase()}</text></g>`, [record(A.box([x - 3, y, 38], [x + 3, y + 0.4, 41], { name: `lamp.${name}.label` }))], { bias: 0.1 });
   }
-  put("panel.screws", [100, y, 80], screws([[54, 36], [146, 36], [54, 124], [146, 124]].map(([x, z]) => [x, y, z]), 0.5), [record(A.box([53, y, 35], [147, y + 0.05, 125], { name: "panel.screws" }))], { bias: 0.1 });
+  put("panel.screws", [100, y, 80], screws([[54, 36], [146, 36], [54, 124], [146, 124]].map(([x, z]) => [x, y, z]), 0.5), [record(A.box([53, y, 35], [147, y + 0.4, 125], { name: "panel.screws" }))], { bias: 0.1 });
 }
 
 // ---------- settle every pose, then write ----------
