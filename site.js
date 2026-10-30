@@ -386,7 +386,7 @@
     var ctl = new Map();
     tiles.forEach(function (t) { if (RUN[t.id]) ctl.set(t, RUN[t.id](t)); });
     var seen = new Set();
-    function sync() { ctl.forEach(function (c, t) { if (seen.has(t) && !document.hidden) c.start(); else c.stop(); }); }
+    function sync() { ctl.forEach(function (c, t) { if (seen.has(t) && !document.hidden && !document.documentElement.hasAttribute('data-drawing')) c.start(); else c.stop(); }); }
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) seen.add(e.target); else seen.delete(e.target); }); sync(); }, { threshold: 0.35 });
       tiles.forEach(function (t) { io.observe(t); });
@@ -729,12 +729,14 @@
   // Drawing mode: a switch in the header and the D key. drawing.js and drawing.css load on first use, not before.
   (function () {
     var head = document.querySelector('.site-head'); if (!head) return;
-    var b = el('button', 'draw-t', '<span>Drawing</span><i aria-hidden="true"></i>'); b.type = 'button'; b.id = 'draw-toggle'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-keyshortcuts', 'd'); b.title = 'Drawing mode (D)';
+    var b = el('button', 'draw-t', '<span class="draw-t__tease">see how this page is built</span><span>Drawing</span><i aria-hidden="true"></i><kbd>D</kbd>'); b.type = 'button'; b.id = 'draw-toggle'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-keyshortcuts', 'd'); b.title = 'Drawing mode (D)';
     head.appendChild(b);
-    var want = false, loading = false;
+    var want = false, loading = false, sheet = window.parent !== window && location.hash === '#dwg-sheet';   // the print frame drawing.js opens
     function apply() { var d = window.__drawing; if (d) { if (want) d.on(); else d.off(); } }
     function toggle() {
       want = !want; b.setAttribute('aria-pressed', want ? 'true' : 'false');
+      // shareable: #drawing opens the page in this mode; turning it off clears the hash
+      if (!sheet && (want ? !location.hash : location.hash === '#drawing')) history.replaceState(null, '', location.pathname + location.search + (want ? '#drawing' : ''));
       if (window.__drawing) return apply();
       if (loading) return; loading = true;
       var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'drawing.css';
@@ -744,7 +746,8 @@
       document.head.appendChild(l); document.head.appendChild(s);
     }
     b.addEventListener('click', toggle);
-    if (window.parent !== window && location.hash === '#dwg-sheet') toggle();   // the print frame drawing.js opens
+    window.__dwgSheet = sheet;
+    if (sheet || location.hash === '#drawing') toggle();
     document.addEventListener('keydown', function (e) {
       if ((e.key !== 'd' && e.key !== 'D') || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
       var t = e.target; if (t && t.closest && t.closest('input,textarea,select,[contenteditable],[role=textbox]')) return;

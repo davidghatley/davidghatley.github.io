@@ -16,7 +16,7 @@ What it writes (all at the repo root, all committed; GitHub Pages still serves t
   sitemap.xml        the index, the font library, the lab and every case page
   robots.txt         keeps Disallow: /review/ and /dive/ and adds the Sitemap line
   site.js            the CASE_JS line (which projects ship previews/<slug>/case.js) and the LAB line (lab board order)
-  drawing.js         the REV line (short git SHA) for the Drawing mode title block
+  drawing.js         the REV line (short SHA of the last source commit) for the Drawing mode title block
   fonts/**/index.html  an absolute og:image when the generated page has none (fonts/ itself comes from
                      secret-sauce/tools/font/foundry/library.py; only this tag is added)
 
@@ -301,9 +301,11 @@ def main():
 
     fonts_og()
 
-    # drawing.js: REV in the title block is the short SHA of the commit this build was made from
+    # drawing.js: REV is the last commit that changed the source. Generated copies and this line itself don't count, so
+    # committing a build leaves the tree clean and building again writes nothing.
     try:
-        rev = subprocess.run(['git', 'rev-parse', '--short=7', 'HEAD'], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
+        rev = subprocess.run(['git', 'log', '-1', '--format=%h', '--abbrev=7', '--', '.', ':!review', ':!dive', ':!drawing.js'],
+                             cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
         rev = ''
     dj = ROOT / 'drawing.js'

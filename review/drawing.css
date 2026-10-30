@@ -1,38 +1,52 @@
-/* Drawing mode. Loaded with drawing.js on the first toggle; every rule is scoped to html[data-drawing]. Two inks: ink for
-   the object lines, cobalt for dimensions, vermilion for the detail references. Sheet conventions after
-   dimensional-drawing by Enes Ozturk (MIT). */
-html[data-drawing] main, html[data-drawing] .site-foot, html[data-drawing] .site-home { opacity: .42; filter: grayscale(1); transition: opacity var(--dur-move, .2s) linear; }
+/* Drawing mode. Loaded with drawing.js on the first toggle; every rule is scoped to html[data-drawing] or to overlay parts.
+   The page is redrawn, not dimmed: pictures become X-box slots, fills become outlines, type goes to one ink, and the
+   linework sits on top at full strength. Sheet conventions after dimensional-drawing by Enes Ozturk (MIT). */
+html[data-drawing] { --dwg-type: color-mix(in srgb, var(--ink) 58%, var(--paper)); }
+html[data-drawing] .acc { --accent: var(--ink) !important; --acc-l: var(--ink) !important; --acc-d: var(--ink) !important; }
 html[data-drawing] .field { visibility: hidden; }
 html[data-drawing] .totop { bottom: 40px; }
+html[data-drawing] main *, html[data-drawing] .site-foot, html[data-drawing] .site-foot *, html[data-drawing] .site-home, html[data-drawing] .site-home * {
+  color: var(--dwg-type) !important; background: transparent !important; box-shadow: none !important; text-shadow: none !important; filter: none !important;
+  border-color: var(--dwg-type) !important; animation: none !important; transition: none !important; }
+html[data-drawing] main img, html[data-drawing] main video, html[data-drawing] main canvas { visibility: hidden !important; }
+html[data-drawing] main .glyph, html[data-drawing] .ss-lockup__mark { color: var(--ink) !important; }
+html[data-drawing] .case-bar { background: var(--paper) !important; }
+html[data-drawing] main .cmp-h { background: var(--ink) !important; }
+html[data-drawing] main svg:not(.glyph):not(.parrow):not(.unm) * { fill: none !important; stroke: var(--dwg-type) !important; stroke-width: 1px !important; vector-effect: non-scaling-stroke; }
 .dwg-probes { position: absolute; left: 0; top: 0; width: 0; height: 0; visibility: hidden; pointer-events: none; }
 .dwg-probes i { position: absolute; left: 0; top: 0; height: 1px; display: block; }
+.dwg-probes .dwg-probe-l { width: 1px; height: 0; border-top: var(--line-hair, 1px) solid; }
 
 #dwg { position: absolute; left: 0; top: 0; z-index: 4; pointer-events: none; overflow: clip; color: var(--cobalt-text); }
 .dwg-svg { position: absolute; left: 0; top: 0; display: block; overflow: visible; }
-.dwg-svg line, .dwg-svg rect, .dwg-svg circle { vector-effect: none; }
-.dwg-grid rect { fill: var(--cobalt-text); opacity: .03; }
+.dwg-gl { stroke: var(--cobalt-text); stroke-width: .5; opacity: .32; }
 .dwg-f rect { fill: none; stroke: var(--ink); stroke-width: 1; }
-.dwg-zone { font: 500 10px/1 var(--font-mono); fill: var(--ink-muted); }
-.dwg-e { stroke: var(--cobalt-text); stroke-width: .75; opacity: .6; }
+.dwg-e { stroke: var(--cobalt-text); stroke-width: .75; opacity: .65; }
 .dwg-m { stroke: var(--cobalt-text); stroke-width: 1; }
 .dwg-a { fill: var(--cobalt-text); }
-.dwg-oo { fill: none; stroke: var(--ink); stroke-width: 1; }
-.dwg-ob { fill: none; stroke: var(--ink); stroke-width: 1; }
-.dwg-c { stroke: var(--ink); stroke-width: .75; stroke-dasharray: 14 3 2 3; opacity: .5; }
+.dwg-oo { fill: none; stroke: var(--ink); stroke-width: 1.5; }
+.dwg-ot { fill: none; stroke: var(--ink); stroke-width: .75; }
+.dwg-sl { fill: none; stroke: var(--ink); stroke-width: 1.25; }
+.dwg-sx { stroke: var(--ink); stroke-width: .6; }
 .dwg-ref circle { fill: none; stroke: var(--vermilion-text); stroke-width: 1; stroke-dasharray: 3 3; }
 .dwg-labels { position: absolute; inset: 0; }
-.dwg-l { position: absolute; display: block; height: 12px; box-sizing: border-box; text-align: center; font: 500 11px/12px var(--font-mono); letter-spacing: 0; color: var(--cobalt-text); background: var(--paper); white-space: nowrap; overflow: hidden; }
-.dwg-l--ref { color: var(--vermilion-text); font-weight: 600; }
+.dwg-l { position: absolute; display: block; height: 12px; box-sizing: border-box; text-align: center; font: 500 11px/12px var(--font-mono); letter-spacing: 0; color: var(--cobalt-text); background: var(--paper); white-space: nowrap; overflow: hidden; pointer-events: auto; cursor: default; }
+.dwg-l--ref { color: var(--vermilion-text); font-weight: 600; pointer-events: none; }
+.dwg-l--slot { font-size: 9px; letter-spacing: .4px; color: var(--ink); pointer-events: none; }
+.dwg-l--w { font-size: 9px; letter-spacing: .4px; color: var(--ink-muted); pointer-events: none; }
+.dwg-d.is-hot .dwg-m, .dwg-d.is-hot .dwg-e { stroke: var(--vermilion-text); opacity: 1; stroke-width: 1.5; }
+.dwg-d.is-hot .dwg-a { fill: var(--vermilion-text); }
+.dwg-l.is-hot { background: var(--vermilion-text); color: var(--paper); }
+.dwg-tbl tr.is-hot th, .dwg-tbl tr.is-hot td { background: var(--vermilion-tint); }
 
-/* the pen draws: each stroke runs over its pathLength; labels arrive when their line has */
-html[data-dwg-anim] .dwg-d line, html[data-dwg-anim] .dwg-d rect, html[data-dwg-anim] .dwg-d circle { stroke-dasharray: 1; stroke-dashoffset: 1; animation: dwg-pen .42s var(--ease-move, ease-out) forwards; animation-delay: calc(var(--i, 0) * 11ms); }
-html[data-dwg-anim] .dwg-d .dwg-c, html[data-dwg-anim] .dwg-ref circle { stroke-dasharray: none; stroke-dashoffset: 0; animation: dwg-in .3s linear both; animation-delay: calc(var(--i, 0) * 11ms + .3s); }
-html[data-dwg-anim] .dwg-a { animation: dwg-in .12s linear both; animation-delay: calc(var(--i, 0) * 11ms + .36s); }
-html[data-dwg-anim] .dwg-g { animation: dwg-in .2s linear both; }
-html[data-dwg-anim] .dwg-l { animation: dwg-in .12s linear both; animation-delay: calc(var(--i, 0) * 11ms + .3s); }
+/* the pen, by hierarchy: frame, grid, objects, slots, then dimensions one at a time, labels last. About 1.5 s. */
+html[data-dwg-anim] .dwg-d line, html[data-dwg-anim] .dwg-d rect, html[data-dwg-anim] .dwg-d circle { stroke-dasharray: 1; stroke-dashoffset: 1; animation: dwg-pen .36s cubic-bezier(.4,0,.6,1) forwards; animation-delay: var(--d, 0ms); }
+html[data-dwg-anim] .dwg-a { animation: dwg-in .1s linear both; animation-delay: calc(var(--d, 0ms) + .3s); }
+html[data-dwg-anim] .dwg-l { animation: dwg-in .12s linear both; animation-delay: var(--d, 0ms); }
+html[data-dwg-anim] .dwg-ref circle { stroke-dasharray: none; stroke-dashoffset: 0; animation: dwg-in .2s linear both; animation-delay: var(--d, 0ms); }
 @keyframes dwg-pen { to { stroke-dashoffset: 0; } }
 @keyframes dwg-in { from { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { html[data-drawing] * { animation: none !important; transition: none !important; } }
+@media (prefers-reduced-motion: reduce) { #dwg * { animation: none !important; } }
 
 /* sheet parts */
 .dwg-k { display: block; font: 500 9px/12px var(--font-mono); letter-spacing: .6px; color: var(--ink-muted); }
@@ -43,42 +57,66 @@ html[data-dwg-anim] .dwg-l { animation: dwg-in .12s linear both; animation-delay
 .dwg-tb__c { padding: 3px 8px 4px; border-bottom: 1px solid var(--ink); min-width: 0; }
 .dwg-tb__c:nth-child(even) { border-right: 1px solid var(--ink); }
 .dwg-tb__c:nth-last-child(-n+2) { border-bottom: 0; }
+.dwg-jump { display: block; margin-top: 8px; font: 500 11px/16px var(--font-mono); color: var(--cobalt-text); }
 .dwg-tbl { width: 100%; border-collapse: collapse; margin-top: 12px; background: var(--paper); font: 400 11px/16px var(--font-mono); color: var(--ink); table-layout: fixed; }
-.dwg-tbl caption { text-align: left; font: 400 16px/20px var(--font-pixel); text-transform: lowercase; padding-bottom: 4px; -webkit-font-smoothing: none; }
+.dwg-tbl caption { text-align: left; font: 400 16px/20px var(--font-pixel); padding-bottom: 4px; -webkit-font-smoothing: none; }
 .dwg-tbl th, .dwg-tbl td { border: 1px solid var(--ink); padding: 0 4px; font-weight: 400; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .dwg-tbl thead th { font-size: 9px; letter-spacing: .4px; color: var(--ink-muted); }
 .dwg-tbl tbody th { color: var(--cobalt-text); font-weight: 500; }
-.dwg-tbl th:first-child { width: 40px; }
-.dwg-tbl td:last-child, .dwg-tbl th:last-child { width: 56px; text-align: right; }
+.dwg-tbl th:first-child { width: 36px; }
+.dwg-tbl td:last-child, .dwg-tbl th:last-child { width: 52px; text-align: right; }
+.dwg-tbl tbody td:nth-child(2) { white-space: normal; line-height: 14px; }
+.dwg-tbl tbody tr { cursor: default; }
+.dwg-tbl tbody tr:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 .dwg-det { margin: 0 0 12px; }
 .dwg-dsvg { display: block; width: 100%; max-width: 152px; height: auto; }
-.dwg-det figcaption { margin-top: 4px; font: 400 10px/12px var(--font-mono); color: var(--ink-muted); }
-.dwg-det figcaption b { display: block; font-weight: 500; color: var(--ink); letter-spacing: .4px; }
-.dwg-det figcaption span { display: block; }
+.dwg-det figcaption, .dwg-axof figcaption { margin-top: 4px; font: 400 10px/12px var(--font-mono); color: var(--ink-muted); }
+.dwg-det figcaption b, .dwg-axof figcaption b { display: block; font-weight: 500; color: var(--ink); letter-spacing: .4px; }
+.dwg-det figcaption span, .dwg-axof figcaption span { display: block; }
 .dwg-lat { stroke: var(--cobalt-text); stroke-width: .5; opacity: .45; }
-.dwg-ol { fill: none; stroke: var(--ink); stroke-width: 1.5; }
-.dwg-in { fill: none; stroke: var(--cobalt-text); stroke-width: 1; stroke-dasharray: 3 3; }
 .dwg-fill { fill: var(--ink); }
+.dwg-rule { fill: var(--ink-muted); }
+.dwg-gapf { fill: var(--cobalt-text); opacity: .12; }
 .dwg-cell { fill: var(--vermilion-text); }
 .dwg-ring { fill: none; stroke: var(--vermilion-text); stroke-width: 1; stroke-dasharray: 3 3; }
-.dwg-dsvg circle.dwg-ring + * { paint-order: stroke; }
 .dwg-dt { font: 500 11px var(--font-mono); fill: var(--cobalt-text); paint-order: stroke; stroke: var(--paper); stroke-width: 3px; }
 .dwg-notes { font: 400 10px/14px var(--font-mono); color: var(--ink); }
 .dwg-notes b { font-weight: 600; }
-.dwg-notes ol { margin: 4px 0 0; padding: 0 0 0 16px; }
+.dwg-notes ol { margin: 4px 0 0; padding: 0 0 0 20px; }
 .dwg-notes li { margin: 0 0 4px; }
 .dwg-credit { margin: 8px 0 0; color: var(--ink-muted); }
 
-/* rails: only when the margins are wide enough to hold a sheet column */
-.dwg-rail { position: sticky; top: 16px; pointer-events: auto; max-height: calc(100vh - 32px); box-sizing: border-box; }
-#dwg .dwg-rail--l { position: absolute; left: 16px; top: 112px; }
-#dwg .dwg-rail--r { position: absolute; right: 12px; top: 16px; }
-.dwg-rail--r { overflow-y: auto; scrollbar-width: thin; }
-.dwg-rail[hidden] { display: none; }
+/* the exploded view */
+.dwg-axof { margin: 16px 0 0; }
+.dwg-axo { display: block; width: 100%; height: auto; }
+.dwg-axo rect, .dwg-axo line { vector-effect: non-scaling-stroke; }
+.dwg-ax-plate { fill: var(--paper); fill-opacity: .9; stroke: var(--ink); stroke-width: 1.25; }
+.dwg-ax-f { fill: var(--ink); opacity: .2; }
+.dwg-ax-f2 { fill: var(--ink); opacity: .07; }
+.dwg-ax-col { fill: none; stroke: var(--cobalt-text); stroke-width: .5; opacity: .6; }
+.dwg-ax-t { fill: var(--ink); opacity: .55; }
+.dwg-ax-b { fill: var(--paper); fill-opacity: .8; stroke: var(--ink); stroke-width: 1.25; }
+.dwg-ax-s { fill: var(--paper); fill-opacity: .85; stroke: var(--ink); stroke-width: 1; }
+.dwg-ax-x { stroke: var(--ink); stroke-width: .5; }
+.dwg-ax-o { fill: none; stroke: var(--cobalt-text); stroke-width: .75; stroke-dasharray: 6 4; }
+.dwg-ax-d { stroke: var(--cobalt-text); stroke-width: .9; }
+.dwg-ax-c { stroke: var(--ink-muted); stroke-width: .6; stroke-dasharray: 14 3 2 3; }
+.dwg-ax-lead { fill: none; stroke: var(--ink); stroke-width: .6; }
+.dwg-ax-dot { fill: var(--ink); }
+.dwg-ax-n { font: 500 11px var(--font-mono); letter-spacing: .6px; fill: var(--ink); }
+.dwg-ax-u { font: 400 9px var(--font-mono); letter-spacing: .3px; fill: var(--ink-muted); }
+
+/* rails: a full-height column in each margin, with a sticky, scrollable panel inside */
+.dwg-col { position: absolute; top: 0; bottom: 0; }
+.dwg-col[hidden] { display: none; }
+.dwg-col--l { left: 16px; }
+.dwg-col--r { right: 12px; }
+.dwg-rail { position: sticky; top: 16px; margin-top: 32px; max-height: calc(100vh - 32px); overflow-y: auto; box-sizing: border-box; pointer-events: auto; scrollbar-width: thin; scrollbar-color: var(--ink-muted) transparent; }
+.dwg-more { position: sticky; bottom: 0; padding: 12px 0 2px; text-align: right; font: 500 10px/12px var(--font-mono); color: var(--cobalt-text); background: linear-gradient(transparent, var(--paper) 55%); pointer-events: none; }
+.dwg-more[hidden] { display: none; }
 
 /* foot: a real section below the page, so nothing above it moves */
 .dwg-foot { box-sizing: border-box; padding: 16px 0 48px; }
-.dwg-foot[hidden] { display: none; }
 .dwg-foot__g { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 16px; }
 .dwg-foot__d { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .dwg-tables { min-width: 0; }
@@ -94,32 +132,39 @@ html[data-dwg-anim] .dwg-l { animation: dwg-in .12s linear both; animation-delay
 .dwg-strip[hidden] { display: none; }
 .dwg-strip a { margin-left: auto; color: var(--cobalt-text); }
 
-/* One A3 landscape sheet. Print media queries answer to the print dialog's paper, not @page, so the page can't be trusted
-   to reach its 12-column layout in print. The plan is drawn in a hidden same-origin frame 1512 px wide (A3 less 10mm
-   margins): a frame's media queries answer to the frame. The frame lays itself out as the sheet; the parent prints only it. */
+/* A3 landscape sheets. Print media queries answer to the print dialog's paper, not @page, so the page can't be trusted to
+   reach its 12-column layout in print. The plan is drawn in a hidden same-origin frame 1512 px wide (A3 less 10mm margins):
+   a frame's media queries answer to the frame. Long pages add static copies of it, two windows a sheet. */
 .dwg-printframe { position: fixed; left: -20000px; top: 0; width: 1512px; height: 1046px; border: 0; visibility: hidden; pointer-events: none; }
 html[data-dwg-plan] { --paper: #fff; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 html[data-dwg-plan], html[data-dwg-plan] body { height: 1046px; overflow: hidden; }
 html[data-dwg-plan] body { position: relative; }
-html[data-dwg-plan] body > :not(.site, #dwg, #dwg-foot) { display: none !important; }
-html[data-dwg-plan] #draw-toggle, html[data-dwg-plan] .dwg-strip, html[data-dwg-plan] .dwg-rail { display: none !important; }
+html[data-dwg-plan] body > :not(.site, #dwg, #dwg-foot, .dwg-win, .dwg-stamp) { display: none !important; }
+html[data-dwg-plan] #draw-toggle, html[data-dwg-plan] .dwg-strip, html[data-dwg-plan] .dwg-col { display: none !important; }
 html[data-dwg-plan] body::after { content: ""; position: absolute; inset: 0; border: 1px solid var(--ink); border-radius: 12px; z-index: 7; pointer-events: none; }
-html[data-dwg-plan]:not([data-dwg-measure]) .site { transform-origin: var(--dwg-ox) 0; transform: translateX(var(--dwg-tx)) scale(var(--dwg-s)); }
-html[data-dwg-plan]:not([data-dwg-measure]) #dwg { transform-origin: 0 0; transform: translateX(var(--dwg-tx)) scale(var(--dwg-s)); }
+html[data-dwg-plan]:not([data-dwg-measure]) .site { transform-origin: var(--dwg-ox) 0; transform: translate(var(--dwg-tx), var(--dwg-ty, 0)) scale(var(--dwg-s)); }
+html[data-dwg-plan]:not([data-dwg-measure]) #dwg { transform-origin: 0 0; transform: translate(var(--dwg-tx), var(--dwg-ty, 0)) scale(var(--dwg-s)); }
+html[data-dwg-plan] .dwg-f { display: none; }
 html[data-dwg-plan] .dwg-foot { position: absolute; top: 12px; z-index: 6; width: 764px; height: 1022px; margin: 0; padding: 0 12px; box-sizing: border-box; border-left: 1px solid var(--ink); background: #fff; overflow: hidden; }
-html[data-dwg-plan] .dwg-foot__g { grid-template-columns: 324px 1fr; }
 html[data-dwg-plan] .dwg-foot .dwg-tb { grid-template-columns: repeat(6, 1fr); }
-html[data-dwg-plan] .dwg-foot .dwg-tb__t { grid-column: 1 / -1; }
+html[data-dwg-plan] .dwg-foot .dwg-tb__t { grid-column: 1 / -1; padding-bottom: 2px; }
 html[data-dwg-plan] .dwg-foot .dwg-tb__c { border-bottom: 0; border-right: 1px solid var(--ink); }
 html[data-dwg-plan] .dwg-foot .dwg-tb__c:last-child { border-right: 0; }
+html[data-dwg-plan] .dwg-axof { margin-top: 8px; }
+html[data-dwg-plan] .dwg-axo { width: 46%; margin: 0 auto; }
+html[data-dwg-plan] .dwg-foot__g { grid-template-columns: 324px 1fr; margin-top: 8px; }
 html[data-dwg-plan] .dwg-foot .dwg-tables { display: block; columns: 3; column-gap: 16px; }
-html[data-dwg-plan] .dwg-tbl { break-inside: auto; }
+.dwg-win { position: absolute; top: 12px; width: 738px; height: 1022px; overflow: hidden; }
+.dwg-win + .dwg-win { border-left: 1px solid var(--ink); }
+.dwg-win .site { position: relative; }
+.dwg-stamp { position: absolute; right: 16px; bottom: 16px; z-index: 8; padding: 4px 8px; border: 1px solid var(--ink); background: #fff; font: 500 10px/12px var(--font-mono); color: var(--ink); }
 @media print {
   html[data-drawing]:not([data-dwg-plan]) { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html[data-dwg-frame] { color-scheme: light; }
-  html[data-dwg-frame], html[data-dwg-frame] body { height: 1046px; overflow: hidden; background: #fff !important; }
+  html[data-dwg-frame], html[data-dwg-frame] body { height: auto; overflow: visible; background: #fff !important; }
   html[data-dwg-frame] body > :not(.dwg-printframe) { display: none !important; }
-  html[data-dwg-frame] .dwg-printframe { position: absolute !important; left: 0 !important; top: 0 !important; visibility: visible !important; }
+  html[data-dwg-frame] .dwg-printframe { display: block; position: static !important; visibility: visible !important; break-after: page; }
+  html[data-dwg-frame] .dwg-printframe:last-of-type { break-after: auto; }
   /* no frame (a phone, or print pressed before it loaded): the sheet data prints alone */
   html[data-dwg-print]:not([data-dwg-frame]):not([data-dwg-plan]) .site, html[data-dwg-print]:not([data-dwg-frame]):not([data-dwg-plan]) #dwg, html[data-dwg-print]:not([data-dwg-frame]):not([data-dwg-plan]) .dwg-strip { display: none !important; }
   html[data-dwg-print]:not([data-dwg-frame]):not([data-dwg-plan]) .dwg-foot { margin: 0 !important; width: auto !important; }
