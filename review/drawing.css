@@ -19,7 +19,8 @@ html[data-drawing] main svg:not(.glyph):not(.parrow):not(.unm) * { fill: none !i
 
 #dwg { position: absolute; left: 0; top: 0; z-index: 4; pointer-events: none; overflow: clip; color: var(--cobalt-text); }
 .dwg-svg { position: absolute; left: 0; top: 0; display: block; overflow: visible; }
-.dwg-gridh { position: absolute; left: 0; top: 0; z-index: -1; pointer-events: none; overflow: clip; }
+.dwg-gridh { position: absolute; left: 0; top: 0; z-index: -1; pointer-events: none; overflow: clip; display: none; }
+.dwg-gridh.is-on { display: block; }
 .dwg-gridh i { position: absolute; top: 0; bottom: 0; display: block; box-sizing: border-box; border-left: 1px solid; border-right: 1px solid; border-color: color-mix(in srgb, var(--cobalt-text) 18%, transparent); }
 .dwg-f rect { fill: none; stroke: var(--ink); stroke-width: 2; }
 .dwg-e { stroke: var(--cobalt-text); stroke-width: .75; opacity: .65; }
@@ -93,6 +94,7 @@ html[data-dwg-anim] .dwg-ref circle { stroke-dasharray: none; stroke-dashoffset:
 .dwg-det figcaption span, .dwg-axof figcaption span { display: block; }
 .dwg-lat { stroke: var(--cobalt-text); stroke-width: .5; opacity: .45; }
 .dwg-fill { fill: var(--ink); }
+.dwg-edge { fill: none; stroke: var(--ink); stroke-width: 1; }
 .dwg-rule { fill: var(--ink-muted); }
 .dwg-gapf { fill: var(--cobalt-text); opacity: .12; }
 .dwg-cell { fill: var(--vermilion-text); }
@@ -153,11 +155,18 @@ html[data-dwg-anim] .dwg-ref circle { stroke-dasharray: none; stroke-dashoffset:
 .dwg-rt .dwg-k { font-size: 8px; line-height: 10px; }
 .dwg-jump { margin: 6px 0 0; font: 500 10px/12px var(--font-mono); display: flex; gap: 12px; }
 .dwg-jump a { color: var(--cobalt-text); }
-.dwg-rail .dwg-tbl { margin-top: 6px; font-size: 10px; }
-.dwg-rail .dwg-tbl caption { font-size: 16px; line-height: 16px; padding-bottom: 2px; }
+.dwg-rail .dwg-tbl { margin-top: 4px; font: 400 10px/13px var(--font-mono); }
+.dwg-rail .dwg-tables { margin-top: 2px; }
+.dwg-rail .dwg-tbl th, .dwg-rail .dwg-tbl td { line-height: 13px; }
+.dwg-rd { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px; }
+.dwg-rd:empty { display: none; }
+.dwg-rd .dwg-det { margin: 0; }
+.dwg-rd .dwg-det figcaption { font-size: 8px; line-height: 10px; margin-top: 1px; }
+.dwg-rd .dwg-det figcaption span { display: none; }
+.dwg-rail .dwg-tbl caption { font-size: 16px; line-height: 14px; padding-bottom: 1px; }
 .dwg-rail .dwg-tbl thead th { font-size: 8px; line-height: 10px; }
 .dwg-rail .dwg-tbl:not(:first-of-type) thead { display: none; }
-.dwg-rail .dwg-tbl tbody td:nth-child(2) { white-space: normal; line-height: 12px; }
+
 .dwg-flag { margin: 6px 0 0; font: 400 10px/12px var(--font-mono); color: var(--vermilion-text); }
 
 /* the rest of the sheet: a real section below the page, so nothing above it moves */
@@ -190,8 +199,7 @@ html[data-dwg-anim] .dwg-ref circle { stroke-dasharray: none; stroke-dashoffset:
 html[data-dwg-plan] { --paper: #fff; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 html[data-dwg-plan], html[data-dwg-plan] body { height: 1046px; overflow: hidden; }
 html[data-dwg-plan] body { position: relative; }
-html[data-dwg-plan] body > :not(.site, #dwg, #dwg-foot, .dwg-win, .dwg-stamp, .dwg-gridh) { display: none !important; }
-html[data-dwg-plan] .dwg-gridh { display: block !important; }
+html[data-dwg-plan] body > :not(.site, #dwg, #dwg-foot, .dwg-win, .dwg-stamp) { display: none !important; }
 html[data-dwg-plan] #draw-toggle, html[data-dwg-plan] .dwg-strip, html[data-dwg-plan] .dwg-col { display: none !important; }
 html[data-dwg-plan] body::after { content: ""; position: absolute; inset: 0; border: 2px solid var(--ink); z-index: 7; pointer-events: none; }
 html[data-dwg-plan]:not(.x) .site, html[data-dwg-plan]:not(.x) #dwg { clip-path: polygon(-9999px -9999px, 9999px -9999px, 9999px var(--dwg-clip, 99999px), -9999px var(--dwg-clip, 99999px)); }
@@ -204,8 +212,8 @@ html[data-dwg-plan] .dwg-v1 { margin: 0; }
 html[data-dwg-plan] .dwg-views { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: start; gap: 12px; margin-top: 4px; }
 html[data-dwg-plan] .dwg-view { margin-top: 6px; }
 html[data-dwg-plan] .dwg-axo { max-height: 430px; }
-html[data-dwg-plan] .dwg-foot .dwg-tables { columns: 3; margin-top: 8px; flex: 1 1 auto; min-height: 0; }
-html[data-dwg-plan] .dwg-foot > .dwg-tb { grid-template-columns: repeat(6, 1fr); margin-top: 6px; flex: none; }
+html[data-dwg-plan] .dwg-foot .dwg-tables { columns: 3; margin-top: 8px; flex: none; }
+html[data-dwg-plan] .dwg-foot > .dwg-tb { grid-template-columns: repeat(6, 1fr); margin-top: auto; flex: none; }
 html[data-dwg-plan] .dwg-foot > .dwg-tb .dwg-tb__c { border-bottom: 0; border-right: 1px solid var(--ink); }
 html[data-dwg-plan] .dwg-foot > .dwg-tb .dwg-tb__c:last-child { border-right: 0; }
 html[data-dwg-plan] .dwg-foot > .dwg-tb .dwg-tb__t { padding-bottom: 2px; }
@@ -225,3 +233,16 @@ html[data-dwg-plan] .dwg-foot > .dwg-tb .dwg-tb__t { padding-bottom: 2px; }
   html[data-dwg-print]:not([data-dwg-frame]):not([data-dwg-plan]) .site, html[data-dwg-print]:not([data-dwg-frame]):not([data-dwg-plan]) #dwg, html[data-dwg-print]:not([data-dwg-frame]):not([data-dwg-plan]) .dwg-strip { display: none !important; }
   html[data-dwg-print]:not([data-dwg-frame]):not([data-dwg-plan]) .dwg-foot { margin: 0 !important; width: auto !important; }
 }
+/* short laptop windows: the legend keeps every row; group captions and circle size give way */
+.dwg-rd .dwg-dsvg { max-width: 92px; }
+@media (max-height: 790px) { .dwg-rail .dwg-tbl caption { display: none; } .dwg-rail .dwg-tbl { margin-top: 3px; } }
+.dwg-rail .dwg-tbl th:first-child { width: 38px; }
+.dwg-rail .dwg-tbl td:nth-child(3), .dwg-rail .dwg-tbl thead th:nth-child(3) { width: 22px; }
+.dwg-rail .dwg-tbl td:last-child, .dwg-rail .dwg-tbl thead th:last-child { width: 50px; }
+html[data-dwg-plan] .dwg-axo { max-height: 410px; }
+html[data-dwg-plan] .dwg-foot .dwg-tbl { font: 400 10px/13px var(--font-mono); margin-top: 4px; }
+html[data-dwg-plan] .dwg-foot .dwg-tbl th, html[data-dwg-plan] .dwg-foot .dwg-tbl td { line-height: 13px; }
+html[data-dwg-plan] .dwg-foot .dwg-tbl caption { font-size: 16px; line-height: 16px; }
+html[data-dwg-plan] .dwg-foot > .dwg-tb .dwg-tb__n { font-size: 24px; line-height: 28px; }
+html[data-dwg-plan] .dwg-notes { font-size: 9px; line-height: 12px; }
+html[data-dwg-plan] .dwg-notes li { margin-bottom: 2px; }

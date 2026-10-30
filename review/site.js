@@ -731,6 +731,8 @@
     var head = document.querySelector('.site-head'); if (!head) return;
     var b = el('button', 'draw-t', '<span class="draw-t__tease">see how this page is built</span><span class="draw-t__tease2">see specs</span><span class="draw-t__b"><span>Drawing</span><i aria-hidden="true"></i><kbd>D</kbd></span>'); b.type = 'button'; b.id = 'draw-toggle'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-keyshortcuts', 'd'); b.setAttribute('aria-label', 'Drawing mode: redraws this page as a dimensioned engineering sheet'); b.title = 'Drawing mode (D)';
     head.appendChild(b);
+    // the switch says so once a session: one ink pulse (CSS, none under reduced motion)
+    try { if (!sessionStorage.getItem('dwg-seen')) { sessionStorage.setItem('dwg-seen', '1'); b.classList.add('draw-t--pulse'); } } catch (e) {}
     var want = false, loading = false, sheet = window.parent !== window && location.hash === '#dwg-sheet';   // the print frame drawing.js opens
     function apply() { var d = window.__drawing; if (d) { if (want) d.on(); else d.off(); } }
     function toggle() {
@@ -749,6 +751,7 @@
     window.__dwgSheet = sheet; window.__dwgPages = INDEX.concat(LAB);
     if (sheet || location.hash === '#drawing') toggle();
     document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && want && document.getElementById('zoom').hidden) { toggle(); return; }
       if ((e.key !== 'd' && e.key !== 'D') || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
       var t = e.target; if (t && t.closest && t.closest('input,textarea,select,[contenteditable],[role=textbox]')) return;
       toggle();

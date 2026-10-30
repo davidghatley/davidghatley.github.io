@@ -59,7 +59,11 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 @media (max-width: 639px) { .draw-t__tease, .draw-t kbd { display: none; } .draw-t__tease2 { display: inline; } .draw-t, .draw-t__b { height: 22px; } }
 .draw-t i { display: block; box-sizing: border-box; width: 24px; height: 12px; border: 1px solid currentColor; position: relative; }
 .draw-t i::after { content: ""; position: absolute; left: 1px; top: 1px; width: 8px; height: 8px; background: currentColor; }
-.draw-t:hover .draw-t__b, .draw-t:focus-visible .draw-t__b { color: var(--cobalt-text); border-color: var(--cobalt-text); }
+.draw-t:hover .draw-t__b, .draw-t--pulse .draw-t__b { animation: draw-pulse 1.4s 1.2s 2 ease-out; }
+@keyframes draw-pulse { 0% { box-shadow: 0 0 0 0 var(--ink); } 60%, 100% { box-shadow: 0 0 0 8px transparent; } }
+@media (prefers-reduced-motion: reduce) { .draw-t--pulse .draw-t__b { animation: none; } }
+.draw-t--pulse[aria-pressed="true"] .draw-t__b { animation: none; }
+.draw-t:focus-visible .draw-t__b { color: var(--cobalt-text); border-color: var(--cobalt-text); }
 .draw-t[aria-pressed="true"] .draw-t__b { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .draw-t[aria-pressed="true"] i::after { left: 13px; }
 .draw-t:focus-visible, .draw-t[aria-pressed="true"] { color: var(--cobalt-text); }
