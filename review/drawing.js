@@ -694,6 +694,10 @@
       over.style.height = fh + 'px'; svg.setAttribute('height', fh); svg.setAttribute('viewBox', '0 0 ' + S.W + ' ' + fh);
       frame(fh);
     }
+    if (S.sheet) { // the title block must stay on the sheet: views give way until the panel fits
+      var fsec = foot.querySelector('.dwg-sec'), fax = foot.querySelector('.dwg-axo'), mh = 180, ma = 330;
+      for (var fi = 0; fi < 12 && foot.scrollHeight > foot.clientHeight + 1; fi++) { mh = Math.max(84, mh - 16); ma = Math.max(210, ma - 16); if (fsec) fsec.style.maxHeight = mh + 'px'; if (fax) fax.style.setProperty('max-height', ma + 'px', 'important'); }
+    }
     syncMore();
     if (S.view > 1 && !S.sheet) openView(S.view, true);
     root.removeAttribute('data-dwg-measure');

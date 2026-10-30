@@ -281,3 +281,4 @@ html[data-dwg-plan] .dwg-axo { max-height: 330px !important; }
 @media print { .dwg-stage { display: none !important; } }
 .dwg-ax-n--p { font-size: 34px; font-weight: 600; }
 .dwg-ax-u--p { font-size: 24px; }
+.dwg-ax-n--p, .dwg-ax-u--p { paint-order: stroke; stroke: var(--paper); stroke-width: 8px; }
