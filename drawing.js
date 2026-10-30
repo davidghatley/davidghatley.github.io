@@ -6,9 +6,9 @@
 (function () {
   var REV = 'd72a8f9'; // build.py: git rev
   var NS = 'http://www.w3.org/2000/svg', root = document.documentElement;
-  var LABEL_H = 12, CH = 6.6, PW = 1512, PH = 1046, PANEL = 776, PAD = 76, MIN_FIT = 0.45;
+  var LABEL_H = 12, CH = 6.6, PW = 1512, PH = 1046, PANEL = 640, PAD = 76, S2 = 738 / (944 + 152);
   var S = { on: false, dims: [], lazy: [], extras: [], held: [], vids: [] };
-  var over, svg, labels, foot, strip, probes, pageStyle, colL, colR, railR, gridHost, legend, occ, nativeRAF;
+  var over, svg, labels, foot, strip, probes, pageStyle, colL, colR, railR, gridHost, legend, stage, occ, nativeRAF;
 
   function cs(e) { return getComputedStyle(e); }
   function px(v) { return parseFloat(v) || 0; }
@@ -27,7 +27,7 @@
     ['.lane__note', 'section note'], ['.xgrid', 'experiment grid'], ['.board', 'board'], ['.lab-h1,.site-h1', 'H1'], ['.site-sub', 'subline'], ['.pnl', 'panel grid'], ['.panel', 'panel'], ['.site-foot', 'footer'],
     ['.dos__sheet', 'dossier notes'], ['.dos__work', 'dossier work'], ['.dos__id', 'dossier title'], ['.dos__fig', 'dossier figure'], ['.dos', 'dossier'], ['.case-deep', 'deep dive'], ['.hero', 'hero'], ['.tally', 'tally'], ['.pn', 'next and previous'],
     ['figure', 'figure'], ['p', 'paragraph'], ['ul,ol,dl', 'list'], ['section,article', 'section'], ['.glyph', 'glyph'], ['.ss-lockup__mark', 'mark']];
-  function nameOf(e) { for (var i = 0; i < NAMES.length; i++) if (e.matches(NAMES[i][0])) return NAMES[i][1]; return 'block'; }
+  function nameOf(e) { if (e.matches('.lc--x .lc__head')) return 'experiment head'; if (e.matches('.lc--x')) return 'experiment card'; for (var i = 0; i < NAMES.length; i++) if (e.matches(NAMES[i][0])) return NAMES[i][1]; return 'block'; }
 
   // ---------- occupancy ----------
   function hit(r, list, pad) { pad = pad || 0; for (var i = 0; i < list.length; i++) { var q = list[i]; if (r.l < q.r + pad && q.l < r.r + pad && r.t < q.b + pad && q.t < r.b + pad) return true; } return false; }
@@ -59,8 +59,8 @@
     if (code) e.setAttribute('data-code', code);
     occ.labels.push(r); return e;
   }
-  function extHits(x, e, y) { return e != null && hit({ l: x - .5, r: x + .5, t: Math.min(e, y), b: Math.max(e, y) }, occ.text, 0); }
-  function extHitsV(y, e, x) { return e != null && hit({ l: Math.min(e, x), r: Math.max(e, x), t: y - .5, b: y + .5 }, occ.text, 0); }
+  function extHits(x, e, y) { if (e == null) return false; var r = { l: x - .5, r: x + .5, t: Math.min(e, y), b: Math.max(e, y) }; return hit(r, occ.text, 0) || hit(r, occ.obj, -1); }
+  function extHitsV(y, e, x) { if (e == null) return false; var r = { l: Math.min(e, x) + (x > e ? 3 : 0), r: Math.max(e, x) - (x < e ? 3 : 0), t: y - .5, b: y + .5 }; return hit(r, occ.text, 1) || hit(r, occ.obj, -1); }
   function inRun(e, y, dir) { // carries an extension line on to the feature: into the box, until it would meet type or a picture
     var d = 0; while (d < 32) { var a = e + dir * d, b = e + dir * (d + 4), r = { l: Math.min(a, b), r: Math.max(a, b), t: y - 1, b: y + 1 }; if (hit(r, occ.text) || hit(r, occ.obj)) break; d += 4; } return d;
   }
@@ -72,7 +72,7 @@
     for (var i = 0; i < ys.length; i++) {
       var y = snap(ys[i]), row = { l: x1 - (small ? 12 : 0), r: x2 + (small ? 12 : 0), t: y - 2, b: y + 2 };
       if (hit(row, occ.h) || row.l < 0 || row.r > S.W || y < 2 || y > S.H - 2 || lineCrossesText(row) || hit(row, occ.mask)) continue;
-      if (extHits(x1, e1, y) || extHits(x2, e2, y)) continue; // an extension line never strikes through type
+      if (hit(row, occ.obj) || extHits(x1, e1, y) || extHits(x2, e2, y)) continue; // an extension line never strikes through type
       var pos = null, cands = small ? [x2 + 11 + w / 2, x1 - 11 - w / 2] : [.5, .3, .7, .15, .85].map(function (t) { return x1 + span * t; });
       for (var k = 0; k < cands.length && !pos; k++) { var r = lab(clampX(cands[k], w), y, w); if (labelFree(r)) pos = r; }
       if (!pos) continue;
@@ -92,7 +92,7 @@
     if (S.once[once] || (!c.word && S.vspan[Math.round(y1) + ',' + Math.round(y2)])) return false; // one dimension for one span
     for (var i = 0; i < xs.length; i++) {
       var x = snap(xs[i]), col = { l: x - 2, r: x + 2, t: y1 - (small ? 12 : 0), b: y2 + (small ? 12 : 0) };
-      if (hit(col, occ.v) || col.l < 2 || col.r > S.W - 2 || hit(col, occ.text, 4) || hit(col, occ.mask)) continue;
+      if (hit(col, occ.v) || col.l < 2 || col.r > S.W - 2 || hit(col, occ.text, 4) || hit(col, occ.obj) || hit(col, occ.mask)) continue;
       if (extHitsV(y1, e1, x) || extHitsV(y2, e2, x)) continue;
       var pos = null, opts = small ? [[x, y1 - 19], [x, y2 + 19], [x - w / 2 - 5, (y1 + y2) / 2], [x + w / 2 + 5, (y1 + y2) / 2]] : [[x, y1 + span * .5], [x, y1 + span * .3], [x, y1 + span * .7], [x, y1 - 10], [x, y2 + 10], [x + w / 2 + 4, y1 + span * .5], [x - w / 2 - 4, y1 + span * .5]];
       for (var k = 0; k < opts.length && !pos; k++) { var r = lab(clampX(opts[k][0], w), opts[k][1], w); if (labelFree(r)) pos = r; }
@@ -174,7 +174,9 @@
     var m = mctx.measureText('H'), asc = m.fontBoundingBoxAscent, cap = m.actualBoundingBoxAscent;
     // the whole line of type: its right end and the box it sits in
     var rs = e.getBoundingClientRect(), y0 = q.top + scrollY, x0 = q.left + scrollX, base = y0 + asc, right = 0; Array.prototype.forEach.call(document.createRange ? (function () { var r2 = document.createRange(); r2.selectNodeContents(e); return r2.getClientRects(); })() : [], function (c) { if (Math.abs(c.top - q.top) < 8) right = Math.max(right, c.right); });
-    return { el: n.parentElement, lh: lh, fs: fs, cap: cap, base: base, mid: y0 + (q.bottom - q.top) / 2, l: x0, r: (right || q.right) + scrollX };
+    var mid_ = y0 + (q.bottom - q.top) / 2, rr = (right || q.right) + scrollX;
+    occ.text.forEach(function (a) { if (a.t < mid_ && a.b > mid_ && a.l >= rs.left + scrollX - 1 && a.r <= rs.right + scrollX + 1 && a.r > rr) rr = a.r; }); // the real end of the line
+    return { el: n.parentElement, lh: lh, fs: fs, cap: cap, base: base, mid: mid_, l: x0, r: rr };
   }
   function cType(e, nm) { // leading, and the cap height as the eye reads it; both carried beside the line of type
     var t = typeOf(e); if (!t) return [];
@@ -294,7 +296,7 @@
         var cap = h('span', 'dwg-l dwg-l--slot', esc(txt), labels); cap.style.cssText = 'left:' + (cx - tw / 2) + 'px;top:' + (cy - 6) + 'px;width:' + tw + 'px;--d:680ms';
       }
     });
-    all('main svg.glyph,.ss-lockup__mark,main svg.ro-spark,main svg.ro-vram,.unm').forEach(function (e) { if (visible(e)) occ.obj.push(box(e)); });
+    all('main svg,.ss-lockup__mark,main .lm-bar,main .lc__track,main .ty-strip,main .va-page,.ibtn,.tag,#draw-toggle').forEach(function (e) { if (visible(e) || e.tagName === 'svg') { var q = box(e); if (q.w > 0 && q.h > 0) occ.obj.push(q); } });
   }
   function frame(fh) {
     var g = group('dwg-d dwg-f', 0);
@@ -374,7 +376,7 @@
     var L = ra.w || rb.w, ll = null;
     if (L) { ll = mk('text', { x: 30, y: Y(Math.max(A.t, B.t)) - 6, 'class': 'dwg-dt' }, sv); ll.textContent = 'L'; }
     var off = across ? (A.r + gap / 2) % bPx : A.b % bPx;
-    return { key: 'DET-A', svg: sv, labelG: tl, labelL: ll, L: L, ruleEl: ra.w ? pair[0] : pair[1], ruleHow: (ra.w ? ra : rb).how, gap: gap, rawEl: pair[0].parentElement, title: 'DETAIL A · ' + (nameOf(pair[0]).replace('dossier ', '') + ' MEETS ' + nameOf(pair[1]).replace('dossier ', '')).toUpperCase(),
+    return { key: 'DET-A', svg: sv, labelG: tl, labelL: ll, L: L, ruleEl: ra.w ? pair[0] : pair[1], ruleHow: (ra.w ? ra : rb).how, gap: gap, rawEl: pair[0].parentElement, short: 'A JOIN: ' + nameOf(pair[0]).replace('dossier ', '').toUpperCase() + ' + ' + nameOf(pair[1]).replace('dossier ', '').toUpperCase(), title: 'DETAIL A · ' + (nameOf(pair[0]).replace('dossier ', '') + ' MEETS ' + nameOf(pair[1]).replace('dossier ', '')).toUpperCase(),
       caption: 'SCALE ' + M + ':1. GAP ' + fmt(gap) + ', ' + fmt(gap / bPx) + '·B. LINE ' + fmt(L) + ' (' + (ra.w ? ra : rb).how.toUpperCase() + '). EDGES ' + (A.r % bPx === 0 || !across ? 'ON' : 'OFF') + ' THE ' + fmt(bPx) + ' PX LATTICE.' };
   }
   function detailCell(glyph) {
@@ -390,14 +392,14 @@
     var w = pick.getBoundingClientRect().width;
     var tx = mk('text', { x: ox + pick.x.baseVal.value * unit * M + w * M / 2, y: oy + pick.y.baseVal.value * unit * M - 6, 'class': 'dwg-dt', 'text-anchor': 'middle' }, sv); tx.textContent = 'CELL';
     var bl = mk('text', { x: 76, y: 146, 'class': 'dwg-dt', 'text-anchor': 'middle' }, sv); bl.textContent = 'B';
-    return { key: 'DET-B', svg: sv, label: tx, labelB: bl, el: pick, w: w, title: 'DETAIL B · GLYPH CELL', caption: 'SCALE ' + fmt(M) + ':1. CELL = ' + fmt(w) + ' = ' + fmt(w / bPx) + '·B. B = ' + fmt(bPx) + '.' };
+    return { key: 'DET-B', svg: sv, label: tx, labelB: bl, el: pick, w: w, short: 'B GLYPH CELL', title: 'DETAIL B · GLYPH CELL', caption: 'SCALE ' + fmt(M) + ':1. CELL = ' + fmt(w) + ' = ' + fmt(w / bPx) + '·B. B = ' + fmt(bPx) + '.' };
   }
-  function detailFig(d) { var f = h('figure', 'dwg-det'); f.setAttribute('data-code', d.key); h('span', 'dwg-tag dwg-tag--fig', d.key.slice(-1), f); f.appendChild(d.svg); h('figcaption', '', '<b>' + esc(d.title) + '</b><span>' + esc(d.caption) + '</span>', f); return f; }
+  function detailFig(d) { var f = h('figure', 'dwg-det'); f.setAttribute('data-code', d.key); h('span', 'dwg-tag dwg-tag--fig', d.key.slice(-1), f); f.appendChild(d.svg); h('figcaption', '', '<b class="dwg-long">' + esc(d.title) + '</b><b class="dwg-short">' + esc(d.short) + '</b><span>' + esc(d.caption) + '</span>', f); return f; }
 
   // ---------- exploded axonometric: the real layout, lifted into its layers ----------
   function plural(n, w) { return n + ' ' + w + (n === 1 ? '' : 'S'); }
-  function axo(G) {
-    var hc = Math.min(S.H, S.W * .95), s = 560 / S.W, Z = 190, inH = function (b) { return b.t < hc; };
+  function axo(G, large) {
+    var hc = Math.min(S.H, S.W * (large ? .62 : .95)), phone = large && S.W < 640, s = (large ? 760 : 560) / S.W, Z = phone ? 230 : large ? 130 : 190, inH = function (b) { return b.t < hc; };
     var long = function (r) { return Math.max(r.r - r.l, r.b - r.t) > 60; }, dh = occ.h.filter(long), dv = occ.v.filter(long);
     var tops = S.boxes.filter(function (b) { return !S.boxes.some(function (q) { return q !== b && q.l <= b.l + 1 && q.r >= b.r - 1 && q.t <= b.t + 1 && q.b >= b.b - 1 && q.w * q.h > b.w * b.h; }); });
     var nowText = occ.text.filter(function (t) { return t.t < hc && t.b - t.t > 6; }), inner = all('main .t-head,main .t-body > *,main .ro-k,main .ro-big,main .ro-cells > *,main .lm-pack,main .lm-stats > *,main .lc__head,main .lc__fig,main .lc__what,main .lc__foot,main .dos__id,main .dos__result,main .dos__out,main .dos__dec').filter(visible).map(box).filter(inH);
@@ -406,11 +408,11 @@
     function P(x, y, z) { return [.94 * s * x - .34 * s * y, .17 * s * x + .47 * s * y - z]; }
     var cx = [[0, 0], [S.W, 0], [S.W, hc], [0, hc]], xs = [], ys = [];
     for (var i = 0; i < 5; i++) cx.forEach(function (q) { var p = P(q[0], q[1], i * Z); xs.push(p[0]); ys.push(p[1]); });
-    var minX = Math.min.apply(0, xs), maxX = Math.max.apply(0, xs), minY = Math.min.apply(0, ys), maxY = Math.max.apply(0, ys), LP = 196;
+    var minX = Math.min.apply(0, xs), maxX = Math.max.apply(0, xs), minY = Math.min.apply(0, ys), maxY = Math.max.apply(0, ys), LP = phone ? 12 : large ? 280 : 196;
     var vbW = maxX - minX + LP + 16, vbH = maxY - minY + 24, tx = -minX + LP, ty = -minY + 12;
     var sv = mk('svg', { viewBox: '0 0 ' + vbW + ' ' + vbH, 'class': 'dwg-axo', role: 'img', 'aria-label': 'Exploded view of the page: canvas field, page, tiles, instruments and overlay, drawn from the real layout' });
     var mtx = function (z) { return 'matrix(' + [.94 * s, .17 * s, -.34 * s, .47 * s, tx, ty - z].join(' ') + ')'; };
-    function layer(z) { var g = mk('g', { transform: mtx(z) }, sv); mk('rect', { x: 0, y: 0, width: S.W, height: hc, 'class': 'dwg-ax-plate' }, g); return g; }
+    var plates = []; function layer(z) { var g = mk('g', { transform: mtx(z) }, sv); plates.push({ g: g, z: z }); mk('rect', { x: 0, y: 0, width: S.W, height: hc, 'class': 'dwg-ax-plate' }, g); return g; }
     function rect(g, b, cls) { if (b.t < hc) mk('rect', { x: b.l, y: b.t, width: b.w, height: Math.min(b.h, hc - b.t), 'class': cls }, g); }
     var g0 = layer(0);
     for (var yy = 32; yy < hc; yy += 64) for (var xx = 32; xx < S.W; xx += 64) mk('rect', { x: xx, y: yy, width: 16, height: 16, 'class': (xx < G.site.l || xx > G.site.r) ? 'dwg-ax-f' : 'dwg-ax-f2' }, g0);
@@ -423,36 +425,69 @@
     S.dims.forEach(function (d) { var q = d.labelEl && d.labelEl.closest && d.labelEl.closest('.dwg-labels') && d.labelEl.getBoundingClientRect(); if (!q) return; var ly = q.top + scrollY; if (ly >= hc) return; mk('rect', { x: q.left + scrollX - 4, y: ly - 4, width: q.width + 8, height: q.height + 8, 'class': 'dwg-ax-lb' }, g4); });
     dh.forEach(function (r) { if (r.t < hc) mk('line', { x1: r.l, y1: (r.t + r.b) / 2, x2: r.r, y2: (r.t + r.b) / 2, 'class': 'dwg-ax-d' }, g4); });
     dv.forEach(function (r) { if (r.t < hc) mk('line', { x1: (r.l + r.r) / 2, y1: r.t, x2: (r.l + r.r) / 2, y2: Math.min(r.b, hc), 'class': 'dwg-ax-d' }, g4); });
-    for (var k = 0; k < 4; k++) [[0, 0], [S.W, 0], [S.W, hc], [0, hc]].forEach(function (q) { var a = P(q[0], q[1], k * Z), b = P(q[0], q[1], (k + 1) * Z); mk('line', { x1: a[0] + tx, y1: a[1] + ty, x2: b[0] + tx, y2: b[1] + ty, 'class': 'dwg-ax-c' }, sv); });
+    var chrome = mk('g', { 'class': 'dwg-ax-chrome' }, sv);
+    for (var k = 0; k < 4; k++) [[0, 0], [S.W, 0], [S.W, hc], [0, hc]].forEach(function (q) { var a = P(q[0], q[1], k * Z), b = P(q[0], q[1], (k + 1) * Z); mk('line', { x1: a[0] + tx, y1: a[1] + ty, x2: b[0] + tx, y2: b[1] + ty, 'class': 'dwg-ax-c' }, chrome); });
     names.forEach(function (n, j) {
-      var z = (4 - j) * Z, p = P(0, hc * .5, z), px_ = p[0] + tx, py = p[1] + ty, lx = 176;
-      mk('polyline', { points: px_ + ',' + py + ' ' + (lx + 8) + ',' + py, 'class': 'dwg-ax-lead' }, sv);
-      mk('circle', { cx: px_, cy: py, r: 2, 'class': 'dwg-ax-dot' }, sv);
-      var t = mk('text', { x: lx, y: py - 1, 'text-anchor': 'end', 'class': 'dwg-ax-n' }, sv); t.textContent = n[0] + ' · ' + n[1];
-      var u = mk('text', { x: lx, y: py + 15, 'text-anchor': 'end', 'class': 'dwg-ax-u' }, sv); u.textContent = n[2];
+      var z = (4 - j) * Z, p = P(0, hc * .5, z), px_ = p[0] + tx, py = p[1] + ty, lx = phone ? 12 : LP - 20;
+      if (phone) { var pt = mk('text', { x: lx, y: py - Z * .42, 'class': 'dwg-ax-n dwg-ax-n--p' }, chrome); pt.textContent = n[0] + ' · ' + n[1]; var pu = mk('text', { x: lx, y: py - Z * .42 + 32, 'class': 'dwg-ax-u dwg-ax-u--p' }, chrome); pu.textContent = n[2]; return; }
+      mk('polyline', { points: px_ + ',' + py + ' ' + (lx + 8) + ',' + py, 'class': 'dwg-ax-lead' }, chrome);
+      mk('circle', { cx: px_, cy: py, r: 2, 'class': 'dwg-ax-dot' }, chrome);
+      var t = mk('text', { x: lx, y: py - 2, 'text-anchor': 'end', 'class': 'dwg-ax-n' + (large ? ' dwg-ax-n--l' : '') }, chrome); t.textContent = n[0] + ' · ' + n[1];
+      var u = mk('text', { x: lx, y: py + (large ? 19 : 15), 'text-anchor': 'end', 'class': 'dwg-ax-u' + (large ? ' dwg-ax-u--l' : '') }, chrome); u.textContent = n[2];
     });
-    return viewFig('dwg-v2', '2', 'EXPLODED VIEW', 'AXONOMETRIC. Z GAPS NOT TO SCALE. REAL POSITIONS, FIRST ' + Math.round(hc) + ' PX OF THE PAGE.', sv);
+    if (large) sv.__lift = function () { // the plates lift apart from the plan
+      var fit = Math.min(vbW / S.W, vbH / hc) * .86, M0 = [fit, 0, 0, fit, (vbW - S.W * fit) / 2 + LP / 3, (vbH - hc * fit) / 2], ease = function (u) { return u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; };
+      function frame(t) { plates.forEach(function (pl, i) { var u = ease(Math.max(0, Math.min(1, (t - (4 - i) * .07) / .72))), M1 = [.94 * s, .17 * s, -.34 * s, .47 * s, tx, ty - pl.z]; pl.g.setAttribute('transform', 'matrix(' + M0.map(function (a, k) { return a + (M1[k] - a) * u; }).join(' ') + ')'); }); chrome.style.opacity = Math.max(0, (t - .72) / .28); }
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { frame(1); return; }
+      var t0 = 0, run = S.viewRun = {}, raf = nativeRAF || window.requestAnimationFrame; frame(0);
+      (function tick(now) { if (run !== S.viewRun) return; if (!t0) t0 = now; var q = (now - t0) / 1500; frame(Math.min(1, q)); if (q < 1) raf.call(window, tick); })(performance.now());
+    };
+    return viewFig(large ? 'dwg-axo-l' : 'dwg-v2', '2', 'EXPLODED VIEW', 'AXONOMETRIC. Z GAPS NOT TO SCALE. REAL POSITIONS, FIRST ' + Math.round(hc) + ' PX OF THE PAGE.', sv);
   }
   function cutRow() { // the first row of real neighbours on the page
     var c = all('.t-body.an,.dos,.lane__cards,.pnl').filter(visible);
     for (var i = 0; i < c.length; i++) { var k = kidsOf(c[i]); if (k.length > 1) { var a = k[0].getBoundingClientRect(), b = k[1].getBoundingClientRect(); if (b.left >= a.right - 1 && b.top < a.bottom) { var row = [k[0]]; k.slice(1).forEach(function (q) { if (q.getBoundingClientRect().top < a.bottom) row.push(q); }); return row; } } }
     return null;
   }
-  function section(G) { // section A-A: the row the plane cuts, to scale, with its chain closed against W
+  function section(G) { // section A-A: the row the plane cuts, in elevation: its rules, parts and gutters, with its heights
     if (!S.cutRow) return null;
-    var W_ = 900, sc = W_ / S.W, kids = S.cutRow.map(box), H_ = Math.min(S.sheet ? 34 : 70, Math.max.apply(0, kids.map(function (b) { return b.h; })) * sc), T = 8, base = T + H_;
-    var sv = mk('svg', { viewBox: '0 0 ' + W_ + ' ' + (base + 34), 'class': 'dwg-sec', role: 'img', 'aria-label': 'Section through the first row of the page' });
+    var MX = 56, W_ = 900 + 2 * MX, sc = 900 / (S.R - S.L), kids = S.cutRow.map(box), t0 = Math.min.apply(0, kids.map(function (b) { return b.t; })), rowH = Math.max.apply(0, kids.map(function (b) { return b.b; })) - t0, T = 8, base = T + rowH * sc;
+    var sv = mk('svg', { viewBox: '0 0 ' + W_ + ' ' + (base + 34), 'class': 'dwg-sec', role: 'img', 'aria-label': 'Section through the first row of the page, showing its parts' });
+    var X = function (x) { return MX + (x - S.L) * sc; }, Y = function (y) { return T + (y - t0) * sc; };
     var pat = mk('pattern', { id: 'dwgh', width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, mk('defs', {}, sv)); mk('line', { x1: 0, y1: 0, x2: 0, y2: 6, 'class': 'dwg-hatch' }, pat);
-    mk('rect', { x: 0, y: T, width: W_, height: H_, fill: 'url(#' + pat.id + ')' }, sv);
-    var chain = [], X = S.L; kids.forEach(function (b, i) { if (b.l > X + .5) chain.push({ a: X, b: b.l, gap: true }); var k = spanOf(b); chain.push({ a: b.l, b: b.r, code: k ? (k === G.n ? 'W' : 'C' + k) : '' }); X = b.r; });
-    if (X < S.R - .5) chain.push({ a: X, b: S.R, gap: true });
+    mk('rect', { x: X(S.L), y: T, width: 900, height: rowH * sc, fill: 'url(#' + pat.id + ')' }, sv);
+    var chain = [], c0 = S.L, nParts = 0;
+    S.cutRow.forEach(function (el, i) {
+      var b = kids[i];
+      if (b.l > c0 + .5) chain.push({ a: c0, b: b.l, gap: true });
+      var k = spanOf(b); chain.push({ a: b.l, b: b.r, code: k ? (k === G.n ? 'W' : 'C' + k) : '' }); c0 = b.r;
+      mk('rect', { x: X(b.l), y: Y(b.t), width: b.w * sc, height: b.h * sc, 'class': 'dwg-sec-o' }, sv);
+      all('*', el).forEach(function (e) { // the real internals
+        if (e.closest('svg') && e.tagName !== 'svg') return; if (!visible(e) && e.tagName !== 'svg' && !/^(IMG|VIDEO|CANVAS)$/.test(e.tagName)) return; if (e.matches(SKIP)) return;
+        var q = box(e); if (q.w < 6 || q.h < 3 || q.b > b.b + 1) return; nParts++;
+        var media = /^(IMG|VIDEO|CANVAS)$/.test(e.tagName), bordered = px(cs(e).borderTopWidth) > 0;
+        mk('rect', { x: X(q.l), y: Y(q.t), width: q.w * sc, height: q.h * sc, 'class': media ? 'dwg-sec-m' : bordered ? 'dwg-sec-r' : 'dwg-sec-i' }, sv);
+        if (media) { mk('line', { x1: X(q.l), y1: Y(q.t), x2: X(q.r), y2: Y(q.b), 'class': 'dwg-sx' }, sv); mk('line', { x1: X(q.r), y1: Y(q.t), x2: X(q.l), y2: Y(q.b), 'class': 'dwg-sx' }, sv); }
+      });
+      occ.text.forEach(function (a) { if (a.l >= b.l - 1 && a.r <= b.r + 1 && a.t >= b.t - 1 && a.b <= b.b + 1 && a.b - a.t > 5) mk('rect', { x: X(a.l), y: Y(a.t + (a.b - a.t) * .25), width: (a.r - a.l) * sc, height: (a.b - a.t) * .5 * sc, 'class': 'dwg-sec-t' }, sv); });
+      // heights: down the outside of the first and last parts, each child and the space after it
+      if (i === 0 || i === S.cutRow.length - 1) {
+        var side = i === 0 ? X(S.L) - 16 : X(S.R) + 16, ch = kidsOf(el).map(box).sort(function (u, v) { return u.t - v.t; }), y0 = b.t, lastY = -99;
+        ch.concat([{ t: b.b, b: b.b }]).forEach(function (q) {
+          [[y0, q.t], [q.t, q.b]].forEach(function (sp) { var d = sp[1] - sp[0]; if (d < 1) return; var ya = Y(sp[0]), yb = Y(sp[1]);
+            mk('line', { x1: side, y1: ya, x2: side, y2: yb, 'class': 'dwg-m' }, sv); mk('line', { x1: side - 4, y1: ya, x2: side + 4, y2: ya, 'class': 'dwg-e' }, sv); mk('line', { x1: side - 4, y1: yb, x2: side + 4, y2: yb, 'class': 'dwg-e' }, sv);
+            var my = (ya + yb) / 2; if (my - lastY >= 11) { var tl = mk('text', { x: side + (i === 0 ? -7 : 7), y: my + 3.5, 'text-anchor': i === 0 ? 'end' : 'start', 'class': 'dwg-sec-v' }, sv); tl.textContent = fmt(d); lastY = my; } });
+          y0 = q.b;
+        });
+      }
+    });
+    if (c0 < S.R - .5) chain.push({ a: c0, b: S.R, gap: true });
     chain.forEach(function (c) {
-      var x = c.a * sc, w = (c.b - c.a) * sc; if (!c.gap) mk('rect', { x: x, y: T, width: w, height: H_, 'class': 'dwg-sec-o' }, sv);
-      var yy = base + 16; mk('line', { x1: x, y1: T + H_, x2: x, y2: yy + 4, 'class': 'dwg-e' }, sv); mk('line', { x1: x + w, y1: T + H_, x2: x + w, y2: yy + 4, 'class': 'dwg-e' }, sv); mk('line', { x1: x, y1: yy, x2: x + w, y2: yy, 'class': 'dwg-m' }, sv);
-      var g = Math.abs(c.b - c.a - G.g) < .5, tt = c.gap && g ? 'G' : (c.code || ''), val = fmt(c.b - c.a), t = mk('text', { x: x + w / 2, y: yy + (w < 60 ? 14 : -3), 'text-anchor': 'middle', 'class': 'dwg-dt' }, sv); t.textContent = (tt ? tt + ' = ' : '') + val;
+      var x = X(c.a), w = (c.b - c.a) * sc, yy = base + 16; mk('line', { x1: x, y1: base, x2: x, y2: yy + 4, 'class': 'dwg-e' }, sv); mk('line', { x1: x + w, y1: base, x2: x + w, y2: yy + 4, 'class': 'dwg-e' }, sv); mk('line', { x1: x, y1: yy, x2: x + w, y2: yy, 'class': 'dwg-m' }, sv);
+      var g = Math.abs(c.b - c.a - G.g) < .5, tt = c.gap && g ? 'G' : (c.code || ''), t = mk('text', { x: x + w / 2, y: yy + (w < 60 ? 14 : -3), 'text-anchor': 'middle', 'class': 'dwg-dt' }, sv); t.textContent = (tt ? tt + ' = ' : '') + fmt(c.b - c.a);
     });
     var sum = kids.reduce(function (a, b) { return a + b.w; }, 0), gaps = kids.length - 1, close = Math.abs(sum + gaps * G.g - (S.R - S.L)) < 1;
-    return viewFig('dwg-v3', '3', 'SECTION A–A', 'SCALE ' + fmt(sc) + ':1. THE ROW THE PLANE CUTS. ' + kids.length + ' PARTS + ' + gaps + '·G = ' + fmt(sum + gaps * G.g) + (close ? ', CLOSES ON W.' : ', W IS ' + fmt(S.R - S.L) + '.'), sv);
+    return viewFig('dwg-v3', '3', 'SECTION A–A', 'SCALE ' + fmt(sc) + ':1. ' + nParts + ' BOXES IN ' + kids.length + ' PARTS, ' + gaps + '·G. WIDTH ' + fmt(sum + gaps * G.g) + (close ? ', CLOSES ON W.' : ', W IS ' + fmt(S.R - S.L) + '.') + ' HEIGHTS MEASURED.', sv);
   }
   function viewFig(id, num, title, sub, sv) {
     var f = h('figure', 'dwg-view'); f.id = id; f.appendChild(sv);
@@ -467,9 +502,9 @@
     var i = (window.__dwgPages || []).indexOf(window.SLUG); return i < 0 ? 'X' : i + 3;
   }
   function sheetCount() { return S.sheet ? S.sheets : (S.parentSheets || (S.W >= 1024 ? planFor(S.H, S.R - S.L).sheets : 1)); }
-  function planFor(H, w) {
-    var wide = (PW - PANEL - 16) / (w + 2 * PAD), fit = (PH - 24) / H, sc = fit >= wide ? wide : fit >= MIN_FIT ? fit : wide, crop = (PH - 24) / sc;
-    return { sc: sc, crop: crop, sheets: H <= crop + 1 ? 1 : 1 + Math.ceil((H - crop) / (2 * crop)) };
+  function planFor(H, w) { // sheet 1 carries the plan large beside the data; the rest of the page runs on two windows a sheet
+    var s1 = S.forceS || (PW - PANEL - 16) / (w + 2 * PAD), s2 = Math.min(S2, 738 / (w + 2 * PAD)), crop = (PH - 24) / s1, crop2 = (PH - 24 - 38) / s2;
+    return { sc: s1, s2: s2, crop: crop, crop2: crop2, sheets: H <= crop + 1 ? 1 : 1 + Math.ceil(Math.ceil((H - crop) / crop2) / 2) };
   }
   function titleBlock() {
     function cell(k, val) { return '<div class="dwg-tb__c"><span class="dwg-k">' + k + '</span><span class="dwg-v">' + val + '</span></div>'; }
@@ -495,7 +530,7 @@
       + (heroName() ? '<li>' + heroName() + ' IS DRAWN IN FULL, TYPE INCLUDED.</li>' : '')
       + (S.shift ? '<li>PLAN SHIFTED ' + fmt(S.shift) + ' LEFT IN THE FRAME TO FIT THE SHEET. M IS ' + fmt(px(cs(document.querySelector('.site')).marginLeft)) + ' ON THE PAGE; NOTHING REFLOWS.</li>' : '')
       + '<li>REV IS THE LAST COMMIT THAT CHANGED THE SOURCE.</li>'
-      + (S.sheet ? '<li>PLAN AT ' + fmt(S.printScale) + ':1 ON ' + S.sheets + (S.sheets > 1 ? ' SHEETS.' : ' SHEET.') + '</li>' : (sheetCount() > 1 ? '<li>PRINTS ON ' + sheetCount() + ' A3 SHEETS.</li>' : '<li>PRINTS ON ONE A3 SHEET.</li>'))
+      + (S.sheet ? '<li>PLAN AT ' + fmt(S.printScale) + ':1 ON THIS SHEET' + (S.sheets > 1 ? ', ' + fmt(S.s2) + ':1 ON THE OTHER ' + (S.sheets - 1) + '.' : '.') + '</li>' : (sheetCount() > 1 ? '<li>PRINTS ON ' + sheetCount() + ' A3 SHEETS.</li>' : '<li>PRINTS ON ONE A3 SHEET.</li>'))
       + '</ol><p class="dwg-credit">DRAWING STYLE AFTER DIMENSIONAL-DRAWING, E. OZTURK (MIT).</p></div>';
   }
   function natural(a, b) { return String(a).localeCompare(String(b), 'en', { numeric: true }); }
@@ -515,8 +550,9 @@
       var rows = Object.keys(byCode).map(function (k) { return byCode[k]; }).filter(function (v) { return v.group === grp; }).sort(function (a, b) { return grp === 'GRID' ? 0 : natural(a.code, b.code); });
       if (!rows.length) return;
       out += '<table class="dwg-tbl"><caption>' + grp.toLowerCase() + '</caption><thead><tr><th scope="col">CODE</th><th scope="col">VARIABLE</th><th scope="col">QTY</th><th scope="col">VALUE</th></tr></thead><tbody>'
+        + (function () { var seen = {}; rows.forEach(function (v) { var nm = roleName(v, bPx); (seen[nm] = seen[nm] || []).push(v); }); Object.keys(seen).forEach(function (k) { if (seen[k].length > 1) seen[k].sort(function (a, b) { return a.value - b.value; }).forEach(function (v, i) { v.alias = k + (seen[k].length === 2 ? (i ? ', tall' : ', short') : ' ' + (i + 1)); }); }); return ''; })()
         + rows.map(function (v) {
-          var m = /^C(\d+)$/.exec(v.code), nm = roleName(v, bPx), val = fmt(v.value);
+          var m = /^C(\d+)$/.exec(v.code), nm = v.alias || roleName(v, bPx), val = fmt(v.value);
           if (m) { var k = +m[1], nom = k * G.col + (k - 1) * G.g; nm = k + '·COL+' + (k - 1) + '·G'; if (Math.abs(nom - v.value) >= .01) { val += '†'; flags.push(v.code + ' MEASURED ' + fmt(v.value) + ', NOMINAL ' + fmt(nom)); } }
           return '<tr tabindex="0" data-code="' + esc(v.code) + '"><th scope="row">' + esc(v.code) + '</th><td title="' + esc(nm) + '">' + esc(nm) + '</td><td>' + (S.qty[v.code] || v.n) + '</td><td>' + val + '</td></tr>';
         }).join('') + '</tbody></table>';
@@ -556,6 +592,7 @@
     colL.hidden = !S.detailsLeft; colR.hidden = !S.rail; strip.hidden = S.rail || S.sheet;
     if (S.rail) { occ.mask.push({ l: S.R + 34, r: S.W - 8, t: 0, b: S.H }); colR.style.width = (S.W - S.R - 34 - 12) + 'px'; }
     occ.text = collectText();
+    if (!S.sheet) { var maxB = occ.text.reduce(function (m, t) { return Math.max(m, t.b); }, 0); foot.style.marginTop = Math.max(0, Math.ceil(maxB - S.H) + (maxB > S.H ? 16 : 0)) + 'px'; } // some page text overhangs its box; the sheet starts below it
 
     var G = S.G = measureGrid();
     drawGrid(G); objects(); slots();
@@ -621,13 +658,19 @@
     S.dims.push({ code: 'CELL', value: +fmt(dB.w), prop: 'width', el: dB.el, labelEl: dB.label, group: 'GRID', role: 'glyph cell' });
     S.dims.push({ code: 'B', value: +fmt(bPx), prop: 'width', el: probes.b, labelEl: dB.labelB, group: 'GRID', role: 'baseline' });
 
+    if (S.sheet && S.fitH !== S.H) { // sheet 1's scale: the largest whose window ends on a clean break and stays full
+      S.fitH = S.H; var pw = S.R - S.L, top = (PW - PANEL - 16) / (pw + 2 * PAD), best = top, bestF = 0;
+      for (var sc_ = top; sc_ >= S2 - .001; sc_ -= .01) { var cr = (PH - 24) / sc_, f = Math.min(1, cutsFor(cr)[1] / cr); if (f > bestF + .02) { bestF = f; best = sc_; } }
+      S.forceS = best; root.removeAttribute('data-dwg-measure'); return render(false);
+    }
     if (S.sheet) { S.cuts = cutsFor(); S.sheets = S.cuts.length <= 2 ? 1 : 1 + Math.ceil((S.cuts.length - 2) / 2); root.style.setProperty('--dwg-clip', S.cuts[1] + 'px'); }
     var hdr = titleBlock(), ntx = notes(G), tbl = tables(G), figA = detailFig(dA), figB = detailFig(dB), ax = axo(G), sec = section(G);
     foot.innerHTML = '<p class="dwg-v1"><span class="dwg-tag dwg-tag--view">1</span><span><b>PLAN</b><span>' + (S.sheet ? 'THE LIVE PAGE AT LEFT, ' + fmt(S.printScale) : 'THE LIVE PAGE ABOVE, 1') + ':1.</span></span></p>';
+    S.hasSec = !!sec;
     var vw = h('div', 'dwg-views', null, foot), left = h('div', 'dwg-views__m', null, vw), side = h('div', 'dwg-views__s', null, vw);
-    left.appendChild(ax);
+    if (S.sheet) left.appendChild(ax); else vw.classList.add('dwg-views--one');
     if (S.rail) {
-      railR.innerHTML = '<div class="dwg-rt">' + hdr + '</div><p class="dwg-jump"><a href="#dwg-v2">2 EXPLODED</a>' + (sec ? ' <a href="#dwg-v3">3 SECTION</a>' : '') + '</p><div class="dwg-rd"></div><div class="dwg-tables">' + tbl + '</div><div class="dwg-more" aria-hidden="true">MORE ↓</div>';
+      railR.innerHTML = '<div class="dwg-rt">' + hdr + '</div>' + viewSwitch(!!sec) + '<div class="dwg-rd"></div><div class="dwg-tables">' + tbl + '</div><div class="dwg-more" aria-hidden="true">MORE ↓</div>';
       if (S.detailsLeft) {
         figA.style.cssText = 'top:' + S.figA + 'px;width:' + (S.L - 104) + 'px'; figB.style.cssText = 'top:' + S.figB + 'px;width:' + (S.L - 104) + 'px';
         colL.textContent = ''; colL.appendChild(figB); colL.appendChild(figA);
@@ -639,9 +682,9 @@
       side.insertAdjacentHTML('beforeend', ntx);
       if (sec) foot.appendChild(sec);
       foot.insertAdjacentHTML('beforeend', '<div class="dwg-tables">' + tbl + '</div>' + hdr);
-      strip.innerHTML = '<span>DH-001/' + pageNo() + '</span><span>REV ' + esc(REV) + '</span><a href="#dwg-v2">VIEWS</a><button type="button" aria-expanded="' + (S.legend ? 'true' : 'false') + '">VARIABLES ' + uniqAll() + '</button>';
+      strip.innerHTML = '<span>DH-001/' + pageNo() + '</span><span>REV ' + esc(REV) + '</span>' + viewSwitch(!!sec, true) + '<button class="dwg-varb" type="button" aria-expanded="' + (S.legend ? 'true' : 'false') + '">VARIABLES ' + uniqAll() + '</button>';
       legend.hidden = !S.legend; legend.innerHTML = tbl;
-      strip.querySelector('button').onclick = function () { S.legend = !S.legend; legend.hidden = !S.legend; this.setAttribute('aria-expanded', S.legend ? 'true' : 'false'); };
+      strip.querySelector('.dwg-varb').onclick = function () { S.legend = !S.legend; legend.hidden = !S.legend; this.setAttribute('aria-expanded', S.legend ? 'true' : 'false'); };
     }
     if (!S.sheet) { var fl = S.rail ? 16 : S.L; foot.style.marginLeft = fl + 'px'; foot.style.width = (S.R - fl) + 'px'; }
     // the frame goes round everything: plan, views, tables and title block are one sheet
@@ -651,6 +694,7 @@
       frame(fh);
     }
     syncMore();
+    if (S.view > 1 && !S.sheet) openView(S.view, true);
     root.removeAttribute('data-dwg-measure');
     if (S.sheet) { try { if (window.parent.__drawing) window.parent.__drawing._sheetDrawn(); } catch (e) {} }
   }
@@ -660,6 +704,33 @@
   }
   function heroName() { var e = all('.tile,.lc,.dos__sheet,.hero').filter(visible)[0]; if (!e) return ''; var t = e.querySelector('.t-name .tt,.lc__chs,.dos__h .tt'); return (t ? t.textContent.trim() : nameOf(e)).toUpperCase(); }
   function uniqAll() { var o = {}; S.dims.concat(S.extra).forEach(function (d) { o[d.code] = 1; }); return Object.keys(o).length; }
+  // ---------- views: plan, exploded, section. The chosen one fills the first screen over the plan; the page is never touched. ----------
+  function viewSwitch(sec, tiny) {
+    var names = [['1', 'PLAN'], ['2', 'EXPLODED']].concat(sec ? [['3', 'SECTION']] : []);
+    return '<div class="dwg-seg' + (tiny ? ' dwg-seg--tiny' : '') + '" role="group" aria-label="Views">' + names.map(function (n) { return '<button type="button" data-view="' + n[0] + '" aria-pressed="' + (S.view === +n[0] ? 'true' : 'false') + '"><kbd>' + n[0] + '</kbd>' + (tiny ? n[1].slice(0, 4) : n[1]) + '</button>'; }).join('') + '</div>';
+  }
+  function setViewHash(n) { var t = n > 1 ? '#dwg-v' + n : '#drawing'; if (location.hash !== t) history.replaceState(null, '', location.pathname + location.search + t); }
+  function openView(n, quiet) {
+    if (S.sheet) return;
+    if (n === 3 && !S.hasSec) n = 1;
+    S.view = n; S.viewRun = null;
+    all('[data-view]').forEach(function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-view') === n ? 'true' : 'false'); });
+    if (!quiet) setViewHash(n);
+    if (n === 1) { stage.hidden = true; stage.textContent = ''; return; }
+    stage.textContent = '';
+    var rightOff = S.rail ? (S.W - S.R - 34 + 8) : 8;
+    stage.style.cssText = 'left:8px;top:8px;right:' + rightOff + 'px;bottom:' + (S.rail ? 8 : 32) + 'px';
+    var fig = n === 2 ? axo(S.G, true) : section(S.G);
+    fig.classList.add('dwg-stagefig'); stage.appendChild(fig); stage.hidden = false;
+    if (!quiet) window.scrollTo(0, 0);
+    var sv = fig.querySelector('svg'); if (sv.__lift) sv.__lift();
+  }
+  function onView(e) { var b = e.target.closest && e.target.closest('[data-view]'); if (b) openView(+b.getAttribute('data-view')); }
+  function onKey(e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return; var t = e.target; if (t && t.closest && t.closest('input,textarea,select,[contenteditable],[role=textbox]')) return;
+    if (/^[123]$/.test(e.key)) { openView(+e.key); }
+    else if (e.key === 'Escape' && S.view > 1) { e.stopImmediatePropagation(); openView(1); }
+  }
   function uniq() { var o = {}; S.dims.forEach(function (d) { o[d.code] = 1; }); return Object.keys(o).length; }
   function syncMore() { var m = railR && railR.querySelector('.dwg-more'); if (m) m.hidden = railR.scrollTop + railR.clientHeight >= railR.scrollHeight - 4; }
 
@@ -712,24 +783,27 @@
     foot = h('div', 'dwg-foot'); foot.id = 'dwg-foot'; foot.setAttribute('data-dwg-ui', ''); foot.setAttribute('role', 'region'); foot.setAttribute('aria-label', 'Drawing data');
     site.parentNode.insertBefore(foot, site.nextSibling);
     strip = h('div', 'dwg-strip'); strip.setAttribute('data-dwg-ui', ''); document.body.appendChild(strip);
+    stage = h('div', 'dwg-stage'); stage.setAttribute('data-dwg-ui', ''); stage.hidden = true; document.body.appendChild(stage);
     legend = h('div', 'dwg-legend'); legend.setAttribute('data-dwg-ui', ''); legend.hidden = true; document.body.appendChild(legend);
     pageStyle = h('style', ''); pageStyle.textContent = '@page { size: A3 landscape; margin: 10mm; }'; document.head.appendChild(pageStyle);
+    document.addEventListener('click', onView); window.addEventListener('keydown', onKey, true);
     document.addEventListener('input', onWipe, true); document.addEventListener('pointermove', onWipe, { passive: true });
     over.addEventListener('pointerover', onHover); foot.addEventListener('pointerover', onHover);
     over.addEventListener('focusin', onHover); foot.addEventListener('focusin', onHover);
   }
   function teardown() {
+    document.removeEventListener('click', onView); window.removeEventListener('keydown', onKey, true);
     document.removeEventListener('input', onWipe, true); document.removeEventListener('pointermove', onWipe);
-    [over, foot, strip, legend, pageStyle, gridHost, S.frame, probes && probes.host].concat(S.extras).forEach(function (n) { if (n && n.parentNode) n.parentNode.removeChild(n); });
-    over = foot = strip = legend = pageStyle = probes = S.frame = null; S.extras = [];
+    [over, foot, strip, legend, stage, pageStyle, gridHost, S.frame, probes && probes.host].concat(S.extras).forEach(function (n) { if (n && n.parentNode) n.parentNode.removeChild(n); });
+    over = foot = strip = legend = stage = pageStyle = probes = S.frame = null; S.extras = [];
   }
   function on() {
     if (S.on) return; S.on = true;
-    S.sheet = !!window.__dwgSheet;
+    S.sheet = !!window.__dwgSheet; var hv = /^#dwg-v([123])$/.exec(location.hash); S.view = hv ? +hv[1] : 1;
     root.setAttribute('data-drawing', ''); build();
     if (S.sheet) { root.setAttribute('data-theme', 'light'); root.setAttribute('data-dwg-plan', ''); eagerAll(); }
     else { freeze(); all('main img[loading="lazy"]').forEach(function (i) { if (i.getBoundingClientRect().top + scrollY < 2000) { i.loading = 'eager'; S.lazy.push(i); } }); }
-    render(!S.sheet);
+    render(!S.sheet && S.view === 1);
     S.ro = new ResizeObserver(later); S.ro.observe(document.querySelector('.site'));
     window.addEventListener('resize', later); window.addEventListener('beforeprint', bp); window.addEventListener('afterprint', ap);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(later);
@@ -752,25 +826,25 @@
   // ---------- print: real sheets. See drawing.css for why these are frames. ----------
   function setupScale() { // inside the first frame
     var site = document.querySelector('.site').getBoundingClientRect(), left = site.left + scrollX, v = root.style, pl = planFor(S.H, site.width), sc = pl.sc;
-    S.printScale = +sc.toFixed(3); S.cropH = pl.crop; S.sheets = pl.sheets;
+    S.printScale = +sc.toFixed(3); S.cropH = pl.crop; S.crop2 = pl.crop2; S.s2 = pl.s2; S.left = left; S.sheets = pl.sheets;
     v.setProperty('--dwg-s', sc); v.setProperty('--dwg-tx', ((PAD - left) * sc) + 'px'); v.setProperty('--dwg-ox', -left + 'px');
     var fl = Math.ceil((site.width + 2 * PAD) * sc) + 12; foot.style.left = fl + 'px'; foot.style.width = (PW - fl - 12) + 'px';
   }
-  function cutsFor() { // where the sheets break: between blocks, never through type or a picture
+  function cutsFor(c1) { // where the sheets break: between blocks, never through type or a picture
     var ys = all('main > *, main section, main figure, main table, main article > *, .tile, .lc, .tally, .hero, .site-foot, main p').filter(visible).map(function (e) { return box(e).t - 2; });
     ys = ys.concat(occ.text.map(function (t) { return t.b + 2; })).filter(function (y, i, a) { return a.indexOf(y) === i; }).sort(function (a, b) { return a - b; });
     var solid = S.boxes.filter(function (b) { return b.h < S.cropH * .9; }).concat(S.slots);
     function safe(y) { var r = { l: 0, r: S.W, t: y - .5, b: y + .5 }; return !hit(r, occ.text) && !hit(r, S.slots) && !solid.some(function (b) { return b.t < y - 3 && b.b > y + 3 && b.h < S.cropH * .6; }); }
-    var cuts = [0], later_ = S.cropH * (PH - 24 - 38) / (PH - 24), k = 0, guard = 0;
+    var cuts = [0], later_ = S.crop2, guard = 0;
     while (guard++ < 40) {
-      var start = cuts[cuts.length - 1], room = cuts.length === 1 ? S.cropH : later_, end = start + room;
+      var start = cuts[cuts.length - 1], room = cuts.length === 1 ? (c1 || S.cropH) : later_, end = start + room;
       if (end >= S.H) { cuts.push(S.H); break; }
       var best = null; for (var i = ys.length - 1; i >= 0; i--) { if (ys[i] <= end && ys[i] > start + room * .5 && safe(ys[i])) { best = ys[i]; break; } }
       cuts.push(best == null ? end : best);
     }
     return cuts;
   }
-  function sheetInfo() { return { sheets: S.sheets, cuts: S.cuts, s: S.printScale, html: root.outerHTML }; }
+  function sheetInfo() { return { sheets: S.sheets, cuts: S.cuts, s: S.s2, left: S.left, html: root.outerHTML }; }
   function makeFrame() {
     if (window.parent !== window || innerWidth < 640 || S.frame) return; // phones print the sheet data alone
     var f = S.frame = document.createElement('iframe');
@@ -797,6 +871,7 @@
     var win = 1, cuts = info.cuts;
     for (var sh = 2; sh <= info.sheets; sh++) {
       var d = parsed.cloneNode(true), b = d.body; b.textContent = '';
+      d.documentElement.style.setProperty('--dwg-s', info.s); d.documentElement.style.setProperty('--dwg-tx', ((PAD - info.left) * info.s) + 'px');
       for (var slot = 0; slot < 2 && win + slot < cuts.length - 1; slot++) {
         var a_ = cuts[win + slot], b_ = cuts[win + slot + 1], box_ = d.createElement('div'); box_.className = 'dwg-win'; box_.style.left = (12 + slot * 750) + 'px'; box_.style.height = Math.ceil((b_ - a_) * info.s) + 'px'; box_.style.setProperty('--dwg-ty', (-a_ * info.s) + 'px');
         box_.appendChild(d.importNode(site, true)); box_.appendChild(d.importNode(dw, true)); b.appendChild(box_);

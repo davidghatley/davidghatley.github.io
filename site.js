@@ -738,7 +738,7 @@
     function toggle() {
       want = !want; b.setAttribute('aria-pressed', want ? 'true' : 'false');
       // shareable: #drawing opens the page in this mode; turning it off clears the hash
-      if (!sheet && (want ? !location.hash : location.hash === '#drawing')) history.replaceState(null, '', location.pathname + location.search + (want ? '#drawing' : ''));
+      if (!sheet && (want ? !location.hash : /^#(drawing|dwg-v[123])$/.test(location.hash))) history.replaceState(null, '', location.pathname + location.search + (want ? '#drawing' : ''));
       if (window.__drawing) return apply();
       if (loading) return; loading = true;
       var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'drawing.css';
@@ -749,7 +749,7 @@
     }
     b.addEventListener('click', toggle);
     window.__dwgSheet = sheet; window.__dwgPages = INDEX.concat(LAB);
-    if (sheet || location.hash === '#drawing') toggle();
+    if (sheet || /^#(drawing|dwg-v[123])$/.test(location.hash)) toggle();
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && want && document.getElementById('zoom').hidden) { toggle(); return; }
       if ((e.key !== 'd' && e.key !== 'D') || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;

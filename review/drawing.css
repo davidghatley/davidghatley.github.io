@@ -74,15 +74,13 @@ html[data-dwg-anim] .dwg-ref circle { stroke-dasharray: none; stroke-dashoffset:
 .dwg-tb__c:nth-child(even) { border-right: 1px solid var(--ink); }
 .dwg-tb__c:nth-last-child(-n+2) { border-bottom: 0; }
 .dwg-jump { display: block; margin-top: 8px; font: 500 11px/16px var(--font-mono); color: var(--cobalt-text); }
-.dwg-tbl { width: 100%; border-collapse: collapse; margin-top: 12px; background: var(--paper); font: 400 11px/16px var(--font-mono); color: var(--ink); table-layout: fixed; }
+.dwg-tbl { width: 100%; border-collapse: collapse; margin-top: 12px; background: var(--paper); font: 400 11px/16px var(--font-mono); color: var(--ink); table-layout: auto; }
 .dwg-tbl caption { text-align: left; font: 400 16px/20px var(--font-pixel); padding-bottom: 4px; -webkit-font-smoothing: none; }
-.dwg-tbl th, .dwg-tbl td { border: 1px solid var(--ink); padding: 0 4px; font-weight: 400; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.dwg-tbl th, .dwg-tbl td { border: 1px solid var(--ink); padding: 0 4px; font-weight: 400; text-align: left; white-space: nowrap; }
+.dwg-tbl tbody td:nth-child(2) { white-space: normal; width: 100%; }
 .dwg-tbl thead th { font-size: 9px; letter-spacing: .4px; color: var(--ink-muted); }
 .dwg-tbl tbody th { color: var(--cobalt-text); font-weight: 500; }
-.dwg-tbl th:first-child { width: 44px; }
-.dwg-tbl th, .dwg-tbl td { box-sizing: border-box; }
-.dwg-tbl td:last-child, .dwg-tbl thead th:last-child { width: 56px; text-align: right; }
-.dwg-tbl td:nth-child(3), .dwg-tbl thead th:nth-child(3) { width: 26px; text-align: right; padding: 0 3px; }
+.dwg-tbl td:last-child, .dwg-tbl thead th:last-child, .dwg-tbl td:nth-child(3), .dwg-tbl thead th:nth-child(3) { text-align: right; }
 .dwg-tbl td:nth-child(2) { padding-right: 2px; }
 .dwg-tbl tbody tr { cursor: default; }
 .dwg-tbl tbody tr:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
@@ -163,6 +161,9 @@ html[data-dwg-anim] .dwg-ref circle { stroke-dasharray: none; stroke-dashoffset:
 .dwg-rd .dwg-det { margin: 0; }
 .dwg-rd .dwg-det figcaption { font-size: 8px; line-height: 10px; margin-top: 1px; }
 .dwg-rd .dwg-det figcaption span { display: none; }
+.dwg-short { display: none !important; }
+.dwg-rd .dwg-long { display: none !important; }
+.dwg-rd .dwg-short { display: block !important; font-size: 8px; white-space: nowrap; overflow: hidden; }
 .dwg-rail .dwg-tbl caption { font-size: 16px; line-height: 14px; padding-bottom: 1px; }
 .dwg-rail .dwg-tbl thead th { font-size: 8px; line-height: 10px; }
 .dwg-rail .dwg-tbl:not(:first-of-type) thead { display: none; }
@@ -234,11 +235,8 @@ html[data-dwg-plan] .dwg-foot > .dwg-tb .dwg-tb__t { padding-bottom: 2px; }
   html[data-dwg-print]:not([data-dwg-frame]):not([data-dwg-plan]) .dwg-foot { margin: 0 !important; width: auto !important; }
 }
 /* short laptop windows: the legend keeps every row; group captions and circle size give way */
-.dwg-rd .dwg-dsvg { max-width: 92px; }
+.dwg-rd .dwg-dsvg { max-width: 108px; margin: 0 auto; }
 @media (max-height: 790px) { .dwg-rail .dwg-tbl caption { display: none; } .dwg-rail .dwg-tbl { margin-top: 3px; } }
-.dwg-rail .dwg-tbl th:first-child { width: 38px; }
-.dwg-rail .dwg-tbl td:nth-child(3), .dwg-rail .dwg-tbl thead th:nth-child(3) { width: 22px; }
-.dwg-rail .dwg-tbl td:last-child, .dwg-rail .dwg-tbl thead th:last-child { width: 50px; }
 html[data-dwg-plan] .dwg-axo { max-height: 410px; }
 html[data-dwg-plan] .dwg-foot .dwg-tbl { font: 400 10px/13px var(--font-mono); margin-top: 4px; }
 html[data-dwg-plan] .dwg-foot .dwg-tbl th, html[data-dwg-plan] .dwg-foot .dwg-tbl td { line-height: 13px; }
@@ -246,3 +244,40 @@ html[data-dwg-plan] .dwg-foot .dwg-tbl caption { font-size: 16px; line-height: 1
 html[data-dwg-plan] .dwg-foot > .dwg-tb .dwg-tb__n { font-size: 24px; line-height: 28px; }
 html[data-dwg-plan] .dwg-notes { font-size: 9px; line-height: 12px; }
 html[data-dwg-plan] .dwg-notes li { margin-bottom: 2px; }
+
+/* the view switch and the stage: a chosen view fills the first screen, over the plan */
+.dwg-seg { display: flex; margin-top: 6px; border: 1px solid var(--ink); }
+.dwg-seg button { all: unset; box-sizing: border-box; flex: 1 1 auto; display: flex; justify-content: center; align-items: center; gap: 4px; height: 24px; padding: 0 4px; font: 500 10px/12px var(--font-mono); letter-spacing: .3px; color: var(--ink); cursor: pointer; border-right: 1px solid var(--ink); white-space: nowrap; }
+.dwg-seg button:last-child { border-right: 0; }
+.dwg-seg button:hover { color: var(--cobalt-text); }
+.dwg-seg button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.dwg-seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.dwg-seg kbd { font: inherit; font-size: 9px; opacity: .7; }
+.dwg-seg--tiny { margin: 0 0 0 auto; border-width: 0 1px; height: 24px; }
+.dwg-seg--tiny button { flex: none; height: 23px; padding: 0 5px; }
+.dwg-seg--tiny kbd { display: none; }
+.dwg-varb { margin-left: 8px; }
+.dwg-stage { position: fixed; z-index: 6; background: var(--paper); border: 2px solid var(--ink); box-sizing: border-box; padding: 12px 16px; display: flex; }
+.dwg-stage[hidden] { display: none; }
+.dwg-stagefig { margin: 0; flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.dwg-stagefig > svg { flex: 1 1 0; min-height: 0; width: 100%; height: 100%; }
+.dwg-stagefig figcaption { flex: none; margin-top: 8px; }
+.dwg-ax-n--l { font-size: 18px; }
+.dwg-ax-u--l { font-size: 14px; }
+.dwg-sec-r { fill: none; stroke: var(--ink); stroke-width: 1; }
+.dwg-sec-m { fill: var(--paper); stroke: var(--ink); stroke-width: 1; }
+.dwg-sec-t { fill: var(--ink); opacity: .55; }
+.dwg-sec-v { font: 500 9px var(--font-mono); fill: var(--cobalt-text); }
+.dwg-sec-i { fill: none; stroke: var(--ink); stroke-width: .4; opacity: .55; }
+.dwg-views--one { grid-template-columns: 1fr !important; }
+.dwg-views--one .dwg-views__m:empty { display: none; }
+html[data-dwg-plan] .dwg-stage { display: none !important; }
+html[data-dwg-plan] .dwg-views { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; }
+html[data-dwg-plan] .dwg-foot__d .dwg-det figcaption b { font-size: 9px; }
+html[data-dwg-plan] .dwg-foot .dwg-sec { max-height: 180px; }
+html[data-dwg-plan] .dwg-foot__d .dwg-dsvg { max-width: 120px; }
+html[data-dwg-plan] .dwg-foot__d { margin-bottom: 4px; }
+html[data-dwg-plan] .dwg-axo { max-height: 330px !important; }
+@media print { .dwg-stage { display: none !important; } }
+.dwg-ax-n--p { font-size: 34px; font-weight: 600; }
+.dwg-ax-u--p { font-size: 24px; }
