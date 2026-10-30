@@ -50,9 +50,6 @@ html[data-theme=dark] .pv-lmr,.pv-lmr.dk{--a:#8fa9e0}
 .pv-lmr .stats b{display:block;font:400 32px/36px var(--font-pixel)}
 .pv-lmr .stats span{font:500 11px/15px var(--font-mono);color:var(--ink-muted)}
 .pv-lmr .say{font:400 13px/19px var(--font-sans);margin:10px 0 0;min-height:56px;max-width:60ch}
-.pv-lmr .shot{margin:0}
-.pv-lmr .shot img{display:block;width:100%;height:auto;border:1px solid var(--ink)}
-.pv-lmr .shot figcaption{font:italic 400 12px/17px var(--font-serif);color:var(--ink-muted);margin-top:6px}
 @media (prefers-reduced-motion:reduce){.pv-lmr .it,.pv-lmr .seg,.pv-lmr .nofit,.pv-lmr .stats div{transition:none}}
 `;
 export default function mount(root, { mode, base }) {
@@ -65,8 +62,7 @@ export default function mount(root, { mode, base }) {
     <div class="list"></div>
     <div class="bar" aria-hidden="true"></div><div class="bl"><span>0</span><span class="free"></span><span>1,000 tokens</span></div>
     <div class="stats"><div class="s1"><b>70 / 73</b><span>needed paragraphs BM25 found</span></div><div class="s2"><b>54 / 73</b><span>reach the model (dev, BM25 order)</span></div></div>
-    <p class="say" aria-live="polite"></p></div>
-    <figure class="shot"><img src="${base}public/media/lmr/ui.png" alt="The lmr web UI: an answer, rank movement from BM25 to the reranker, and the token budget"><figcaption>The real UI, same question: the reranker lifts five paragraphs into view; they fill 977 of 1,000 tokens.</figcaption></figure>`;
+    <p class="say" aria-live="polite"></p></div>`;
   const $ = s => el.querySelector(s);
   const list = $('.list'), bar = $('.bar'), steps = $('.steps');
   const fit = () => el.classList.toggle('is-narrow', el.getBoundingClientRect().width < 640);

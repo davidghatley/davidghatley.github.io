@@ -4,7 +4,7 @@
    adapted from dimensional-drawing by Enes Ozturk (MIT): https://github.com/enesozturk/dimensional-drawing.
    Copyright (c) 2026 Enes Ozturk. The measuring engine and the site's inks are this site's own. */
 (function () {
-  var REV = 'f58e1b0'; // build.py: git rev
+  var REV = '0d5ddd2'; // build.py: git rev
   var NS = 'http://www.w3.org/2000/svg', root = document.documentElement;
   var LABEL_H = 12, CH = 6.6, PW = 1512, PH = 1046, PANEL = 640, PAD = 76, S2 = 738 / (944 + 152);
   var S = { on: false, dims: [], lazy: [], extras: [], held: [], vids: [] };
@@ -42,7 +42,7 @@
       if (!t.textContent.trim() || !p || p.closest('[data-dwg-ui],script,style')) continue;
       var st = cs(p); if (st.visibility === 'hidden' || st.display === 'none') continue;
       rg.selectNodeContents(t); var q = rg.getClientRects();
-      for (var i = 0; i < q.length; i++) if (q[i].width > 0) out.push({ l: q[i].left + x, r: q[i].right + x, t: q[i].top + y, b: q[i].bottom + y });
+      for (var i = 0; i < q.length; i++) if (q[i].width > 0) out.push({ l: q[i].left + x, r: q[i].right + x, t: q[i].top + y, b: q[i].bottom + y, sr: !!p.closest('.sr-only') });
     }
     return out;
   }
@@ -118,7 +118,7 @@
     var r = e.getBoundingClientRect(); if (r.width < 1 || r.height < 1) return false;
     var st = cs(e); return st.visibility !== 'hidden' && st.display !== 'none' && st.display !== 'inline';
   }
-  var SKIP = '.gc-root,.sr-only,.ch,.tt,.t-link,.case-bar,.dwg-probes,script,style,defs,[hidden],input,.cmp-b,.cmp-l,.cmp-h,.seg,.ibtn,.parrow,.static,#draw-toggle';
+  var SKIP = '.dos__inst,.lc__fig > *,.gc-root,.sr-only,.ch,.tt,.t-link,.case-bar,.dwg-probes,script,style,defs,[hidden],input,.cmp-b,.cmp-l,.cmp-h,.seg,.ibtn,.parrow,.static,#draw-toggle';
   var FIXEDH = '.site-head,.t-head,.lc__head,.cat__head';
   function spanOf(b) { // k if this box is exactly k columns wide and starts on a column line
     var G = S.G, k = Math.round((b.w + G.g) / (G.col + G.g));
@@ -296,7 +296,7 @@
         var cap = h('span', 'dwg-l dwg-l--slot', esc(txt), labels); cap.style.cssText = 'left:' + (cx - tw / 2) + 'px;top:' + (cy - 6) + 'px;width:' + tw + 'px;--d:680ms';
       }
     });
-    all('main svg:not(.gc-svg),.ss-lockup__mark,main .lm-bar,main .lc__track,main .ty-strip,main .va-page,.ibtn,.tag,#draw-toggle').forEach(function (e) { if (visible(e) || e.tagName === 'svg') { var q = box(e); if (q.w > 0 && q.h > 0) occ.obj.push(q); } });
+    all('main .dos__inst,main .lc__fig,main svg:not(.gc-svg),.ss-lockup__mark,main .lm-bar,main .lc__track,main .ty-strip,main .va-page,.ibtn,.tag,#draw-toggle').forEach(function (e) { if (visible(e) || e.tagName === 'svg') { var q = box(e); if (q.w > 0 && q.h > 0) occ.obj.push(q); } });
   }
   function frame(fh) {
     var g = group('dwg-d dwg-f', 0);
@@ -403,7 +403,7 @@
     var hc = Math.min(S.H, S.W * (large ? .62 : .95)), phone = large && S.W < 640, s = (large ? 760 : 560) / S.W, Z = phone ? 230 : large ? 130 : 190, inH = function (b) { return b.t < hc; };
     var long = function (r) { return Math.max(r.r - r.l, r.b - r.t) > 60; }, dh = occ.h.filter(long), dv = occ.v.filter(long);
     var tops = S.boxes.filter(function (b) { return !S.boxes.some(function (q) { return q !== b && q.l <= b.l + 1 && q.r >= b.r - 1 && q.t <= b.t + 1 && q.b >= b.b - 1 && q.w * q.h > b.w * b.h; }); });
-    var nowText = occ.text.filter(function (t) { return t.t < hc && t.b - t.t > 6; }), inner = all('main .t-head,main .t-body > *,main .ro-k,main .ro-big,main .ro-cells > *,main .lm-pack,main .lm-stats > *,main .lc__head,main .lc__fig,main .lc__what,main .lc__foot,main .dos__id,main .dos__result,main .dos__out,main .dos__dec').filter(visible).map(box).filter(inH);
+    var nowText = occ.text.filter(function (t) { return t.t < hc && t.b - t.t > 6 && !t.sr; }), inner = all('main .t-head,main .t-body > *,main .ro-k,main .ro-big,main .ro-cells > *,main .lm-pack,main .lm-stats > *,main .lc__head,main .lc__fig,main .lc__what,main .lc__foot,main .dos__id,main .dos__result,main .dos__out,main .dos__dec').filter(visible).map(box).filter(inH);
     var svgsAll = all('main svg:not(.parrow)').filter(visible).map(box).filter(inH), slotIn = S.slots.filter(inH);
     var names = [['L4', 'OVERLAY', (dh.filter(inH).length + dv.filter(inH).length) + ' LONG DIMENSIONS'], ['L3', 'INSTRUMENTS', plural(slotIn.length, 'SLOT') + ', ' + plural(svgsAll.length, 'MARK')], ['L2', 'TILES', plural(tops.filter(inH).length, 'BLOCK') + ', ' + plural(inner.length, 'PART')], ['L1', 'PAGE', G.n + ' COLUMNS, ' + nowText.length + ' TEXT RUNS'], ['L0', 'CANVAS FIELD', '16 PX CELLS']];
     function P(x, y, z) { return [.94 * s * x - .34 * s * y, .17 * s * x + .47 * s * y - z]; }
@@ -470,7 +470,7 @@
         mk('rect', { x: X(q.l), y: Y(q.t), width: q.w * sc, height: q.h * sc, 'class': media ? 'dwg-sec-m' : bordered ? 'dwg-sec-r' : 'dwg-sec-i' }, sv);
         if (media) { mk('line', { x1: X(q.l), y1: Y(q.t), x2: X(q.r), y2: Y(q.b), 'class': 'dwg-sx' }, sv); mk('line', { x1: X(q.r), y1: Y(q.t), x2: X(q.l), y2: Y(q.b), 'class': 'dwg-sx' }, sv); }
       });
-      occ.text.forEach(function (a) { if (a.l >= b.l - 1 && a.r <= b.r + 1 && a.t >= b.t - 1 && a.b <= b.b + 1 && a.b - a.t > 5) mk('rect', { x: X(a.l), y: Y(a.t + (a.b - a.t) * .25), width: (a.r - a.l) * sc, height: (a.b - a.t) * .5 * sc, 'class': 'dwg-sec-t' }, sv); });
+      occ.text.forEach(function (a) { if (!a.sr && a.l >= b.l - 1 && a.r <= b.r + 1 && a.t >= b.t - 1 && a.b <= b.b + 1 && a.b - a.t > 5) mk('rect', { x: X(a.l), y: Y(a.t + (a.b - a.t) * .25), width: (a.r - a.l) * sc, height: (a.b - a.t) * .5 * sc, 'class': 'dwg-sec-t' }, sv); });
       // heights: down the outside of the first and last parts, each child and the space after it
       if (i === 0 || i === S.cutRow.length - 1) {
         var side = i === 0 ? X(S.L) - 16 : X(S.R) + 16, ch = kidsOf(el).map(box).sort(function (u, v) { return u.t - v.t; }), y0 = b.t, lastY = -99;
@@ -642,7 +642,7 @@
     var heroFirst = Object.keys(heroCodes).filter(function (k) { return k !== 'G' && !/^CAP/.test(k); }), restC = Object.keys(freq).filter(function (k) { return k !== 'G' && !heroCodes[k] && !/^CAP/.test(k); }).sort(function (a, b) { return freq[b] - freq[a]; });
     heroFirst.concat(restC).slice(0, room).forEach(function (k) { keep[k] = 1; }); Object.keys(freq).forEach(function (k) { if (/^CAP/.test(k)) keep[k] = 1; });
     var limit = budget(), ri = 0;
-    heroC.forEach(function (c) { if (!c.code || !keep[c.code]) return; c.text = c.code; c.run(c); });
+    heroC.forEach(function (c) { if (!c.code || !keep[c.code]) return; if (/^[SX]\d/.test(c.code) && (S.use[c.code] || 0) >= 2) return; c.text = c.code; c.run(c); }); // a stack of one code beside the part says nothing new
     groups = groups.map(function (g) { return g.slice(0, perBlock * 2); });
     while (S.dims.length < limit && groups.some(function (g) { return g.length; })) {
       var g = groups[ri++ % groups.length]; if (!g.length) continue;
@@ -724,7 +724,7 @@
     if (n === 1) { stage.hidden = true; stage.textContent = ''; return; }
     stage.textContent = '';
     var rightOff = S.rail ? (S.W - S.R - 34 + 8) : 8;
-    stage.style.cssText = 'left:8px;top:8px;right:' + rightOff + 'px;bottom:' + (S.rail ? 8 : 32) + 'px';
+    stage.style.cssText = 'left:8px;top:8px;right:' + rightOff + 'px;bottom:' + (S.rail ? 8 : 32) + 'px;--dwg-mask-r:' + (S.rail ? S.W - S.R - 34 : 5) + 'px;--dwg-mask-b:' + (S.rail ? 0 : 24) + 'px';
     var fig = n === 2 ? axo(S.G, true) : section(S.G);
     fig.classList.add('dwg-stagefig'); stage.appendChild(fig); stage.hidden = false;
     if (!quiet) window.scrollTo(0, 0);

@@ -313,12 +313,6 @@
   },
   "media": [
    {
-    "src": "public/media/tasty_tunez/promo-app.mp4",
-    "poster": "public/media/tasty_tunez/promo-app.jpg",
-    "alt": "A 14-second silent clip from the tasty_tunez walkthrough: cover plates drawing themselves from each song's pitch and loudness, with the brief, key, length and render time beside them.",
-    "caption": "Each song's cover plate draws itself from the song's own pitch and loudness."
-   },
-   {
     "src": "public/media/tasty_tunez/cover.jpg",
     "alt": "A generated cover plate: cobalt pitch grid over time, loudness bars, a vermilion peak cell and the title in Stem 7",
     "caption": "The cover that ships inside each MP3, drawn from the song's own pitch and loudness."
@@ -369,12 +363,6 @@
    "one RTX 3060, 12 GB"
   ],
   "work": [
-   {
-    "src": "public/media/tasty_tunez/promo-app.mp4",
-    "poster": "public/media/tasty_tunez/promo-app.jpg",
-    "alt": "A 14-second silent clip from the tasty_tunez walkthrough: cover plates drawing themselves from each song's pitch and loudness.",
-    "caption": "Each song's cover plate draws itself from the song's own pitch and loudness."
-   },
    {
     "src": "public/media/tasty_tunez/app.jpg",
     "alt": "The tasty_tunez generate view with eight starter presets",

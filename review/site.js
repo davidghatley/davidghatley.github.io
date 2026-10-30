@@ -597,6 +597,7 @@
   // my decisions and the one thing I changed from the AI's output, what it's built with, outputs, status, links.
   // The project's case.js renders below it as the deep dive. Text David hasn't confirmed carries data-draft.
   var OPENS = { 'anime-pipeline': 1, lmr: 0, tasty_tunez: 0, fonts: 0 };
+  var TILE_FACE = { 'anime-pipeline': 1, tasty_tunez: 1 };   // these titles stay in their home tile's face: nothing to step into
   function dossier(p, ps, base) {
     var d = el('section', 'dos'); d.setAttribute('aria-label', p.title + ', summary');
     var w = el('div', 'dos__work' + (p.work_row ? ' dos__work--row' : '')); w.style.viewTransitionName = 'hero-' + p.slug;
@@ -665,10 +666,13 @@
     d.appendChild(s); d.appendChild(w);
     // the signature moment: the glyph builds cell by cell (CSS), then the title steps into the project's own face
     var cs = [].slice.call(tt.querySelectorAll('.ch')), k = 0;
-    if (REDUCED) cs.forEach(function (c) { c.classList.add('ch--on'); });
+    if (TILE_FACE[p.slug]) { /* the glyph still builds; the title is final from the first frame */ }
+    else if (REDUCED) cs.forEach(function (c) { c.classList.add('ch--on'); });
     else {
       dosHold(h, cs);
-      setTimeout(function step() { if (k < cs.length) { cs[k++].classList.add('ch--on'); setTimeout(step, 70); } else cs.forEach(function (c) { c.style.width = ''; }); }, 70 * (g.childNodes.length + 2));
+      // short enough that no one reads a half-stepped title
+      var dt = Math.min(70, 360 / (cs.length || 1));
+      setTimeout(function step() { if (k < cs.length) { cs[k++].classList.add('ch--on'); setTimeout(step, dt); } else cs.forEach(function (c) { c.style.width = ''; }); }, Math.min(480, 70 * (g.childNodes.length + 2)));
     }
     return d;
   }

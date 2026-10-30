@@ -5,6 +5,8 @@ html[data-drawing] { --dwg-type: var(--ink); --dwg-grey: color-mix(in srgb, var(
 html[data-drawing] .acc { --accent: var(--ink) !important; --acc-l: var(--ink) !important; --acc-d: var(--ink) !important; }
 html[data-drawing] .field { visibility: hidden; }
 html[data-drawing] .totop { display: none !important; }
+/* type metrics stay put: a hovered tile keeps the name's resting face, so nothing rewraps under the dimensions */
+html[data-drawing] .t-name .ch--on { font-family: var(--font-pixel) !important; font-weight: 400 !important; font-size: inherit !important; text-transform: none !important; -webkit-font-smoothing: none; }
 html[data-drawing] main *, html[data-drawing] .site-foot, html[data-drawing] .site-foot *, html[data-drawing] .site-home, html[data-drawing] .site-home * {
   color: var(--dwg-type) !important; background: transparent !important; box-shadow: none !important; text-shadow: none !important; filter: none !important;
   border-color: var(--dwg-type) !important; animation: none !important; transition: none !important; }
@@ -259,6 +261,8 @@ html[data-dwg-plan] .dwg-notes li { margin-bottom: 2px; }
 .dwg-varb { margin-left: 8px; }
 .dwg-stage { position: fixed; z-index: 6; background: var(--paper); border: 2px solid var(--ink); box-sizing: border-box; padding: 12px 16px; display: flex; }
 .dwg-stage[hidden] { display: none; }
+/* the plan stays under the stage, but only the sheet frame and the rail show round it */
+.dwg-stage::before { content: ""; position: fixed; left: 5px; top: 5px; right: var(--dwg-mask-r, 5px); bottom: var(--dwg-mask-b, 0); z-index: -1; background: var(--paper); }
 .dwg-stagefig { margin: 0; flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
 .dwg-stagefig > svg { flex: 1 1 0; min-height: 0; width: 100%; height: 100%; }
 .dwg-stagefig figcaption { flex: none; margin-top: 8px; }
