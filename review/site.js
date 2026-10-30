@@ -459,9 +459,12 @@
       document.body.appendChild(dlg); live = dlg.querySelector('.gc-live');
       dlg.querySelector('.gc-dlg__x').addEventListener('click', function () { dlg.close(); });
       dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
-      dlg.addEventListener('close', function () { document.documentElement.style.overflow = ''; });
+      dlg.addEventListener('close', function () { document.documentElement.style.overflow = ''; open.focus(); });
+      // the figure keeps its own keys; Esc always closes the dialog
+      dlg.addEventListener('keydown', function (e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); dlg.close(); } }, true);
       import('./gc/gc-embed.mjs').then(function (m) {
         h = m.mountGC(live, { theme: theme() });
+        var sv = live.querySelector('svg.gc-svg'); if (sv) sv.setAttribute('role', 'group');   // it holds focusable peaks, so it can't be one image
         // the figure's long disclosure folds under it
         var lg = live.querySelector('.iso-legend');
         if (lg) { var dt = el('details', 'bg__gc-note', '<summary>How this figure is computed</summary>'), body = el('div', 'iso-legend'); body.innerHTML = lg.innerHTML; lg.remove(); dt.appendChild(body); live.parentNode.appendChild(dt); }

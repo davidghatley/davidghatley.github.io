@@ -477,6 +477,7 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 .gc-live.iso .iso-figure { margin: 0; max-width: none; width: 100%; }
 .gc-live.iso .iso-plate { box-shadow: none; border: var(--line-hair) solid var(--rule); border-radius: 0; }
 .gc-live .gc-stage { max-width: max(100%, 0px); max-width: min(100%, calc((100dvh - 320px) * 1.03)); margin-inline: auto; }
+.gc-live [data-corner] { color: var(--ink-muted); }
 .gc-live [data-corner="fig"], .gc-live [data-corner="hint"] { display: none; }
 .bg__gc-note { font: 400 12px/16px var(--font-mono); letter-spacing: .4px; }
 .bg__gc-note summary { cursor: pointer; min-height: 24px; color: var(--ink); }
@@ -629,4 +630,4 @@ body { background: transparent; color: var(--ink); font: var(--type-body); margi
 .dos__inst .pv-tasty_tunez { grid-template-columns: minmax(0, 1fr); }
 /* reference sections of a long case page fold natively, so they work without script */
 .cs-more > summary { cursor: pointer; list-style: revert; }
-.cs-more > summary h2 { display: inline; }
+.cs-more > summary h2 { display: inline-flex; align-items: baseline; gap: 12px; margin: 0; }

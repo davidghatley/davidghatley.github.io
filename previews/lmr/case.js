@@ -40,7 +40,7 @@ export default async function renderCase(root, { project: p, base }) {
   const fig = (i) => `<figure><img src="${base + m[i].src}" alt="${esc(m[i].alt)}" loading="lazy"><figcaption>${esc(m[i].caption)}</figcaption></figure>`;
   const sw = (rows, name, req) => rows.map(r => `<tr${r[0] === 100 ? ' class="hl"' : ''}><td>${name}</td><td class="v">${r[0] === 0 ? 'none' : r[0]}</td><td class="v">${r[1]} / ${req}</td><td class="v">${r[2] < 1000 ? r[2] + ' ms' : (r[2] / 1000).toFixed(1) + ' s'}</td></tr>`).join('');
   el.innerHTML = `<h2><span class="n">1</span>Finding</h2>
-    <p>${esc(b[0])}</p>
+    <p data-draft="true">${esc(b[0])}</p>
     <p>${esc(b[1])}</p>
     ${fig(1)}
     <div class="hero"><div class="pv"></div><div class="cap">The pipeline as a packing problem, beside the real UI. Rows and token counts are from the screenshot's own example.</div></div>
