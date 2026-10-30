@@ -1,13 +1,13 @@
 {
  "source": "anime-pipeline/logs/runs.jsonl, aggregated by build.py (panel.py runlog_json)",
- "runs": 1815,
- "succeeded": 1671,
+ "runs": 1819,
+ "succeeded": 1675,
  "cuda_oom": 0,
- "gpu_hours": 38.0,
+ "gpu_hours": 38.1,
  "peak_vram_mib": 11868,
  "vram_total_mib": 12288,
  "first": "2026-10-12",
- "last": "2026-10-29",
+ "last": "2026-10-30",
  "days": [
   {
    "d": "2026-10-12",
@@ -98,6 +98,11 @@
    "d": "2026-10-29",
    "runs": 7,
    "peak_mib": 11705
+  },
+  {
+   "d": "2026-10-30",
+   "runs": 4,
+   "peak_mib": 11690
   }
  ]
 }
