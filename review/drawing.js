@@ -6,9 +6,9 @@
 (function () {
   var REV = '2e83682'; // build.py: git rev
   var NS = 'http://www.w3.org/2000/svg', root = document.documentElement;
-  var LABEL_H = 12, CH = 6.6, PW = 1512, PH = 1046, PANEL = 776, PAD = 112, MIN_FIT = 0.45;
+  var LABEL_H = 12, CH = 6.6, PW = 1512, PH = 1046, PANEL = 776, PAD = 76, MIN_FIT = 0.45;
   var S = { on: false, dims: [], lazy: [], extras: [], held: [], vids: [] };
-  var over, svg, labels, foot, strip, probes, pageStyle, colL, colR, railL, railR, occ, nativeRAF;
+  var over, svg, labels, foot, strip, probes, pageStyle, colL, colR, railR, occ, nativeRAF;
 
   function cs(e) { return getComputedStyle(e); }
   function px(v) { return parseFloat(v) || 0; }
@@ -48,6 +48,7 @@
   }
 
   // ---------- drawing primitives ----------
+  function hb0() { return Math.max(18, box(document.querySelector('.site-head')).t - 6); }
   function delay(ms) { return Math.round(ms); }
   function line(g, x1, y1, x2, y2, cls) { return mk('line', { x1: x1, y1: y1, x2: x2, y2: y2, 'class': cls, pathLength: 1 }, g); }
   function arrow(g, x, y, dx, dy) { var a = 7, b = 2.3; mk('path', { d: 'M' + x + ',' + y + 'L' + (x - dx * a - dy * b) + ',' + (y - dy * a - dx * b) + 'L' + (x - dx * a + dy * b) + ',' + (y - dy * a + dx * b) + 'z', 'class': 'dwg-a' }, g); }
@@ -62,10 +63,11 @@
   function lineCrossesText(r) { return hit(r, occ.text, 1); }
   function placeH(c, x1, x2, ys, e1, e2, opt) {
     opt = opt || {};
-    var w = c.text.length * CH + 4, span = x2 - x1, small = span < w + 10;
+    var w = c.text.length * CH + 4, span = x2 - x1, small = span < w + 10, once = c.text + 'h' + Math.round(x1) + ',' + Math.round(x2);
+    if (S.once[once]) return false; // dimensioned once; the table's QTY counts the rest
     for (var i = 0; i < ys.length; i++) {
       var y = snap(ys[i]), row = { l: x1 - (small ? 12 : 0), r: x2 + (small ? 12 : 0), t: y - 2, b: y + 2 };
-      if (hit(row, occ.h) || row.l < 2 || row.r > S.W - 2 || y < 2 || y > S.H - 2 || lineCrossesText(row) || hit(row, occ.mask)) continue;
+      if (hit(row, occ.h) || row.l < 0 || row.r > S.W || y < 2 || y > S.H - 2 || lineCrossesText(row) || hit(row, occ.mask)) continue;
       var pos = null, cands = small ? [x2 + 11 + w / 2, x1 - 11 - w / 2] : [.5, .3, .7, .15, .85].map(function (t) { return x1 + span * t; });
       for (var k = 0; k < cands.length && !pos; k++) { var r = lab(clampX(cands[k], w), y, w); if (labelFree(r)) pos = r; }
       if (!pos) continue;
@@ -74,14 +76,15 @@
       if (e2 != null) line(g, x2, e2 + (y > e2 ? 2 : -2), x2, y + (y > e2 ? 4 : -4), 'dwg-e');
       if (span >= 20) { line(g, x1, y, x2, y, 'dwg-m'); arrow(g, x1, y, -1, 0); arrow(g, x2, y, 1, 0); }
       else { line(g, x1 - 11, y, x2 + 11, y, 'dwg-m'); arrow(g, x1, y, 1, 0); arrow(g, x2, y, -1, 0); }
-      occ.h.push(row);
+      occ.h.push(row); S.once[once] = 1;
       commit(c, addLabel(c.text, pos, ms, c.word ? 'dwg-l--w' : '', c.code));
       return true;
     }
     return false;
   }
   function placeV(c, y1, y2, xs, e1, e2) {
-    var w = c.text.length * CH + 4, span = y2 - y1, small = span < LABEL_H + 12;
+    var w = c.text.length * CH + 4, span = y2 - y1, small = span < LABEL_H + 12, once = c.text + 'v' + Math.round(y1) + ',' + Math.round(y2);
+    if (S.once[once]) return false;
     for (var i = 0; i < xs.length; i++) {
       var x = snap(xs[i]), col = { l: x - 2, r: x + 2, t: y1 - (small ? 12 : 0), b: y2 + (small ? 12 : 0) };
       if (hit(col, occ.v) || col.l < 2 || col.r > S.W - 2 || lineCrossesText(col) || hit(col, occ.mask)) continue;
@@ -93,7 +96,7 @@
       if (e2 != null) line(g, e2 + (x > e2 ? 2 : -2), y2, x + (x > e2 ? 4 : -4), y2, 'dwg-e');
       if (span >= 20) { line(g, x, y1, x, y2, 'dwg-m'); arrow(g, x, y1, 0, -1); arrow(g, x, y2, 0, 1); }
       else { line(g, x, y1 - 11, x, y2 + 11, 'dwg-m'); arrow(g, x, y1, 0, 1); arrow(g, x, y2, 0, -1); }
-      occ.v.push(col);
+      occ.v.push(col); S.once[once] = 1;
       commit(c, addLabel(c.text, pos, ms, c.word ? 'dwg-l--w' : '', c.code));
       return true;
     }
@@ -127,7 +130,7 @@
   function rowsFor(b) { return [b.t - 8, b.b + 8, b.t - 20, b.b + 20, b.t + 8, b.b - 8]; }
   function cand(kind, prefix, value, role, group, prop, el, run) { return { kind: kind, prefix: prefix, value: value, role: role, group: group, prop: prop, el: el, run: run }; }
   function cSpan(e, k) {
-    return cand('span', 'C' + k, e.getBoundingClientRect().width, k + '-column span', 'SPANS', 'width', e, function (c) {
+    return cand('span', 'C' + k, e.getBoundingClientRect().width, k + ' columns', 'SPANS', 'width', e, function (c) {
       var b = box(e), ys = rowsFor(b);
       for (var i = 0; i < ys.length; i++) { var ex = ys[i] < b.t ? b.t : ys[i] > b.b ? b.b : null; if (placeH(c, b.l, b.r, [ys[i]], ex, ex)) return true; }
       return false;
@@ -171,11 +174,11 @@
         var k = spanOf(b); if (k && k < S.G.n && (d === 0 || b.w < block.getBoundingClientRect().width - 1) && b.h >= 16) push(cSpan(e, k));
         if (e.matches(FIXEDH) && whole(b.h)) push(cSizeV(e, 'H', nm));
         var pb = px(st.paddingBottom), pt = px(st.paddingTop);
-        if (whole(pb) && pb >= 4 && b.h > pb * 2) push(cSpaceV(e, 'padding-bottom', pb, nm + ' foot', (function (el, p) { return function () { var z = box(el); return [z.b - p, z.b]; }; })(e, pb)));
+        if (whole(pb) && pb >= 4 && b.h > pb * 2) push(cSpaceV(e, 'padding-bottom', pb, nm + ' bottom', (function (el, p) { return function () { var z = box(el); return [z.b - p, z.b]; }; })(e, pb)));
         if (whole(pt) && pt >= 4 && b.h > pt * 2) push(cSpaceV(e, 'padding-top', pt, nm + ' top', (function (el, p) { return function () { var z = box(el); return [z.t, z.t + p]; }; })(e, pt)));
         var mt = px(st.marginTop), pv = e.previousElementSibling;
         if (whole(mt) && mt >= 4 && visible(pv) && !pv.matches(SKIP) && cs(pv).position !== 'absolute' && Math.abs(r.top - pv.getBoundingClientRect().bottom - mt) < 1)
-          push(cSpaceV(e, 'margin-top', mt, nm + ' above', (function (el, p) { return function () { var z = box(el); return [z.t - p, z.t]; }; })(e, mt)));
+          push(cSpaceV(e, 'margin-top', mt, 'above ' + nm, (function (el, p) { return function () { var z = box(el); return [z.t - p, z.t]; }; })(e, mt)));
         if (/grid|flex/.test(st.display)) {
           var col = px(st.columnGap), row = px(st.rowGap), val = col || row;
           if (val && whole(val)) for (var i = 0; i + 1 < kids.length; i++) {
@@ -255,16 +258,30 @@
     });
     all('main svg.glyph,.ss-lockup__mark,main svg.ro-spark,main svg.ro-vram,.unm').forEach(function (e) { if (visible(e)) occ.obj.push(box(e)); });
   }
-  function frame() {
+  function frame(fh) {
     var g = group('dwg-d dwg-f', 0);
-    mk('rect', { x: 3.5, y: 3.5, width: S.W - 7, height: S.H - 7, rx: 12, ry: 12, pathLength: 1 }, g);
-    if (S.W >= 1024) for (var y = 400; y < S.H - 100; y += 400) line(g, 3.5, snap(y), 10, snap(y), 'dwg-e');
+    mk('rect', { x: 3.5, y: 3.5, width: S.W - 7, height: fh - 7, rx: 12, ry: 12, pathLength: 1 }, g);
+    if (S.W >= 1024) for (var y = 400; y < fh - 100; y += 400) line(g, 3.5, snap(y), 10, snap(y), 'dwg-e');
   }
-  function refMark(x, y, letter) {
-    var g = group('dwg-d dwg-ref', 560);
+  function refMark(x, y, letter, leaderTo) { // the circle on the plan, its big letter, and a leader when a clear row exists
+    var g = group('dwg-d dwg-ref', 560, 'DET-' + letter);
     mk('circle', { cx: x, cy: y, r: 14, pathLength: 1 }, g);
-    var opts = [[x - 24, y - 14], [x + 24, y - 14], [x - 24, y + 14], [x + 24, y + 14], [x, y - 24], [x, y + 24]];
-    for (var i = 0; i < opts.length; i++) { var r = lab(opts[i][0], opts[i][1], 12); if (labelFree(r)) { addLabel(letter, r, 560, 'dwg-l--ref'); return; } }
+    occ.obj.push({ l: x - 20, r: x + 20, t: y - 20, b: y + 20 });
+    var opts = [[x - 26, y - 14], [x + 26, y - 14], [x - 26, y + 14], [x + 26, y + 14], [x, y - 28], [x, y + 28]], placed = false;
+    for (var i = 0; i < opts.length && !placed; i++) {
+      var r = { l: opts[i][0] - 9, r: opts[i][0] + 9, t: opts[i][1] - 9, b: opts[i][1] + 9 };
+      if (inSheet(r) && !hit(r, occ.text, 1) && !hit(r, occ.labels, 1)) { var e = h('span', 'dwg-tag', letter, labels); e.style.cssText = 'left:' + r.l + 'px;top:' + r.t + 'px;--d:560ms'; e.setAttribute('data-code', 'DET-' + letter); occ.labels.push(r); placed = true; }
+    }
+    if (leaderTo == null) return null;
+    var ys = [y - 6, y - 14, y + 6, y, y + 14, y - 20];
+    for (var k = 0; k < ys.length; k++) {
+      var row = { l: leaderTo, r: x - 14, t: ys[k] - 1, b: ys[k] + 1 };
+      if (hit(row, occ.text, 1)) continue;
+      var yy = snap(ys[k]); line(g, leaderTo, yy, x - 13, yy, 'dwg-lead'); if (yy !== y) line(g, x - 13, yy, x - 10, y, 'dwg-lead');
+      occ.h.push({ l: leaderTo, r: x - 14, t: yy - 2, b: yy + 2 });
+      return yy;
+    }
+    return null;
   }
 
   // ---------- details ----------
@@ -304,7 +321,7 @@
     var L = ra.w || rb.w, ll = null;
     if (L) { ll = mk('text', { x: 30, y: Y(Math.max(A.t, B.t)) - 6, 'class': 'dwg-dt' }, sv); ll.textContent = 'L'; }
     var off = across ? (A.r + gap / 2) % bPx : A.b % bPx;
-    return { svg: sv, labelG: tl, labelL: ll, L: L, ruleEl: ra.w ? pair[0] : pair[1], ruleHow: (ra.w ? ra : rb).how, gap: gap, rawEl: pair[0].parentElement, title: 'DETAIL A · WHERE ' + (nameOf(pair[0]) + ' MEETS ' + nameOf(pair[1])).toUpperCase(),
+    return { key: 'DET-A', svg: sv, labelG: tl, labelL: ll, L: L, ruleEl: ra.w ? pair[0] : pair[1], ruleHow: (ra.w ? ra : rb).how, gap: gap, rawEl: pair[0].parentElement, title: 'DETAIL A · WHERE ' + (nameOf(pair[0]) + ' MEETS ' + nameOf(pair[1])).toUpperCase(),
       caption: 'SCALE ' + M + ':1. GAP ' + fmt(gap) + ', ' + fmt(gap / bPx) + '·B. LINE ' + fmt(L) + ' (' + (ra.w ? ra : rb).how.toUpperCase() + '). EDGES ' + (A.r % bPx === 0 || !across ? 'ON' : 'OFF') + ' THE ' + fmt(bPx) + ' PX LATTICE.' };
   }
   function detailCell(glyph) {
@@ -320,63 +337,77 @@
     var w = pick.getBoundingClientRect().width;
     var tx = mk('text', { x: ox + pick.x.baseVal.value * unit * M + w * M / 2, y: oy + pick.y.baseVal.value * unit * M - 6, 'class': 'dwg-dt', 'text-anchor': 'middle' }, sv); tx.textContent = 'CELL';
     var bl = mk('text', { x: 76, y: 146, 'class': 'dwg-dt', 'text-anchor': 'middle' }, sv); bl.textContent = 'B';
-    return { svg: sv, label: tx, labelB: bl, el: pick, w: w, title: 'DETAIL B · GLYPH CELL', caption: 'SCALE ' + fmt(M) + ':1. CELL = ' + fmt(w) + ' = ' + fmt(w / bPx) + '·B. B = ' + fmt(bPx) + '.' };
+    return { key: 'DET-B', svg: sv, label: tx, labelB: bl, el: pick, w: w, title: 'DETAIL B · GLYPH CELL', caption: 'SCALE ' + fmt(M) + ':1. CELL = ' + fmt(w) + ' = ' + fmt(w / bPx) + '·B. B = ' + fmt(bPx) + '.' };
   }
-  function detailFig(d) { var f = h('figure', 'dwg-det'); f.appendChild(d.svg); h('figcaption', '', '<b>' + esc(d.title) + '</b><span>' + esc(d.caption) + '</span>', f); return f; }
+  function detailFig(d) { var f = h('figure', 'dwg-det'); f.setAttribute('data-code', d.key); h('span', 'dwg-tag dwg-tag--fig', d.key.slice(-1), f); f.appendChild(d.svg); h('figcaption', '', '<b>' + esc(d.title) + '</b><span>' + esc(d.caption) + '</span>', f); return f; }
 
   // ---------- exploded axonometric: the real layout, lifted into its layers ----------
   function axo(G) {
-    var hc = Math.min(S.H, S.W * 1.45), s = 560 / S.W, Z = 118, names = [
-      ['L4', 'OVERLAY', occ.h.length + occ.v.length + ' DIMENSION LINES'], ['L3', 'INSTRUMENTS', S.slots.length + ' SLOTS'], ['L2', 'TILES', S.boxes.length + ' OBJECTS'],
-      ['L1', 'PAGE', G.n + ' COLUMNS, ' + occ.text.length + ' TEXT RUNS'], ['L0', 'CANVAS FIELD', '16 PX CELLS']];
+    var hc = Math.min(S.H, S.W * .95), s = 560 / S.W, Z = 190;
+    var long = function (r) { return Math.max(r.r - r.l, r.b - r.t) > 60; }, dh = occ.h.filter(long), dv = occ.v.filter(long);
+    var tops = S.boxes.filter(function (b) { return !S.boxes.some(function (q) { return q !== b && q.l <= b.l + 1 && q.r >= b.r - 1 && q.t <= b.t + 1 && q.b >= b.b - 1 && q.w * q.h > b.w * b.h; }); });
+    var names = [['L4', 'OVERLAY', (dh.length + dv.length) + ' LONG DIMENSIONS'], ['L3', 'INSTRUMENTS', S.slots.length + ' SLOTS'], ['L2', 'TILES', tops.length + ' BLOCKS'], ['L1', 'PAGE', G.n + ' COLUMNS'], ['L0', 'CANVAS FIELD', '16 PX CELLS']];
     function P(x, y, z) { return [.94 * s * x - .34 * s * y, .17 * s * x + .47 * s * y - z]; }
     var cx = [[0, 0], [S.W, 0], [S.W, hc], [0, hc]], xs = [], ys = [];
     for (var i = 0; i < 5; i++) cx.forEach(function (q) { var p = P(q[0], q[1], i * Z); xs.push(p[0]); ys.push(p[1]); });
-    var minX = Math.min.apply(0, xs), maxX = Math.max.apply(0, xs), minY = Math.min.apply(0, ys), maxY = Math.max.apply(0, ys), LP = 200;
-    var vbW = maxX - minX + LP + 20, vbH = maxY - minY + 40, tx = -minX + LP, ty = -minY + 20;
+    var minX = Math.min.apply(0, xs), maxX = Math.max.apply(0, xs), minY = Math.min.apply(0, ys), maxY = Math.max.apply(0, ys), LP = 190;
+    var vbW = maxX - minX + LP + 16, vbH = maxY - minY + 24, tx = -minX + LP, ty = -minY + 12;
     var sv = mk('svg', { viewBox: '0 0 ' + vbW + ' ' + vbH, 'class': 'dwg-axo', role: 'img', 'aria-label': 'Exploded view of the page: canvas field, page, tiles, instruments and overlay, drawn from the real layout' });
     var mtx = function (z) { return 'matrix(' + [.94 * s, .17 * s, -.34 * s, .47 * s, tx, ty - z].join(' ') + ')'; };
-    function layer(z) { return mk('g', { transform: mtx(z) }, sv); }
-    function plate(g) { mk('rect', { x: 0, y: 0, width: S.W, height: hc, 'class': 'dwg-ax-plate' }, g); }
-    function clip(b) { return b.t < hc; }
-    function rect(g, b, cls) { if (clip(b)) mk('rect', { x: b.l, y: b.t, width: b.w, height: Math.min(b.h, hc - b.t), 'class': cls }, g); }
-    // L0: the field
-    var g0 = layer(0); plate(g0);
+    function layer(z) { var g = mk('g', { transform: mtx(z) }, sv); mk('rect', { x: 0, y: 0, width: S.W, height: hc, 'class': 'dwg-ax-plate' }, g); return g; }
+    function rect(g, b, cls) { if (b.t < hc) mk('rect', { x: b.l, y: b.t, width: b.w, height: Math.min(b.h, hc - b.t), 'class': cls }, g); }
+    var g0 = layer(0);
     for (var yy = 32; yy < hc; yy += 64) for (var xx = 32; xx < S.W; xx += 64) mk('rect', { x: xx, y: yy, width: 16, height: 16, 'class': (xx < G.site.l || xx > G.site.r) ? 'dwg-ax-f' : 'dwg-ax-f2' }, g0);
-    // L1: page: columns and every text run as a line
-    var g1 = layer(Z); plate(g1); var x = G.site.l;
+    var g1 = layer(Z), x = G.site.l;
     for (var c = 0; c < G.n; c++) { mk('rect', { x: x, y: 0, width: G.col, height: hc, 'class': 'dwg-ax-col' }, g1); x += G.col + G.g; }
-    occ.text.slice(0, 500).forEach(function (t) { if (t.t < hc) mk('rect', { x: t.l, y: t.t + (t.b - t.t) * .35, width: t.r - t.l, height: (t.b - t.t) * .3, 'class': 'dwg-ax-t' }, g1); });
-    // L2: tiles
-    var g2 = layer(Z * 2); S.boxes.forEach(function (b) { rect(g2, b, 'dwg-ax-b'); });
-    // L3: instruments
-    var g3 = layer(Z * 3); S.slots.forEach(function (b) { if (!clip(b)) return; rect(g3, b, 'dwg-ax-s'); var bb = Math.min(b.b, hc); mk('line', { x1: b.l, y1: b.t, x2: b.r, y2: bb, 'class': 'dwg-ax-x' }, g3); mk('line', { x1: b.r, y1: b.t, x2: b.l, y2: bb, 'class': 'dwg-ax-x' }, g3); });
-    // L4: the dimensions themselves
+    var g2 = layer(Z * 2); tops.forEach(function (b) { rect(g2, b, 'dwg-ax-b'); });
+    var g3 = layer(Z * 3); S.slots.forEach(function (b) { if (b.t >= hc) return; rect(g3, b, 'dwg-ax-s'); var bb = Math.min(b.b, hc); mk('line', { x1: b.l, y1: b.t, x2: b.r, y2: bb, 'class': 'dwg-ax-x' }, g3); mk('line', { x1: b.r, y1: b.t, x2: b.l, y2: bb, 'class': 'dwg-ax-x' }, g3); });
     var g4 = layer(Z * 4);
-    mk('rect', { x: 0, y: 0, width: S.W, height: hc, 'class': 'dwg-ax-o' }, g4);
-    occ.h.forEach(function (r) { if (r.t < hc) mk('line', { x1: r.l, y1: (r.t + r.b) / 2, x2: r.r, y2: (r.t + r.b) / 2, 'class': 'dwg-ax-d' }, g4); });
-    occ.v.forEach(function (r) { if (r.t < hc) mk('line', { x1: (r.l + r.r) / 2, y1: r.t, x2: (r.l + r.r) / 2, y2: Math.min(r.b, hc), 'class': 'dwg-ax-d' }, g4); });
-    // the stack's corner lines
-    [[0, 0], [S.W, 0], [S.W, hc], [0, hc]].forEach(function (q) { var a = P(q[0], q[1], 0), b = P(q[0], q[1], Z * 4); mk('line', { x1: a[0] + tx, y1: a[1] + ty, x2: b[0] + tx, y2: b[1] + ty, 'class': 'dwg-ax-c' }, sv); });
-    // labels at each layer's near corner
-    names.forEach(function (n, k) {
-      var z = (4 - k) * Z, p = P(0, hc * .5, z), px_ = p[0] + tx, py = p[1] + ty, lx = 176;
+    dh.forEach(function (r) { if (r.t < hc) mk('line', { x1: r.l, y1: (r.t + r.b) / 2, x2: r.r, y2: (r.t + r.b) / 2, 'class': 'dwg-ax-d' }, g4); });
+    dv.forEach(function (r) { if (r.t < hc) mk('line', { x1: (r.l + r.r) / 2, y1: r.t, x2: (r.l + r.r) / 2, y2: Math.min(r.b, hc), 'class': 'dwg-ax-d' }, g4); });
+    for (var k = 0; k < 4; k++) [[0, 0], [S.W, 0], [S.W, hc], [0, hc]].forEach(function (q) { var a = P(q[0], q[1], k * Z), b = P(q[0], q[1], (k + 1) * Z); mk('line', { x1: a[0] + tx, y1: a[1] + ty, x2: b[0] + tx, y2: b[1] + ty, 'class': 'dwg-ax-c' }, sv); });
+    names.forEach(function (n, j) {
+      var z = (4 - j) * Z, p = P(0, hc * .5, z), px_ = p[0] + tx, py = p[1] + ty, lx = 172;
       mk('polyline', { points: px_ + ',' + py + ' ' + (lx + 8) + ',' + py, 'class': 'dwg-ax-lead' }, sv);
       mk('circle', { cx: px_, cy: py, r: 2, 'class': 'dwg-ax-dot' }, sv);
       var t = mk('text', { x: lx, y: py - 1, 'text-anchor': 'end', 'class': 'dwg-ax-n' }, sv); t.textContent = n[0] + ' · ' + n[1];
-      var u = mk('text', { x: lx, y: py + 11, 'text-anchor': 'end', 'class': 'dwg-ax-u' }, sv); u.textContent = n[2];
+      var u = mk('text', { x: lx, y: py + 12, 'text-anchor': 'end', 'class': 'dwg-ax-u' }, sv); u.textContent = n[2];
     });
-    var f = h('figure', 'dwg-axof'); f.id = 'dwg-axo'; f.appendChild(sv);
-    h('figcaption', '', '<b>EXPLODED VIEW</b><span>AXONOMETRIC. Z GAPS NOT TO SCALE. EVERY BOX IS ITS REAL POSITION ON THIS PAGE AT THIS WIDTH.</span>', f);
+    return viewFig('dwg-v2', '2', 'EXPLODED VIEW', 'AXONOMETRIC. Z GAPS NOT TO SCALE. REAL POSITIONS, FIRST ' + Math.round(hc) + ' PX OF THE PAGE.', sv);
+  }
+  function section(G, xc) { // section A-A: every drawn block the cut passes through, nested, along the page's height
+    var W_ = 900, sc = W_ / S.H, RH = 18, cut = S.boxes.concat(S.slots).filter(function (b) { return b.l <= xc && b.r >= xc; }).sort(function (a, b) { return a.t - b.t || b.h - a.h; });
+    var stack = [], maxD = 0, placed = cut.map(function (b) { while (stack.length && stack[stack.length - 1].b <= b.t + 1) stack.pop(); var d = stack.length; stack.push(b); maxD = Math.max(maxD, d); return { b: b, d: d }; });
+    var HV = 34 + (maxD + 1) * RH, sv = mk('svg', { viewBox: '0 0 ' + W_ + ' ' + HV, 'class': 'dwg-sec', role: 'img', 'aria-label': 'Section through the page along its height' });
+    var hid = 'dwgh' + Math.round(xc); var pat = mk('pattern', { id: hid, width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, mk('defs', {}, sv)); mk('line', { x1: 0, y1: 0, x2: 0, y2: 6, 'class': 'dwg-hatch' }, pat);
+    mk('rect', { x: 0, y: 12, width: W_, height: (maxD + 1) * RH, fill: 'url(#' + hid + ')' }, sv);
+    placed.forEach(function (q) { var y = 12 + q.d * RH; mk('rect', { x: q.b.t * sc, y: y, width: Math.max(1, q.b.h * sc), height: (maxD + 1 - q.d) * RH, 'class': q.d ? 'dwg-sec-i' : 'dwg-sec-o' }, sv); });
+    var yb = 12 + (maxD + 1) * RH + 10; mk('line', { x1: 0, y1: yb, x2: W_, y2: yb, 'class': 'dwg-m' }, sv);
+    [[0, -1], [W_, 1]].forEach(function (a) { mk('path', { d: 'M' + a[0] + ',' + yb + 'l' + (-a[1] * 7) + ',-2.3v4.6z', 'class': 'dwg-a' }, sv); });
+    var t = mk('text', { x: W_ / 2, y: yb + 3, 'text-anchor': 'middle', 'class': 'dwg-dt' }, sv); t.textContent = 'PAGE HEIGHT ' + fmt(S.H);
+    return viewFig('dwg-v3', '3', 'SECTION A–A', 'SCALE ' + fmt(sc) + ':1. CUT AT X = ' + Math.round(xc) + '. ' + cut.length + ' BLOCKS IN SECTION; HATCH IS OPEN PAGE.', sv);
+  }
+  function viewFig(id, num, title, sub, sv) {
+    var f = h('figure', 'dwg-view'); f.id = id; f.appendChild(sv);
+    h('figcaption', '', '<span class="dwg-tag dwg-tag--view">' + num + '</span><span><b>' + title + '</b><span>' + sub + '</span></span>', f);
     return f;
   }
 
   // ---------- title block, notes, tables ----------
   function pageTitle() { return window.PAGE === 'case' ? (window.SLUG || 'case').replace(/[_-]/g, ' ') : window.PAGE === 'lab' ? 'lab' : 'home'; }
+  function pageNo() { // one number per page of the site, the same on screen and on paper
+    if (window.PAGE === 'lab') return 2; if (window.PAGE !== 'case') return 1;
+    var i = (window.__dwgPages || []).indexOf(window.SLUG); return i < 0 ? 'X' : i + 3;
+  }
+  function sheetCount() { return S.sheet ? S.sheets : (S.parentSheets || (S.W >= 1024 ? planFor(S.H, S.R - S.L).sheets : 1)); }
+  function planFor(H, w) {
+    var wide = (PW - PANEL - 16) / (w + 2 * PAD), fit = (PH - 24) / H, sc = fit >= wide ? wide : fit >= MIN_FIT ? fit : wide, crop = (PH - 24) / sc;
+    return { sc: sc, crop: crop, sheets: H <= crop + 1 ? 1 : 1 + Math.ceil((H - crop) / (2 * crop)) };
+  }
   function titleBlock() {
     function cell(k, val) { return '<div class="dwg-tb__c"><span class="dwg-k">' + k + '</span><span class="dwg-v">' + val + '</span></div>'; }
     return '<div class="dwg-tb"><div class="dwg-tb__t"><span class="dwg-k">PORTFOLIO · DIMENSIONAL DRAWING</span><b class="dwg-tb__n">' + esc(pageTitle()) + '</b></div>'
-      + cell('DWG NO.', 'DH-001') + cell('REV', esc(REV)) + cell('SCALE', S.sheet ? fmt(S.printScale) + ':1' : '1:1') + cell('UNITS', 'CSS PX') + cell('SHEETS', S.sheet ? S.sheets : '1') + cell('VIEW', S.sheet ? '1512 WIDE' : innerWidth + '×' + innerHeight) + '</div>';
+      + cell('DWG NO.', 'DH-001/' + pageNo()) + cell('REV', esc(REV)) + cell('SCALE', S.sheet ? fmt(S.printScale) + ':1' : '1:1') + cell('UNITS', 'CSS PX') + cell('SHEETS', sheetCount()) + cell('WIDTH', S.sheet ? PW : innerWidth) + '</div>';
   }
   function conformance() {
     var blocks = all('main *').filter(function (e) { return visible(e) && !e.matches(SKIP) && /block|flex|grid|list-item/.test(cs(e).display) && !e.closest('svg'); });
@@ -385,37 +416,43 @@
     return { n: blocks.length, onB: onB, round: round };
   }
   function notes(G) {
-    var W = G.n * G.col + (G.n - 1) * G.g, c = conformance(), gS = S.dims.filter(function (d) { return d.code.charAt(0) === 'S' && Math.abs(d.value - G.g) < .01; })[0];
-    var pct = c.n ? Math.round(100 * c.onB / c.n) : 0;
+    var W = G.n * G.col + (G.n - 1) * G.g, c = conformance(), bPx = probes.b.getBoundingClientRect().width, pct = c.n ? Math.round(100 * c.onB / c.n) : 0, gk = G.g / bPx;
+    var off = S.dims.filter(function (d) { return d.code.charAt(0) === 'X'; }).length;
     return '<div class="dwg-notes"><b>NOTES:</b> (UNLESS OTHERWISE SPECIFIED)<ol>'
       + '<li>DO NOT SCALE. EVERY VALUE IS MEASURED FROM THE LIVE PAGE AT THIS WIDTH.</li>'
       + '<li>W = ' + G.n + '·COL + ' + (G.n - 1) + '·G = ' + fmt(W) + (Math.abs(W - G.site.w) < .5 ? ', AS MEASURED.' : '; MEASURED ' + fmt(G.site.w) + '.') + '</li>'
-      + '<li>' + c.onB + ' OF ' + c.n + ' BOXES (' + pct + '%) ARE WHOLE MULTIPLES OF B. THE REST HUG THEIR CONTENT.</li>'
-      + '<li>HUG = SIZED BY ITS CONTENT, SO IT CARRIES NO VARIABLE.</li>'
-      + '<li>' + (c.round ? c.round + ' OF ' + c.n + ' BOXES ARE ROUNDED.' : 'NO RADII: 0 OF ' + c.n + ' BOXES ARE ROUNDED. CORNERS ARE SQUARE.') + '</li>'
-      + (gS ? '<li>G = ' + gS.code + ' = ' + fmt(G.g) + ': THE GUTTER IS ALSO THE STACK UNIT.</li>' : '')
-      + (S.sheet && S.sheets > 1 ? '<li>THIS PAGE RUNS TO ' + S.sheets + ' SHEETS AT ' + fmt(S.printScale) + ':1.</li>' : '')
-      + (S.sheet && S.sheets === 1 ? '<li>PLAN FITTED TO THIS SHEET AT ' + fmt(S.printScale) + ':1.</li>' : '')
+      + '<li>S, H AND Z CODES COUNT B: S' + fmt(gk) + ' = ' + fmt(gk) + '·B = ' + fmt(G.g) + ' = G. THE SAME CODE MEANS THE SAME VALUE ON EVERY PAGE.' + (off ? ' X CODES ARE OFF THE LATTICE.' : '') + '</li>'
+      + '<li>' + c.onB + ' OF ' + c.n + ' BOXES (' + pct + '%) ARE WHOLE MULTIPLES OF B. THE REST HUG THEIR CONTENT AND CARRY NO VARIABLE.</li>'
+      + '<li>' + (c.round ? c.round + ' OF ' + c.n + ' BOXES ARE ROUNDED.' : 'NO RADII: 0 OF ' + c.n + ' BOXES ARE ROUNDED.') + '</li>'
+      + '<li>EACH THING IS DIMENSIONED ONCE, TYP. QTY COUNTS ITS INSTANCES ON THIS PAGE.</li>'
+      + '<li>REV IS THE LAST COMMIT THAT CHANGED THE SOURCE.</li>'
+      + (S.sheet ? '<li>PLAN AT ' + fmt(S.printScale) + ':1 ON ' + S.sheets + (S.sheets > 1 ? ' SHEETS.' : ' SHEET.') + '</li>' : (sheetCount() > 1 ? '<li>PRINTS ON ' + sheetCount() + ' A3 SHEETS.</li>' : '<li>PRINTS ON ONE A3 SHEET.</li>'))
       + '</ol><p class="dwg-credit">DRAWING STYLE AFTER DIMENSIONAL-DRAWING, E. OZTURK (MIT).</p></div>';
   }
   function natural(a, b) { return String(a).localeCompare(String(b), 'en', { numeric: true }); }
-  function formula(d, G) {
-    var m = /^C(\d+)$/.exec(d.code); if (!m) return '';
-    var k = +m[1], v = k * G.col + (k - 1) * G.g; return k + '·COL+' + (k - 1) + '·G' + (Math.abs(v - d.value) < .5 ? '' : ' ≠'); // closes, or says it doesn't
+  var SCALE = { 1: 'inset', 2: 'text gap', 3: 'row gap', 4: 'stack unit', 5: 'paragraph step', 6: 'tile bottom', 8: 'block gap', 12: 'section gap', 16: 'section gap' };
+  function roleName(v, bPx) { // the commonest measured role; generic ones fall back to the step's name on the scale
+    if (v.code === 'G') return 'gutter';
+    var tally = {}; v.roles.forEach(function (r) { tally[r] = (tally[r] || 0) + 1; });
+    var top = Object.keys(tally).sort(function (a, b) { return tally[b] - tally[a]; })[0] || '';
+    if (v.group === 'SPACING' && (/block|paragraph|prose|list/.test(top) || Object.keys(tally).length > 2)) return SCALE[v.value / bPx] || top.replace('block', 'space');
+    return top;
   }
   function tables(G) {
-    var byCode = {};
-    S.dims.forEach(function (d) { var v = byCode[d.code] || (byCode[d.code] = { code: d.code, value: d.value, group: d.group, roles: [], n: 0 }); v.n++; if (d.role && v.roles.indexOf(d.role) < 0) v.roles.push(d.role); });
-    var out = '';
+    var byCode = {}, bPx = probes.b.getBoundingClientRect().width;
+    S.dims.forEach(function (d) { var v = byCode[d.code] || (byCode[d.code] = { code: d.code, value: d.value, group: d.group, roles: [], n: 0 }); v.n++; if (d.role) v.roles.push(d.role); });
+    var flags = [], out = '';
     ['GRID', 'SPANS', 'SPACING', 'SIZES'].forEach(function (grp) {
       var rows = Object.keys(byCode).map(function (k) { return byCode[k]; }).filter(function (v) { return v.group === grp; }).sort(function (a, b) { return grp === 'GRID' ? 0 : natural(a.code, b.code); });
       if (!rows.length) return;
-      out += '<table class="dwg-tbl"><caption>' + grp.toLowerCase() + '</caption><thead><tr><th scope="col">CODE</th><th scope="col">VARIABLE</th><th scope="col">VALUE</th></tr></thead><tbody>'
+      out += '<table class="dwg-tbl"><caption>' + grp.toLowerCase() + '</caption><thead><tr><th scope="col">CODE</th><th scope="col">VARIABLE</th><th scope="col">QTY</th><th scope="col">VALUE</th></tr></thead><tbody>'
         + rows.map(function (v) {
-          var named = v.roles.filter(function (r) { return r.indexOf('block') !== 0; }).concat(v.roles.filter(function (r) { return r.indexOf('block') === 0; })), nm = named[0] + (named.length > 1 ? ' +' + (named.length - 1) : '');
-          return '<tr tabindex="0" data-code="' + esc(v.code) + '"><th scope="row">' + esc(v.code) + '</th><td title="' + esc(v.roles.join(', ')) + '">' + esc(formula(v, G) || nm) + '</td><td>' + fmt(v.value) + '</td></tr>';
+          var m = /^C(\d+)$/.exec(v.code), nm = roleName(v, bPx), val = fmt(v.value);
+          if (m) { var k = +m[1], nom = k * G.col + (k - 1) * G.g; nm = k + '·COL+' + (k - 1) + '·G'; if (Math.abs(nom - v.value) >= .01) { val += '†'; flags.push(v.code + ' MEASURED ' + fmt(v.value) + ', NOMINAL ' + fmt(nom)); } }
+          return '<tr tabindex="0" data-code="' + esc(v.code) + '"><th scope="row">' + esc(v.code) + '</th><td title="' + esc(nm) + '">' + esc(nm) + '</td><td>' + (S.qty[v.code] || v.n) + '</td><td>' + val + '</td></tr>';
         }).join('') + '</tbody></table>';
     });
+    if (flags.length) out += '<p class="dwg-flag">† DEVIATION: ' + flags.map(esc).join('; ') + '.</p>';
     return out;
   }
 
@@ -429,7 +466,7 @@
     var site = document.querySelector('.site');
     if (!over) return;
     if (S.sheet) root.setAttribute('data-dwg-measure', '');
-    svg.textContent = ''; labels.textContent = ''; S.dims = []; S.count = 0; S.boxes = []; S.slots = [];
+    svg.textContent = ''; labels.textContent = ''; S.dims = []; S.count = 0; S.boxes = []; S.slots = []; S.once = {};
     occ = { labels: [], h: [], v: [], mask: [], text: [], obj: [] };
     var sb = site.getBoundingClientRect();
     S.W = document.body.clientWidth; S.H = Math.ceil(sb.bottom + window.scrollY);
@@ -437,20 +474,30 @@
     S.rail = !S.sheet && S.L >= 232 && S.W >= 1200;
     if (S.sheet) setupScale();
     S.leftTracks = S.L >= 80 ? [S.L - 16, S.L - 44, S.L - 72] : [Math.max(8, S.L / 2)];
-    S.rightTracks = S.W - S.R >= 80 ? [S.R + 14, S.R + 36] : [S.R + Math.max(8, (S.W - S.R) / 2)];
+    S.rightTracks = S.W - S.R >= 80 ? [S.R + 14] : [S.R + Math.max(8, (S.W - S.R) / 2)];
     over.style.height = S.H + 'px'; over.style.width = S.W + 'px';
     svg.setAttribute('width', S.W); svg.setAttribute('height', S.H); svg.setAttribute('viewBox', '0 0 ' + S.W + ' ' + S.H);
     root.toggleAttribute('data-dwg-anim', !!anim && !matchMedia('(prefers-reduced-motion: reduce)').matches);
     colL.hidden = colR.hidden = !S.rail; strip.hidden = S.rail || S.sheet;
-    if (S.rail) { occ.mask.push({ l: 12, r: S.L - 88, t: 28, b: S.H }, { l: S.R + 50, r: S.W - 8, t: 0, b: S.H }); colL.style.width = (S.L - 88 - 16) + 'px'; colR.style.width = (S.W - S.R - 50 - 12) + 'px'; }
+    if (S.rail) { occ.mask.push({ l: S.R + 28, r: S.W - 8, t: 0, b: S.H }); colR.style.width = (S.W - S.R - 28 - 12) + 'px'; }
     occ.text = collectText();
 
     var G = S.G = measureGrid();
-    frame(); drawGrid(G); objects(); slots();
+    drawGrid(G); objects(); slots();
     var pair = junctionPair(), glyph = all('.t-head .glyph,.lc__head .glyph,.dos__id .glyph,.dos__id svg').filter(function (g) { return visible(g) && g.querySelector('rect'); })[0] || document.querySelector('.ss-lockup__mark');
     var pa = box(pair[0]), pb = box(pair[1]), gb = box(glyph), acr = pb.l >= pa.r - 1;
-    refMark(acr ? (pa.r + pb.l) / 2 : pa.l + 8, acr ? Math.max(pa.t, pb.t) : (pa.b + pb.t) / 2, 'A');
-    refMark(gb.l + gb.w / 2, gb.t + gb.h / 2, 'B');
+    var ax_ = acr ? (pa.r + pb.l) / 2 : pa.l + 8, ay_ = acr ? Math.max(pa.t, pb.t) : (pa.b + pb.t) / 2, gx_ = gb.l + gb.w / 2, gy_ = gb.t + gb.h / 2;
+    var figW = S.L - 104, figH = figW + 78, lead = S.rail ? 16 + figW + 2 : null;
+    S.figB = Math.max(40, gy_ - figW / 2);
+    refMark(gx_, gy_, 'B', lead);
+    var ly = refMark(ax_, ay_, 'A', lead);
+    S.figA = Math.max(S.figB + figH + 8, (ly == null ? ay_ : ly) - figW / 2);
+    if (S.rail) occ.mask.push({ l: 12, r: 16 + figW, t: S.figB, b: S.figB + figH }, { l: 12, r: 16 + figW, t: S.figA, b: S.figA + figH });
+    // section cut, marked at both ends of the plan
+    S.cutX = G.site.l + G.col / 2;
+    var cg = group('dwg-d dwg-cut', 540), cy2 = S.H - 8;
+    [[hb0(), -1], [cy2, -1]].forEach(function (a) { line(cg, S.cutX, a[0], S.cutX, a[0] + a[1] * 10, 'dwg-cutl'); line(cg, S.cutX, a[0], S.cutX + 12, a[0], 'dwg-cutl'); arrow(cg, S.cutX + 12, a[0], 1, 0);
+      var tr = { l: S.cutX + 16, r: S.cutX + 30, t: a[0] - 7, b: a[0] + 7 }; if (!hit(tr, occ.text, 1) && inSheet(tr)) { var ct = h('span', 'dwg-l dwg-l--ref', 'A', labels); ct.style.cssText = 'left:' + tr.l + 'px;top:' + (a[0] - 6) + 'px;width:14px;--d:560ms'; occ.labels.push(tr); } });
 
     // the grid chain first: W, M, COL, G
     var hb = box(document.querySelector('.site-head')), topY = Math.min(14, px(cs(site).paddingTop) / 2 + 2);
@@ -463,57 +510,59 @@
     placeH(fix('G', 'gutter', 'GRID', 'width', probes.g, G.g), G.site.l + G.col, G.site.l + G.col + G.g, [chainY], null, null);
 
     // gather what the page offers, then decide the vocabulary: most-used values first, up to the cap
-    var groups = roots().map(function (r) { return walk(r, S.W < 640 ? 8 : 14); }).filter(function (g) { return g.length; });
-    var freq = {}; groups.forEach(function (g) { g.forEach(function (c) { var k = c.prefix === 'S' ? 'S=' + c.value : c.prefix === 'H' || c.prefix === 'Z' ? c.prefix + '=' + fmt(c.value) : c.prefix; freq[k] = (freq[k] || 0) + 1; }); });
-    var reserved = 7, room = capFor() - reserved; // W M COL G B L CELL
-    var ranked = Object.keys(freq).filter(function (k) { return k !== 'G'; }).sort(function (a, b) { return freq[b] - freq[a]; }).slice(0, Math.max(0, room));
-    var keep = {}; ranked.forEach(function (k) { keep[k] = 1; }); keep.G = 1;
-    var spaceVals = ranked.filter(function (k) { return k.indexOf('S=') === 0; }).map(function (k) { return +k.slice(2); }).sort(function (a, b) { return a - b; });
-    var sizeCode = {}, zn = 0, hn = 0;
-    ranked.filter(function (k) { return k.charAt(0) === 'H'; }).map(function (k) { return +k.slice(2); }).sort(function (a, b) { return a - b; }).forEach(function (v) { sizeCode['H=' + fmt(v)] = 'H' + (++hn); });
-    ranked.filter(function (k) { return k.charAt(0) === 'Z'; }).map(function (k) { return +k.slice(2); }).sort(function (a, b) { return a - b; }).forEach(function (v) { sizeCode['Z=' + fmt(v)] = 'Z' + (++zn); });
-
+    // gather what the page offers. Codes come from the value, so they never change between pages, widths or paper.
+    var bPx = probes.b.getBoundingClientRect().width;
+    function codeOf(c) {
+      if (c.prefix === 'S' || c.prefix === 'H' || c.prefix === 'Z') { var q = c.value / bPx, ok = Math.abs(q - Math.round(q)) < .01; if (ok) return c.prefix + Math.round(q); return c.prefix === 'S' ? 'X' + Math.round(c.value) : null; }
+      return c.prefix;
+    }
+    var perBlock = S.W < 640 ? 8 : 14, groups = roots().map(function (r) { return walk(r, 80); }).filter(function (g) { return g.length; });
+    var freq = {}, seenC = [];
+    groups.forEach(function (g) { g.forEach(function (c) { if (seenC.indexOf(c.el) < 0 || c.prop !== 'width') { c.code = codeOf(c); if (c.code) freq[c.code] = (freq[c.code] || 0) + 1; } seenC.push(c.el); }); });
+    S.qty = freq;
+    var room = Math.max(0, capFor() - 7), keep = { G: 1 }; // W M COL G B L CELL are always there
+    Object.keys(freq).filter(function (k) { return k !== 'G'; }).sort(function (a, b) { return freq[b] - freq[a]; }).slice(0, room).forEach(function (k) { keep[k] = 1; });
     var limit = budget(), ri = 0;
+    groups = groups.map(function (g) { return g.slice(0, perBlock * 2); });
     while (S.dims.length < limit && groups.some(function (g) { return g.length; })) {
       var g = groups[ri++ % groups.length]; if (!g.length) continue;
-      var c = g.shift(); if (!c) continue;
-      if (c.prefix === 'S') { if (!keep['S=' + c.value]) continue; c.code = 'S' + (spaceVals.indexOf(c.value) + 1); }
-      else if (c.prefix === 'H' || c.prefix === 'Z') { var kk = c.prefix + '=' + fmt(c.value); if (!keep[kk]) continue; c.code = sizeCode[kk]; }
-      else { if (!keep[c.prefix]) continue; c.code = c.prefix; }
-      c.text = c.code;
-      c.run(c);
+      var c = g.shift(); if (!c || !c.code || !keep[c.code]) continue;
+      c.text = c.code; c.run(c);
     }
     words(roots().filter(function (e) { return !e.matches('.pnl,.board,.xgrid,.cat__head'); }));
-
-    // renumber: a variable that never got drawn leaves no hole
-    var used = {}; S.dims.forEach(function (d) { if (/^S\d+$/.test(d.code)) used[d.value] = 1; });
-    var order = Object.keys(used).map(Number).sort(function (a, b) { return a - b; });
-    S.dims.forEach(function (d) { if (!/^S\d+$/.test(d.code)) return; var nc = 'S' + (order.indexOf(d.value) + 1); if (nc !== d.code) { d.labelEl.textContent = nc; d.labelEl.setAttribute('data-code', nc); d.code = nc; } });
-    all('g[data-code^="S"]', svg).forEach(function (el) { el.removeAttribute('data-code'); });
-    var gs = all('g.dwg-d[data-code]', svg);
 
     // details: their codes join the table
     var dA = detailJunction(pair), dB = detailCell(glyph);
     S.dims.push({ code: 'G', value: +fmt(G.g), prop: 'width', el: probes.g, labelEl: dA.labelG, group: 'GRID', role: 'gutter' });
     if (dA.L) S.dims.push({ code: 'L', value: +fmt(px(cs(probes.l).borderTopWidth)), prop: 'border-top-width', el: probes.l, labelEl: dA.labelL, group: 'GRID', role: 'hairline' });
     S.dims.push({ code: 'CELL', value: +fmt(dB.w), prop: 'width', el: dB.el, labelEl: dB.label, group: 'GRID', role: 'glyph cell' });
-    S.dims.push({ code: 'B', value: +fmt(probes.b.getBoundingClientRect().width), prop: 'width', el: probes.b, labelEl: dB.labelB, group: 'GRID', role: 'baseline' });
+    S.dims.push({ code: 'B', value: +fmt(bPx), prop: 'width', el: probes.b, labelEl: dB.labelB, group: 'GRID', role: 'baseline' });
 
-    var hdr = titleBlock(), ntx = notes(G), tbl = tables(G), figA = detailFig(dA), figB = detailFig(dB), ax = axo(G);
-    foot.innerHTML = '';
+    var hdr = titleBlock(), ntx = notes(G), tbl = tables(G), figA = detailFig(dA), figB = detailFig(dB), ax = axo(G), sec = section(G, S.cutX);
+    foot.innerHTML = '<p class="dwg-v1"><span class="dwg-tag dwg-tag--view">1</span><span><b>PLAN</b><span>' + (S.sheet ? 'THE LIVE PAGE AT LEFT, ' + fmt(S.printScale) : 'THE LIVE PAGE ABOVE, 1') + ':1.</span></span></p>';
+    var vw = h('div', 'dwg-views', null, foot), left = h('div', 'dwg-views__m', null, vw), side = h('div', 'dwg-views__s', null, vw);
+    left.appendChild(ax);
     if (S.rail) {
-      railR.innerHTML = hdr + '<a class="dwg-jump" href="#dwg-axo">EXPLODED VIEW ↓</a><div class="dwg-tables">' + tbl + '</div><div class="dwg-more" aria-hidden="true">MORE ↓</div>';
-      railL.textContent = ''; railL.appendChild(figA); railL.appendChild(figB); railL.insertAdjacentHTML('beforeend', ntx);
-      foot.appendChild(ax);
+      railR.innerHTML = '<div class="dwg-rt">' + hdr + '</div><p class="dwg-jump"><a href="#dwg-v2">2 EXPLODED</a> <a href="#dwg-v3">3 SECTION</a></p><div class="dwg-tables">' + tbl + '</div><div class="dwg-more" aria-hidden="true">MORE ↓</div>';
+      figA.style.cssText = 'top:' + S.figA + 'px;width:' + (S.L - 104) + 'px'; figB.style.cssText = 'top:' + S.figB + 'px;width:' + (S.L - 104) + 'px';
+      colL.textContent = ''; colL.appendChild(figB); colL.appendChild(figA);
+      side.insertAdjacentHTML('beforeend', ntx);
+      foot.appendChild(sec);
+      foot.insertAdjacentHTML('beforeend', hdr);
     } else {
-      foot.innerHTML = hdr;
-      foot.appendChild(ax);
-      var gg = h('div', 'dwg-foot__g', '<div class="dwg-foot__d"></div><div class="dwg-foot__n">' + ntx + '</div>', foot);
-      var fd = gg.querySelector('.dwg-foot__d'); fd.appendChild(figA); fd.appendChild(figB);
-      foot.insertAdjacentHTML('beforeend', '<div class="dwg-tables">' + tbl + '</div>');
-      strip.innerHTML = '<span>DWG DH-001</span><span>REV ' + esc(REV) + '</span><span>1:1</span><a href="#dwg-foot">VARIABLES ' + uniq() + '</a>';
+      var dd = h('div', 'dwg-foot__d', null, side); dd.appendChild(figA); dd.appendChild(figB);
+      side.insertAdjacentHTML('beforeend', ntx);
+      foot.appendChild(sec);
+      foot.insertAdjacentHTML('beforeend', '<div class="dwg-tables">' + tbl + '</div>' + hdr);
+      strip.innerHTML = '<span>DH-001/' + pageNo() + '</span><span>REV ' + esc(REV) + '</span><span>1:1</span><a href="#dwg-foot">VIEWS AND VARIABLES</a>';
     }
-    if (!S.sheet) { foot.style.marginLeft = S.L + 'px'; foot.style.width = (S.R - S.L) + 'px'; }
+    if (!S.sheet) { var fl = S.rail ? 16 : S.L; foot.style.marginLeft = fl + 'px'; foot.style.width = (S.R - fl) + 'px'; }
+    // the frame goes round everything: plan, views, tables and title block are one sheet
+    if (!S.sheet) {
+      var fh = Math.ceil(foot.getBoundingClientRect().bottom + window.scrollY);
+      over.style.height = fh + 'px'; svg.setAttribute('height', fh); svg.setAttribute('viewBox', '0 0 ' + S.W + ' ' + fh);
+      frame(fh);
+    }
     syncMore();
     root.removeAttribute('data-dwg-measure');
     if (S.sheet) { try { if (window.parent.__drawing) window.parent.__drawing._sheetDrawn(); } catch (e) {} }
@@ -559,7 +608,7 @@
     over = h('div', ''); over.id = 'dwg'; over.setAttribute('data-dwg-ui', '');
     svg = mk('svg', { 'class': 'dwg-svg', 'aria-hidden': 'true' }, over);
     labels = h('div', 'dwg-labels', null, over);
-    colL = h('div', 'dwg-col dwg-col--l', null, over); railL = h('div', 'dwg-rail', null, colL);
+    colL = h('div', 'dwg-col dwg-col--l', null, over);
     colR = h('div', 'dwg-col dwg-col--r', null, over); railR = h('div', 'dwg-rail dwg-rail--r', null, colR);
     railR.setAttribute('role', 'region'); railR.setAttribute('aria-label', 'Title block and variables'); railR.tabIndex = 0; railR.addEventListener('scroll', syncMore, { passive: true });
     document.body.appendChild(over);
@@ -601,12 +650,10 @@
 
   // ---------- print: real sheets. See drawing.css for why these are frames. ----------
   function setupScale() { // inside the first frame
-    var site = document.querySelector('.site').getBoundingClientRect(), left = site.left + scrollX, v = root.style;
-    var wide = (PW - PANEL - 16) / (site.width + 2 * PAD), fit = (PH - 24) / S.H, sc = fit >= wide ? wide : fit >= MIN_FIT ? fit : wide;
-    S.printScale = +sc.toFixed(3); S.cropH = (PH - 24) / sc;
-    S.sheets = S.H <= S.cropH + 1 ? 1 : 1 + Math.ceil((S.H - S.cropH) / (2 * S.cropH));
+    var site = document.querySelector('.site').getBoundingClientRect(), left = site.left + scrollX, v = root.style, pl = planFor(S.H, site.width), sc = pl.sc;
+    S.printScale = +sc.toFixed(3); S.cropH = pl.crop; S.sheets = pl.sheets;
     v.setProperty('--dwg-s', sc); v.setProperty('--dwg-tx', ((PAD - left) * sc) + 'px'); v.setProperty('--dwg-ox', -left + 'px');
-    foot.style.left = (PW - PANEL) + 'px';
+    var fl = Math.ceil((site.width + 2 * PAD) * sc) + 12; foot.style.left = fl + 'px'; foot.style.width = (PW - fl - 12) + 'px';
   }
   function sheetInfo() { return { sheets: S.sheets, crop: S.cropH, s: S.printScale, html: root.outerHTML }; }
   function makeFrame() {
@@ -622,6 +669,7 @@
     var w; try { w = S.frame.contentWindow; } catch (e) { return; }
     if (!w || !w.__drawing || !w.__drawing.sheetInfo) return;
     var info = w.__drawing.sheetInfo(); S.ready = true;
+    if (S.parentSheets !== info.sheets && innerWidth >= 640) { S.parentSheets = info.sheets; render(false); }
     if (info.sheets < 2) return;
     var parsed = new DOMParser().parseFromString('<!doctype html>' + info.html, 'text/html');
     all('script,iframe,video source', parsed).forEach(function (n) { n.remove(); });
@@ -629,7 +677,7 @@
     var base = parsed.querySelector('base') || parsed.head.insertBefore(parsed.createElement('base'), parsed.head.firstChild);
     base.href = new URL(document.baseURI).href;
     var site = parsed.querySelector('.site'), dw = parsed.getElementById('dwg'), ft = parsed.getElementById('dwg-foot'); if (ft) ft.remove();
-    all('.dwg-col,.dwg-strip', parsed).forEach(function (n) { n.remove(); });
+    all('.dwg-col,.dwg-strip,.dwg-probes', parsed).forEach(function (n) { n.remove(); });
     var body = parsed.body, proto = [site, dw]; proto.forEach(function (n) { n.remove(); });
     var win = 1;
     for (var sh = 2; sh <= info.sheets; sh++) {
@@ -639,7 +687,7 @@
         box_.appendChild(d.importNode(site, true)); box_.appendChild(d.importNode(dw, true)); b.appendChild(box_);
       }
       win += 2;
-      var st = d.createElement('div'); st.className = 'dwg-stamp'; st.innerHTML = 'DWG NO. DH-001 · REV ' + esc(REV) + ' · ' + esc(pageTitle()).toUpperCase() + ' · SCALE ' + fmt(info.s) + ':1 · SHEET ' + sh + ' OF ' + info.sheets; b.appendChild(st);
+      var st = d.createElement('div'); st.className = 'dwg-stamp'; st.innerHTML = 'DWG NO. DH-001/' + pageNo() + ' · REV ' + esc(REV) + ' · ' + esc(pageTitle()).toUpperCase() + ' · SCALE ' + fmt(info.s) + ':1 · SHEET ' + sh + ' OF ' + info.sheets; b.appendChild(st);
       var fr = document.createElement('iframe'); fr.className = 'dwg-printframe'; fr.title = 'Print sheet ' + sh; fr.tabIndex = -1; fr.setAttribute('aria-hidden', 'true');
       fr.srcdoc = '<!doctype html>' + d.documentElement.outerHTML;
       document.body.appendChild(fr); S.extras.push(fr);

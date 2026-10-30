@@ -729,7 +729,7 @@
   // Drawing mode: a switch in the header and the D key. drawing.js and drawing.css load on first use, not before.
   (function () {
     var head = document.querySelector('.site-head'); if (!head) return;
-    var b = el('button', 'draw-t', '<span class="draw-t__tease">see how this page is built</span><span>Drawing</span><i aria-hidden="true"></i><kbd>D</kbd>'); b.type = 'button'; b.id = 'draw-toggle'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-keyshortcuts', 'd'); b.title = 'Drawing mode (D)';
+    var b = el('button', 'draw-t', '<span class="draw-t__tease">see how this page is built</span><span class="draw-t__tease2">see specs</span><span>Drawing</span><i aria-hidden="true"></i><kbd>D</kbd>'); b.type = 'button'; b.id = 'draw-toggle'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-keyshortcuts', 'd'); b.setAttribute('aria-label', 'Drawing mode: redraws this page as a dimensioned engineering sheet'); b.title = 'Drawing mode (D)';
     head.appendChild(b);
     var want = false, loading = false, sheet = window.parent !== window && location.hash === '#dwg-sheet';   // the print frame drawing.js opens
     function apply() { var d = window.__drawing; if (d) { if (want) d.on(); else d.off(); } }
@@ -746,7 +746,7 @@
       document.head.appendChild(l); document.head.appendChild(s);
     }
     b.addEventListener('click', toggle);
-    window.__dwgSheet = sheet;
+    window.__dwgSheet = sheet; window.__dwgPages = INDEX.concat(LAB);
     if (sheet || location.hash === '#drawing') toggle();
     document.addEventListener('keydown', function (e) {
       if ((e.key !== 'd' && e.key !== 'D') || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;

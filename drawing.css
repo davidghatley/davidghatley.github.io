@@ -1,17 +1,17 @@
 /* Drawing mode. Loaded with drawing.js on the first toggle; every rule is scoped to html[data-drawing] or to overlay parts.
    The page is redrawn, not dimmed: pictures become X-box slots, fills become outlines, type goes to one ink, and the
    linework sits on top at full strength. Sheet conventions after dimensional-drawing by Enes Ozturk (MIT). */
-html[data-drawing] { --dwg-type: color-mix(in srgb, var(--ink) 58%, var(--paper)); }
+html[data-drawing] { --dwg-type: color-mix(in srgb, var(--ink) 42%, var(--paper)); }
 html[data-drawing] .acc { --accent: var(--ink) !important; --acc-l: var(--ink) !important; --acc-d: var(--ink) !important; }
 html[data-drawing] .field { visibility: hidden; }
-html[data-drawing] .totop { bottom: 40px; }
+html[data-drawing] .totop { display: none !important; }
 html[data-drawing] main *, html[data-drawing] .site-foot, html[data-drawing] .site-foot *, html[data-drawing] .site-home, html[data-drawing] .site-home * {
   color: var(--dwg-type) !important; background: transparent !important; box-shadow: none !important; text-shadow: none !important; filter: none !important;
   border-color: var(--dwg-type) !important; animation: none !important; transition: none !important; }
 html[data-drawing] main img, html[data-drawing] main video, html[data-drawing] main canvas { visibility: hidden !important; }
-html[data-drawing] main .glyph, html[data-drawing] .ss-lockup__mark { color: var(--ink) !important; }
+html[data-drawing] main .glyph, html[data-drawing] .ss-lockup__mark { color: var(--dwg-type) !important; }
 html[data-drawing] .case-bar { background: var(--paper) !important; }
-html[data-drawing] main .cmp-h { background: var(--ink) !important; }
+html[data-drawing] main .cmp-h { visibility: hidden !important; }
 html[data-drawing] main svg:not(.glyph):not(.parrow):not(.unm) * { fill: none !important; stroke: var(--dwg-type) !important; stroke-width: 1px !important; vector-effect: non-scaling-stroke; }
 .dwg-probes { position: absolute; left: 0; top: 0; width: 0; height: 0; visibility: hidden; pointer-events: none; }
 .dwg-probes i { position: absolute; left: 0; top: 0; height: 1px; display: block; }
@@ -19,18 +19,28 @@ html[data-drawing] main svg:not(.glyph):not(.parrow):not(.unm) * { fill: none !i
 
 #dwg { position: absolute; left: 0; top: 0; z-index: 4; pointer-events: none; overflow: clip; color: var(--cobalt-text); }
 .dwg-svg { position: absolute; left: 0; top: 0; display: block; overflow: visible; }
-.dwg-gl { stroke: var(--cobalt-text); stroke-width: .5; opacity: .32; }
-.dwg-f rect { fill: none; stroke: var(--ink); stroke-width: 1; }
+.dwg-gl { stroke: var(--ink); stroke-width: .5; opacity: .14; }
+.dwg-f rect { fill: none; stroke: var(--ink); stroke-width: 2.5; }
 .dwg-e { stroke: var(--cobalt-text); stroke-width: .75; opacity: .65; }
 .dwg-m { stroke: var(--cobalt-text); stroke-width: 1; }
 .dwg-a { fill: var(--cobalt-text); }
-.dwg-oo { fill: none; stroke: var(--ink); stroke-width: 1.5; }
-.dwg-ot { fill: none; stroke: var(--ink); stroke-width: .75; }
-.dwg-sl { fill: none; stroke: var(--ink); stroke-width: 1.25; }
-.dwg-sx { stroke: var(--ink); stroke-width: .6; }
+.dwg-oo { fill: none; stroke: var(--ink); stroke-width: 2.5; }
+.dwg-ot { fill: none; stroke: var(--dwg-type); stroke-width: .5; }
+.dwg-sl { fill: none; stroke: var(--dwg-type); stroke-width: 1; }
+.dwg-sx { stroke: var(--dwg-type); stroke-width: .5; }
+.dwg-lead { stroke: var(--vermilion-text); stroke-width: .75; }
+.dwg-cutl { stroke: var(--ink); stroke-width: 2.5; }
+.dwg-cut .dwg-a { fill: var(--ink); }
 .dwg-ref circle { fill: none; stroke: var(--vermilion-text); stroke-width: 1; stroke-dasharray: 3 3; }
 .dwg-labels { position: absolute; inset: 0; }
 .dwg-l { position: absolute; display: block; height: 12px; box-sizing: border-box; text-align: center; font: 500 11px/12px var(--font-mono); letter-spacing: 0; color: var(--cobalt-text); background: var(--paper); white-space: nowrap; overflow: hidden; pointer-events: auto; cursor: default; }
+.dwg-tag { position: absolute; display: block; width: 18px; height: 18px; box-sizing: border-box; border: 1.5px solid var(--vermilion-text); background: var(--paper); color: var(--vermilion-text); font: 600 12px/15px var(--font-mono); text-align: center; pointer-events: auto; cursor: default; }
+.dwg-tag.is-hot { background: var(--vermilion-text); color: var(--paper); }
+.dwg-ref.is-hot circle { stroke-width: 2.5; stroke-dasharray: none; }
+.dwg-ref.is-hot .dwg-lead { stroke-width: 1.5; }
+.dwg-det.is-hot .dwg-ring { stroke-width: 2.5; stroke-dasharray: none; }
+.dwg-tag--fig { left: 0; top: 0; z-index: 1; }
+.dwg-tag--view { position: static; flex: none; width: 24px; height: 24px; border-color: var(--ink); color: var(--ink); font: 400 16px/21px var(--font-pixel); }
 .dwg-l--ref { color: var(--vermilion-text); font-weight: 600; pointer-events: none; }
 .dwg-l--slot { font-size: 9px; letter-spacing: .4px; color: var(--ink); pointer-events: none; }
 .dwg-l--w { font-size: 9px; letter-spacing: .4px; color: var(--ink-muted); pointer-events: none; }
@@ -64,11 +74,14 @@ html[data-dwg-anim] .dwg-ref circle { stroke-dasharray: none; stroke-dashoffset:
 .dwg-tbl thead th { font-size: 9px; letter-spacing: .4px; color: var(--ink-muted); }
 .dwg-tbl tbody th { color: var(--cobalt-text); font-weight: 500; }
 .dwg-tbl th:first-child { width: 36px; }
-.dwg-tbl td:last-child, .dwg-tbl th:last-child { width: 52px; text-align: right; }
-.dwg-tbl tbody td:nth-child(2) { white-space: normal; line-height: 14px; }
+.dwg-tbl th, .dwg-tbl td { box-sizing: border-box; }
+.dwg-tbl td:last-child, .dwg-tbl thead th:last-child { width: 56px; text-align: right; }
+.dwg-tbl td:nth-child(3), .dwg-tbl thead th:nth-child(3) { width: 26px; text-align: right; padding: 0 3px; }
+.dwg-tbl td:nth-child(2) { padding-right: 2px; }
 .dwg-tbl tbody tr { cursor: default; }
 .dwg-tbl tbody tr:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
-.dwg-det { margin: 0 0 12px; }
+.dwg-det { position: relative; margin: 0 0 12px; pointer-events: auto; }
+.dwg-col--l .dwg-det { position: absolute; left: 0; margin: 0; }
 .dwg-dsvg { display: block; width: 100%; max-width: 152px; height: auto; }
 .dwg-det figcaption, .dwg-axof figcaption { margin-top: 4px; font: 400 10px/12px var(--font-mono); color: var(--ink-muted); }
 .dwg-det figcaption b, .dwg-axof figcaption b { display: block; font-weight: 500; color: var(--ink); letter-spacing: .4px; }
@@ -86,47 +99,71 @@ html[data-dwg-anim] .dwg-ref circle { stroke-dasharray: none; stroke-dashoffset:
 .dwg-notes li { margin: 0 0 4px; }
 .dwg-credit { margin: 8px 0 0; color: var(--ink-muted); }
 
-/* the exploded view */
-.dwg-axof { margin: 16px 0 0; }
-.dwg-axo { display: block; width: 100%; height: auto; }
+/* the views: lettered, captioned, part of the sheet */
+.dwg-v1, .dwg-view figcaption { display: flex; gap: 8px; align-items: flex-start; margin: 8px 0 0; font: 400 10px/12px var(--font-mono); color: var(--ink-muted); }
+.dwg-v1 b, .dwg-view figcaption b { display: block; font-weight: 500; font-size: 12px; line-height: 12px; letter-spacing: .6px; color: var(--ink); }
+.dwg-v1 > span:last-child > span, .dwg-view figcaption > span:last-child > span { display: block; }
+.dwg-view { margin: 16px 0 0; }
+.dwg-views { display: grid; grid-template-columns: 1fr; gap: 16px; }
+.dwg-views__m, .dwg-views__s { min-width: 0; }
+.dwg-axo, .dwg-sec { display: block; width: 100%; height: auto; }
 .dwg-axo rect, .dwg-axo line { vector-effect: non-scaling-stroke; }
-.dwg-ax-plate { fill: var(--paper); fill-opacity: .9; stroke: var(--ink); stroke-width: 1.25; }
+.dwg-hatch { stroke: var(--ink-muted); stroke-width: .5; opacity: .5; }
+.dwg-sec-o { fill: var(--paper); stroke: var(--ink); stroke-width: 1.75; }
+.dwg-sec-i { fill: var(--paper); stroke: var(--ink); stroke-width: .5; }
+.dwg-ax-plate { fill: var(--paper); stroke: var(--ink); stroke-width: 1.5; }
 .dwg-ax-f { fill: var(--ink); opacity: .2; }
 .dwg-ax-f2 { fill: var(--ink); opacity: .07; }
 .dwg-ax-col { fill: none; stroke: var(--cobalt-text); stroke-width: .5; opacity: .6; }
 .dwg-ax-t { fill: var(--ink); opacity: .55; }
-.dwg-ax-b { fill: var(--paper); fill-opacity: .8; stroke: var(--ink); stroke-width: 1.25; }
-.dwg-ax-s { fill: var(--paper); fill-opacity: .85; stroke: var(--ink); stroke-width: 1; }
+.dwg-ax-b { fill: none; stroke: var(--ink); stroke-width: 1.75; }
+.dwg-ax-s { fill: none; stroke: var(--ink); stroke-width: 1; }
 .dwg-ax-x { stroke: var(--ink); stroke-width: .5; }
 .dwg-ax-o { fill: none; stroke: var(--cobalt-text); stroke-width: .75; stroke-dasharray: 6 4; }
-.dwg-ax-d { stroke: var(--cobalt-text); stroke-width: .9; }
-.dwg-ax-c { stroke: var(--ink-muted); stroke-width: .6; stroke-dasharray: 14 3 2 3; }
+.dwg-ax-d { stroke: var(--cobalt-text); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.dwg-ax-c { stroke: var(--ink-muted); stroke-width: .5; stroke-dasharray: 14 3 2 3; }
 .dwg-ax-lead { fill: none; stroke: var(--ink); stroke-width: .6; }
 .dwg-ax-dot { fill: var(--ink); }
 .dwg-ax-n { font: 500 11px var(--font-mono); letter-spacing: .6px; fill: var(--ink); }
 .dwg-ax-u { font: 400 9px var(--font-mono); letter-spacing: .3px; fill: var(--ink-muted); }
 
-/* rails: a full-height column in each margin, with a sticky, scrollable panel inside */
+/* the legend: a sticky panel in the right margin; details sit in the left margin at their targets */
 .dwg-col { position: absolute; top: 0; bottom: 0; }
 .dwg-col[hidden] { display: none; }
-.dwg-col--l { left: 16px; }
+.dwg-col--l { left: 16px; width: 0; }
 .dwg-col--r { right: 12px; }
 .dwg-rail { position: sticky; top: 16px; margin-top: 32px; max-height: calc(100vh - 32px); overflow-y: auto; box-sizing: border-box; pointer-events: auto; scrollbar-width: thin; scrollbar-color: var(--ink-muted) transparent; }
 .dwg-more { position: sticky; bottom: 0; padding: 12px 0 2px; text-align: right; font: 500 10px/12px var(--font-mono); color: var(--cobalt-text); background: linear-gradient(transparent, var(--paper) 55%); pointer-events: none; }
 .dwg-more[hidden] { display: none; }
+.dwg-rt .dwg-tb { grid-template-columns: repeat(3, 1fr); border-radius: 8px; }
+.dwg-rt .dwg-tb__t { padding: 3px 6px 2px; }
+.dwg-rt .dwg-tb__n { font-size: 16px; line-height: 20px; }
+.dwg-rt .dwg-tb__c { padding: 1px 4px 2px; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.dwg-rt .dwg-tb__c:nth-child(3n+1) { border-right: 0; }
+.dwg-rt .dwg-tb__c:nth-last-child(-n+3) { border-bottom: 0; }
+.dwg-rt .dwg-v { font-size: 11px; line-height: 14px; white-space: nowrap; overflow: hidden; }
+.dwg-rt .dwg-k { font-size: 8px; line-height: 10px; }
+.dwg-jump { margin: 6px 0 0; font: 500 10px/12px var(--font-mono); display: flex; gap: 12px; }
+.dwg-jump a { color: var(--cobalt-text); }
+.dwg-rail .dwg-tbl { margin-top: 6px; font-size: 10px; }
+.dwg-rail .dwg-tbl caption { font-size: 16px; line-height: 16px; padding-bottom: 2px; }
+.dwg-rail .dwg-tbl thead { display: none; }
+.dwg-flag { margin: 6px 0 0; font: 400 10px/12px var(--font-mono); color: var(--vermilion-text); }
 
-/* foot: a real section below the page, so nothing above it moves */
-.dwg-foot { box-sizing: border-box; padding: 16px 0 48px; }
-.dwg-foot__g { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 16px; }
-.dwg-foot__d { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+/* the rest of the sheet: a real section below the page, so nothing above it moves */
+.dwg-foot { box-sizing: border-box; padding: 16px 0 24px; position: relative; z-index: 5; }
+.dwg-foot > .dwg-tb { margin-top: 16px; }
+.dwg-foot__d { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 8px; }
 .dwg-tables { min-width: 0; }
-.dwg-foot .dwg-tables { display: grid; grid-template-columns: 1fr; gap: 0 16px; align-items: start; }
+.dwg-foot .dwg-tables { margin-top: 12px; columns: 1; column-gap: 16px; }
+.dwg-foot .dwg-tbl { break-inside: avoid; }
+.dwg-foot .dwg-flag { break-inside: avoid; }
 @media (min-width: 640px) {
-  .dwg-foot .dwg-tb { grid-template-columns: repeat(6, 1fr); }
-  .dwg-foot .dwg-tb__c { border-bottom: 0; border-right: 1px solid var(--ink); }
-  .dwg-foot .dwg-tb__c:last-child { border-right: 0; }
-  .dwg-foot__g { grid-template-columns: 1fr 1fr; }
-  .dwg-foot .dwg-tables { grid-template-columns: 1fr 1fr; }
+  .dwg-foot > .dwg-tb { grid-template-columns: repeat(6, 1fr); }
+  .dwg-foot > .dwg-tb .dwg-tb__c { border-bottom: 0; border-right: 1px solid var(--ink); }
+  .dwg-foot > .dwg-tb .dwg-tb__c:last-child { border-right: 0; }
+  .dwg-views { grid-template-columns: 3fr 2fr; align-items: start; }
+  .dwg-foot .dwg-tables { columns: 2; }
 }
 .dwg-strip { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: flex; flex-wrap: nowrap; gap: 12px; align-items: center; height: 24px; padding: 0 8px; box-sizing: border-box; background: var(--paper); border-top: 1px solid var(--ink); font: 500 10px/12px var(--font-mono); letter-spacing: .3px; color: var(--ink); white-space: nowrap; overflow: hidden; }
 .dwg-strip[hidden] { display: none; }
@@ -145,15 +182,16 @@ html[data-dwg-plan] body::after { content: ""; position: absolute; inset: 0; bor
 html[data-dwg-plan]:not([data-dwg-measure]) .site { transform-origin: var(--dwg-ox) 0; transform: translate(var(--dwg-tx), var(--dwg-ty, 0)) scale(var(--dwg-s)); }
 html[data-dwg-plan]:not([data-dwg-measure]) #dwg { transform-origin: 0 0; transform: translate(var(--dwg-tx), var(--dwg-ty, 0)) scale(var(--dwg-s)); }
 html[data-dwg-plan] .dwg-f { display: none; }
-html[data-dwg-plan] .dwg-foot { position: absolute; top: 12px; z-index: 6; width: 764px; height: 1022px; margin: 0; padding: 0 12px; box-sizing: border-box; border-left: 1px solid var(--ink); background: #fff; overflow: hidden; }
-html[data-dwg-plan] .dwg-foot .dwg-tb { grid-template-columns: repeat(6, 1fr); }
-html[data-dwg-plan] .dwg-foot .dwg-tb__t { grid-column: 1 / -1; padding-bottom: 2px; }
-html[data-dwg-plan] .dwg-foot .dwg-tb__c { border-bottom: 0; border-right: 1px solid var(--ink); }
-html[data-dwg-plan] .dwg-foot .dwg-tb__c:last-child { border-right: 0; }
-html[data-dwg-plan] .dwg-axof { margin-top: 8px; }
-html[data-dwg-plan] .dwg-axo { width: 46%; margin: 0 auto; }
-html[data-dwg-plan] .dwg-foot__g { grid-template-columns: 324px 1fr; margin-top: 8px; }
-html[data-dwg-plan] .dwg-foot .dwg-tables { display: block; columns: 3; column-gap: 16px; }
+html[data-dwg-plan] .dwg-foot { position: absolute; top: 12px; z-index: 6; height: 1022px; margin: 0; padding: 0 12px; box-sizing: border-box; border-left: 2px solid var(--ink); background: #fff; overflow: hidden; display: flex; flex-direction: column; }
+html[data-dwg-plan] .dwg-v1 { margin: 0; }
+html[data-dwg-plan] .dwg-views { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: start; gap: 12px; margin-top: 4px; }
+html[data-dwg-plan] .dwg-view { margin-top: 6px; }
+html[data-dwg-plan] .dwg-axo { max-height: 430px; }
+html[data-dwg-plan] .dwg-foot .dwg-tables { columns: 3; margin-top: 8px; flex: 1 1 auto; min-height: 0; }
+html[data-dwg-plan] .dwg-foot > .dwg-tb { grid-template-columns: repeat(6, 1fr); margin-top: 6px; flex: none; }
+html[data-dwg-plan] .dwg-foot > .dwg-tb .dwg-tb__c { border-bottom: 0; border-right: 1px solid var(--ink); }
+html[data-dwg-plan] .dwg-foot > .dwg-tb .dwg-tb__c:last-child { border-right: 0; }
+html[data-dwg-plan] .dwg-foot > .dwg-tb .dwg-tb__t { padding-bottom: 2px; }
 .dwg-win { position: absolute; top: 12px; width: 738px; height: 1022px; overflow: hidden; }
 .dwg-win + .dwg-win { border-left: 1px solid var(--ink); }
 .dwg-win .site { position: relative; }
