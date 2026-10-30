@@ -301,10 +301,10 @@ def main():
 
     fonts_og()
 
-    # drawing.js: REV is the last commit that changed the source. Generated copies and this line itself don't count, so
+    # drawing.js: REV is the last commit that changed the source. Generated copies and the stamp commits themselves don't count, so
     # committing a build leaves the tree clean and building again writes nothing.
     try:
-        rev = subprocess.run(['git', 'log', '-1', '--format=%h', '--abbrev=7', '--', '.', ':!review', ':!dive', ':!drawing.js'],
+        rev = subprocess.run(['git', 'log', '-1', '--format=%h', '--abbrev=7', '--invert-grep', '--grep=^Stamp REV', '--', '.', ':!review', ':!dive'],
                              cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
         rev = ''
