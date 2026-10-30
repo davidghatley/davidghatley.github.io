@@ -559,7 +559,12 @@
     var h = el('h1', 'dos__h' + (String(p.title).split(' ').some(function (wd) { return wd.length > 6; }) ? ' dos__h--long' : '') + (String(p.title).split(' ').some(function (wd) { return wd.length > 9; }) ? ' dos__h--xl' : ''));   // a long word steps down to 32 so it never breaks mid-word
     h.appendChild(el('span', 'sr-only', esc(p.title)));
     var tt = el('span', 'tt'); tt.setAttribute('aria-hidden', 'true');
-    Array.from(String(p.title)).forEach(function (c) { var q = el('span', 'ch'); q.textContent = c; tt.appendChild(q); });
+    // words hold together; dosHold below keeps each character's box at its final width, so the step moves nothing
+    String(p.title).split(/( )/).forEach(function (wd) {
+      if (!wd) return;
+      if (wd === ' ') { var sp = el('span', 'ch'); sp.textContent = ' '; tt.appendChild(sp); return; }
+      var wr = el('span', 'w'); Array.from(wd).forEach(function (c) { var q = el('span', 'ch'); q.textContent = c; wr.appendChild(q); }); tt.appendChild(wr);
+    });
     h.appendChild(tt); id.appendChild(h); s.appendChild(id);
     var dr = function (n, on) { if (on) n.setAttribute('data-draft', 'true'); return n; };
     s.appendChild(dr(el('p', 'dos__result', esc(p.result || p.oneliner)), p.result_draft));
@@ -601,10 +606,31 @@
     s.appendChild(el('p', 'dos__built', [p.when].concat(p.built_with || []).filter(Boolean).map(function (b) { return '<span>' + esc(b) + '</span>'; }).join(' · ')));
     d.appendChild(s); d.appendChild(w);
     // the signature moment: the glyph builds cell by cell (CSS), then the title steps into the project's own face
-    var cs = [].slice.call(tt.children), k = 0;
+    var cs = [].slice.call(tt.querySelectorAll('.ch')), k = 0;
     if (REDUCED) cs.forEach(function (c) { c.classList.add('ch--on'); });
-    else setTimeout(function step() { if (k < cs.length) { cs[k++].classList.add('ch--on'); setTimeout(step, 70); } }, 70 * (g.childNodes.length + 2));
+    else {
+      dosHold(h, cs);
+      setTimeout(function step() { if (k < cs.length) { cs[k++].classList.add('ch--on'); setTimeout(step, 70); } else cs.forEach(function (c) { c.style.width = ''; }); }, 70 * (g.childNodes.length + 2));
+    }
     return d;
+  }
+
+  // once the title is on the page and its face has loaded, pin each character to its width in that face
+  function dosHold(h, cs) {
+    function pin() {
+      if (!h.isConnected) return requestAnimationFrame(pin);
+      var was = cs.map(function (c) { return c.classList.contains('ch--on'); });
+      cs[0].classList.add('ch--on'); var f = getComputedStyle(cs[0]); var spec = f.fontWeight + ' ' + f.fontSize + ' ' + f.fontFamily; cs[0].classList.toggle('ch--on', was[0]);
+      var go = function () {
+        cs.forEach(function (c) { c.classList.add('ch--on'); });
+        var ws = cs.map(function (c) { return c.getBoundingClientRect().width; });
+        cs.forEach(function (c, i) { c.classList.toggle('ch--on', was[i]); c.style.width = ws[i] + 'px'; });
+      };
+      var done = false, once = function () { if (!done) { done = true; go(); } };
+      if (document.fonts && document.fonts.load) document.fonts.load(spec, 'a').then(once, once);
+      setTimeout(once, 500);
+    }
+    pin();
   }
 
   function order(ps, p) {
@@ -700,6 +726,31 @@
       });
     });
   }
+  // Drawing mode: a switch in the header and the D key. drawing.js and drawing.css load on first use, not before.
+  (function () {
+    var head = document.querySelector('.site-head'); if (!head) return;
+    var b = el('button', 'draw-t', '<span>Drawing</span><i aria-hidden="true"></i>'); b.type = 'button'; b.id = 'draw-toggle'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-keyshortcuts', 'd'); b.title = 'Drawing mode (D)';
+    head.appendChild(b);
+    var want = false, loading = false;
+    function apply() { var d = window.__drawing; if (d) { if (want) d.on(); else d.off(); } }
+    function toggle() {
+      want = !want; b.setAttribute('aria-pressed', want ? 'true' : 'false');
+      if (window.__drawing) return apply();
+      if (loading) return; loading = true;
+      var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'drawing.css';
+      var s = document.createElement('script'); s.src = 'drawing.js';
+      var n = 2; function ready() { if (!--n) apply(); }
+      l.onload = l.onerror = ready; s.onload = ready; s.onerror = function () { loading = false; want = false; b.setAttribute('aria-pressed', 'false'); };
+      document.head.appendChild(l); document.head.appendChild(s);
+    }
+    b.addEventListener('click', toggle);
+    if (window.parent !== window && location.hash === '#dwg-sheet') toggle();   // the print frame drawing.js opens
+    document.addEventListener('keydown', function (e) {
+      if ((e.key !== 'd' && e.key !== 'D') || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+      var t = e.target; if (t && t.closest && t.closest('input,textarea,select,[contenteditable],[role=textbox]')) return;
+      toggle();
+    });
+  })();
   if (window.PAGE === 'case') casePage(); else if (window.PAGE !== 'lab') { home(); background(); }
   field();
   if (/[?&]grid=1\b/.test(location.search)) gridOverlay();
