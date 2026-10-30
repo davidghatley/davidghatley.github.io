@@ -4,9 +4,9 @@
    adapted from dimensional-drawing by Enes Ozturk (MIT): https://github.com/enesozturk/dimensional-drawing.
    Copyright (c) 2026 Enes Ozturk. The measuring engine and the site's inks are this site's own. */
 (function () {
-  var REV = '0d5ddd2'; // build.py: git rev
+  var REV = '84e5cf7'; // build.py: git rev
   var NS = 'http://www.w3.org/2000/svg', root = document.documentElement;
-  var LABEL_H = 12, CH = 6.6, PW = 1512, PH = 1046, PANEL = 640, PAD = 76, S2 = 738 / (944 + 152);
+  var LABEL_H = 12, CH = 6.6, PW = 1512, PH = 1046, PANEL = 640, PAD = 76, TB = 96, S2 = 738 / (944 + 152);
   var S = { on: false, dims: [], lazy: [], extras: [], held: [], vids: [] };
   var over, svg, labels, foot, strip, probes, pageStyle, colL, colR, railR, gridHost, legend, stage, occ, nativeRAF;
 
@@ -504,13 +504,14 @@
   }
   function sheetCount() { return S.sheet ? S.sheets : (S.parentSheets || (S.W >= 1024 ? planFor(S.H, S.R - S.L).sheets : 1)); }
   function planFor(H, w) { // sheet 1 carries the plan large beside the data; the rest of the page runs on two windows a sheet
-    var s1 = S.forceS || (PW - PANEL - 16) / (w + 2 * PAD), s2 = Math.min(S2, 738 / (w + 2 * PAD)), crop = (PH - 24) / s1, crop2 = (PH - 24 - 38) / s2;
+    // one scale on every sheet: the one two windows fit at. A page that fits one sheet alone may go larger.
+    var s2 = Math.min(S2, 738 / (w + 2 * PAD)), top = (PW - PANEL - 16) / (w + 2 * PAD), one = Math.min(top, (PH - 24) / H), s1 = one > s2 ? one : s2, crop = (PH - 24) / s1, crop2 = (PH - 24 - TB) / s2;
     return { sc: s1, s2: s2, crop: crop, crop2: crop2, sheets: H <= crop + 1 ? 1 : 1 + Math.ceil(Math.ceil((H - crop) / crop2) / 2) };
   }
-  function titleBlock() {
+  function titleBlock(n) {
     function cell(k, val) { return '<div class="dwg-tb__c"><span class="dwg-k">' + k + '</span><span class="dwg-v">' + val + '</span></div>'; }
     return '<div class="dwg-tb"><div class="dwg-tb__t"><span class="dwg-k">PORTFOLIO · DIMENSIONAL DRAWING</span><b class="dwg-tb__n">' + esc(pageTitle()) + '</b></div>'
-      + cell('DWG NO.', 'DH-001/' + pageNo()) + cell('REV', esc(REV)) + cell('SCALE', S.sheet ? fmt(S.printScale) + ':1' : '1:1') + cell('UNITS', 'CSS PX') + cell('SHEETS', sheetCount()) + cell('WIDTH', S.sheet ? PW : innerWidth) + '</div>';
+      + cell('DWG NO.', 'DH-001/' + pageNo()) + cell('REV', esc(REV)) + cell('SCALE', S.sheet ? fmt(S.printScale) + ':1' : '1:1') + cell('UNITS', 'CSS PX') + cell('SHEETS', S.sheet ? (n || 1) + ' OF ' + S.sheets : sheetCount()) + cell('WIDTH', S.sheet ? PW : innerWidth) + '</div>';
   }
   function conformance() {
     var blocks = all('main *').filter(function (e) { return visible(e) && !e.matches(SKIP) && /block|flex|grid|list-item/.test(cs(e).display) && !e.closest('svg'); });
@@ -531,7 +532,7 @@
       + (heroName() ? '<li>' + heroName() + ' IS DRAWN IN FULL, TYPE INCLUDED.</li>' : '')
       + (S.shift ? '<li>PLAN SHIFTED ' + fmt(S.shift) + ' LEFT IN THE FRAME TO FIT THE SHEET. M IS ' + fmt(px(cs(document.querySelector('.site')).marginLeft)) + ' ON THE PAGE; NOTHING REFLOWS.</li>' : '')
       + '<li>REV IS THE LAST COMMIT THAT CHANGED THE SOURCE.</li>'
-      + (S.sheet ? '<li>PLAN AT ' + fmt(S.printScale) + ':1 ON THIS SHEET' + (S.sheets > 1 ? ', ' + fmt(S.s2) + ':1 ON THE OTHER ' + (S.sheets - 1) + '.' : '.') + '</li>' : (sheetCount() > 1 ? '<li>PRINTS ON ' + sheetCount() + ' A3 SHEETS.</li>' : '<li>PRINTS ON ONE A3 SHEET.</li>'))
+      + (S.sheet ? '<li>PLAN AT ' + fmt(S.printScale) + ':1 ON ' + (S.sheets > 1 ? 'EVERY SHEET.' : 'THIS SHEET.') + '</li>' : (sheetCount() > 1 ? '<li>PRINTS ON ' + sheetCount() + ' A3 SHEETS.</li>' : '<li>PRINTS ON ONE A3 SHEET.</li>'))
       + '</ol><p class="dwg-credit">DRAWING STYLE AFTER DIMENSIONAL-DRAWING, E. OZTURK (MIT).</p></div>';
   }
   function natural(a, b) { return String(a).localeCompare(String(b), 'en', { numeric: true }); }
@@ -659,11 +660,6 @@
     S.dims.push({ code: 'CELL', value: +fmt(dB.w), prop: 'width', el: dB.el, labelEl: dB.label, group: 'GRID', role: 'glyph cell' });
     S.dims.push({ code: 'B', value: +fmt(bPx), prop: 'width', el: probes.b, labelEl: dB.labelB, group: 'GRID', role: 'baseline' });
 
-    if (S.sheet && S.fitH !== S.H) { // sheet 1's scale: the largest whose window ends on a clean break and stays full
-      S.fitH = S.H; var pw = S.R - S.L, top = (PW - PANEL - 16) / (pw + 2 * PAD), best = top, bestF = 0;
-      for (var sc_ = top; sc_ >= S2 - .001; sc_ -= .01) { var cr = (PH - 24) / sc_, f = Math.min(1, cutsFor(cr)[1] / cr); if (f > bestF + .02) { bestF = f; best = sc_; } }
-      S.forceS = best; root.removeAttribute('data-dwg-measure'); return render(false);
-    }
     if (S.sheet) { S.cuts = cutsFor(); S.sheets = S.cuts.length <= 2 ? 1 : 1 + Math.ceil((S.cuts.length - 2) / 2); root.style.setProperty('--dwg-clip', S.cuts[1] + 'px'); }
     var hdr = titleBlock(), ntx = notes(G), tbl = tables(G), figA = detailFig(dA), figB = detailFig(dB), ax = axo(G), sec = section(G);
     foot.innerHTML = '<p class="dwg-v1"><span class="dwg-tag dwg-tag--view">1</span><span><b>PLAN</b><span>' + (S.sheet ? 'THE LIVE PAGE AT LEFT, ' + fmt(S.printScale) : 'THE LIVE PAGE ABOVE, 1') + ':1.</span></span></p>';
@@ -681,8 +677,12 @@
     } else {
       var dd = h('div', 'dwg-foot__d', null, side); dd.appendChild(figA); dd.appendChild(figB);
       side.insertAdjacentHTML('beforeend', ntx);
-      if (sec) foot.appendChild(sec);
-      foot.insertAdjacentHTML('beforeend', '<div class="dwg-tables">' + tbl + '</div>' + hdr);
+      // an odd window count leaves half of the last sheet free: section and tables go there, and the exploded view takes the room here
+      var lone = S.sheet && S.sheets > 1 && S.cuts.length % 2 === 1;
+      S.side = lone ? (sec ? sec.outerHTML : '') + '<div class="dwg-tables">' + tbl + '</div>' : '';
+      vw.classList.toggle('dwg-views--stack', lone);
+      if (!lone && sec) foot.appendChild(sec);
+      foot.insertAdjacentHTML('beforeend', (lone ? '' : '<div class="dwg-tables">' + tbl + '</div>') + hdr);
       strip.innerHTML = '<span>DH-001/' + pageNo() + '</span><span>REV ' + esc(REV) + '</span>' + viewSwitch(!!sec, true) + '<button class="dwg-varb" type="button" aria-expanded="' + (S.legend ? 'true' : 'false') + '">VARIABLES ' + uniqAll() + '</button>';
       legend.hidden = !S.legend; legend.innerHTML = tbl;
       strip.querySelector('.dwg-varb').onclick = function () { S.legend = !S.legend; legend.hidden = !S.legend; this.setAttribute('aria-expanded', S.legend ? 'true' : 'false'); };
@@ -695,7 +695,8 @@
       frame(fh);
     }
     if (S.sheet) { // the title block must stay on the sheet: views give way until the panel fits
-      var fsec = foot.querySelector('.dwg-sec'), fax = foot.querySelector('.dwg-axo'), mh = 180, ma = 330;
+      var fsec = foot.querySelector('.dwg-sec'), fax = foot.querySelector('.dwg-axo'), mh = 180, ma = foot.querySelector('.dwg-views--stack') ? 600 : 330;
+      if (fax) fax.style.setProperty('max-height', ma + 'px', 'important');
       for (var fi = 0; fi < 12 && foot.scrollHeight > foot.clientHeight + 1; fi++) { mh = Math.max(84, mh - 16); ma = Math.max(210, ma - 16); if (fsec) fsec.style.maxHeight = mh + 'px'; if (fax) fax.style.setProperty('max-height', ma + 'px', 'important'); }
     }
     syncMore();
@@ -849,7 +850,7 @@
     }
     return cuts;
   }
-  function sheetInfo() { return { sheets: S.sheets, cuts: S.cuts, s: S.s2, left: S.left, html: root.outerHTML }; }
+  function sheetInfo() { var tbs = {}; for (var n = 2; n <= S.sheets; n++) tbs[n] = titleBlock(n); return { sheets: S.sheets, cuts: S.cuts, s: S.s2, left: S.left, html: root.outerHTML, tbs: tbs, side: S.side }; }
   function makeFrame() {
     if (window.parent !== window || innerWidth < 640 || S.frame) return; // phones print the sheet data alone
     var f = S.frame = document.createElement('iframe');
@@ -882,7 +883,8 @@
         box_.appendChild(d.importNode(site, true)); box_.appendChild(d.importNode(dw, true)); b.appendChild(box_);
       }
       win += 2;
-      var st = d.createElement('div'); st.className = 'dwg-stamp'; st.innerHTML = 'DWG NO. DH-001/' + pageNo() + ' · REV ' + esc(REV) + ' · ' + esc(pageTitle()).toUpperCase() + ' · SCALE ' + fmt(info.s) + ':1 · SHEET ' + sh + ' OF ' + info.sheets; b.appendChild(st);
+      if (sh === info.sheets && info.side) { var sd = d.createElement('div'); sd.className = 'dwg-side'; sd.innerHTML = info.side; b.appendChild(sd); }
+      var st = d.createElement('div'); st.className = 'dwg-stamp'; st.innerHTML = info.tbs[sh]; b.appendChild(st);
       var fr = document.createElement('iframe'); fr.className = 'dwg-printframe'; fr.title = 'Print sheet ' + sh; fr.tabIndex = -1; fr.setAttribute('aria-hidden', 'true');
       fr.srcdoc = '<!doctype html>' + d.documentElement.outerHTML;
       document.body.appendChild(fr); S.extras.push(fr);

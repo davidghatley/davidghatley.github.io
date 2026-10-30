@@ -202,7 +202,7 @@ html[data-dwg-anim] .dwg-ref circle { stroke-dasharray: none; stroke-dashoffset:
 html[data-dwg-plan] { --paper: #fff; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 html[data-dwg-plan], html[data-dwg-plan] body { height: 1046px; overflow: hidden; }
 html[data-dwg-plan] body { position: relative; }
-html[data-dwg-plan] body > :not(.site, #dwg, #dwg-foot, .dwg-win, .dwg-stamp) { display: none !important; }
+html[data-dwg-plan] body > :not(.site, #dwg, #dwg-foot, .dwg-win, .dwg-stamp, .dwg-side) { display: none !important; }
 html[data-dwg-plan] #draw-toggle, html[data-dwg-plan] .dwg-strip, html[data-dwg-plan] .dwg-col { display: none !important; }
 html[data-dwg-plan] body::after { content: ""; position: absolute; inset: 0; border: 2px solid var(--ink); z-index: 7; pointer-events: none; }
 html[data-dwg-plan]:not(.x) .site, html[data-dwg-plan]:not(.x) #dwg { clip-path: polygon(-9999px -9999px, 9999px -9999px, 9999px var(--dwg-clip, 99999px), -9999px var(--dwg-clip, 99999px)); }
@@ -223,7 +223,20 @@ html[data-dwg-plan] .dwg-foot > .dwg-tb .dwg-tb__t { padding-bottom: 2px; }
 .dwg-win { position: absolute; top: 12px; width: 738px; overflow: hidden; }
 .dwg-win + .dwg-win { border-left: 1px solid var(--ink); }
 .dwg-win .site { position: relative; }
-.dwg-stamp { position: absolute; right: 16px; bottom: 16px; z-index: 8; padding: 4px 8px; border: 1px solid var(--ink); background: #fff; font: 500 10px/12px var(--font-mono); color: var(--ink); }
+/* continuation sheets carry the same title block, bottom right, in the band planFor keeps clear of the windows */
+.dwg-stamp { position: absolute; right: 12px; bottom: 12px; width: 738px; z-index: 8; background: #fff; }
+.dwg-stamp .dwg-tb { grid-template-columns: repeat(6, 1fr); }
+.dwg-stamp .dwg-tb .dwg-tb__c { border-bottom: 0; border-right: 1px solid var(--ink); }
+.dwg-stamp .dwg-tb .dwg-tb__c:last-child { border-right: 0; }
+.dwg-stamp .dwg-tb__t { padding-bottom: 2px; }
+.dwg-stamp .dwg-tb__n { font-size: 24px; line-height: 28px; }
+.dwg-side { position: absolute; left: 762px; right: 12px; top: 12px; bottom: 108px; box-sizing: border-box; padding-left: 12px; border-left: 1px solid var(--ink); overflow: hidden; }
+.dwg-side .dwg-view { margin: 0; }
+.dwg-side .dwg-tables { columns: 3; column-gap: 16px; margin-top: 16px; }
+.dwg-side .dwg-tbl { break-inside: avoid; font: 400 10px/13px var(--font-mono); margin-top: 4px; }
+.dwg-side .dwg-tbl th, .dwg-side .dwg-tbl td { line-height: 13px; }
+.dwg-side .dwg-tbl caption { font-size: 16px; line-height: 16px; }
+.dwg-side .dwg-flag { break-inside: avoid; }
 @media print {
   html[data-drawing] .dwg-legend { display: none !important; }
   html[data-drawing]:not([data-dwg-plan]) { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -286,3 +299,6 @@ html[data-dwg-plan] .dwg-axo { max-height: 330px !important; }
 .dwg-ax-n--p { font-size: 34px; font-weight: 600; }
 .dwg-ax-u--p { font-size: 24px; }
 .dwg-ax-n--p, .dwg-ax-u--p { paint-order: stroke; stroke: var(--paper); stroke-width: 8px; }
+html[data-dwg-plan] .dwg-views--stack { grid-template-columns: minmax(0, 1fr) !important; }
+html[data-dwg-plan] .dwg-views--stack .dwg-views__s { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+.dwg-side .dwg-sec { max-height: 380px; }
