@@ -16,6 +16,7 @@ What it writes (all at the repo root, all committed; GitHub Pages still serves t
   sitemap.xml        the index, the font library, the lab and every case page
   robots.txt         keeps Disallow: /review/ and /dive/ and adds the Sitemap line
   site.js            the CASE_JS line (which projects ship previews/<slug>/case.js) and the LAB line (lab board order)
+  drawing.js         the REV line (short SHA of the last source commit) for the Drawing mode title block
   fonts/**/index.html  an absolute og:image when the generated page has none (fonts/ itself comes from
                      secret-sauce/tools/font/foundry/library.py; only this tag is added)
 
@@ -25,6 +26,7 @@ import html
 import json
 import pathlib
 import re
+import subprocess
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SITE = 'https://davidghatley.github.io/'
@@ -298,6 +300,17 @@ def main():
     write(ROOT / 'robots.txt', 'User-agent: *\nDisallow: /review/\nDisallow: /dive/\n\nSitemap: %ssitemap.xml\n' % SITE)
 
     fonts_og()
+
+    # drawing.js: REV is the last commit that changed the source. Generated copies and the stamp commits themselves don't count, so
+    # committing a build leaves the tree clean and building again writes nothing.
+    try:
+        rev = subprocess.run(['git', 'log', '-1', '--format=%h', '--abbrev=7', '--invert-grep', '--grep=^Stamp REV', '--', '.', ':!review', ':!dive'],
+                             cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        rev = ''
+    dj = ROOT / 'drawing.js'
+    if rev and dj.exists():
+        write(dj, re.sub(r"var REV = '[^']*'; // build\.py: git rev", lambda m: "var REV = '%s'; // build.py: git rev" % rev, dj.read_text(), count=1))
 
 
 if __name__ == '__main__':
