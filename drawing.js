@@ -4,7 +4,7 @@
    adapted from dimensional-drawing by Enes Ozturk (MIT): https://github.com/enesozturk/dimensional-drawing.
    Copyright (c) 2026 Enes Ozturk. The measuring engine and the site's inks are this site's own. */
 (function () {
-  var REV = '97138bb'; // build.py: git rev
+  var REV = '4222bfa'; // build.py: git rev
   var NS = 'http://www.w3.org/2000/svg', root = document.documentElement;
   var LABEL_H = 12, CH = 6.6, PW = 1512, PH = 1046, PANEL = 640, PAD = 76, TB = 96, S2 = 738 / (944 + 152);
   var S = { on: false, dims: [], lazy: [], extras: [], held: [], vids: [] };

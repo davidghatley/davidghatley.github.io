@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const SKILL = "/home/davidhatley/.claude/skills/anatomy";
+const SKILL = process.env.ANATOMY_SKILL || `${process.env.HOME}/.claude/skills/anatomy`;
 const k = await import(`${SKILL}/kit/iso-kit.mjs`);
 const G = await import(`${SKILL}/kit/lathe.mjs`);
 const { tubePieces, tubeSvg } = await import(`${SKILL}/kit/tube.mjs`);
